@@ -1,0 +1,180 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String            @id @default(uuid())
+  email        String            @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  memberships  WorkspaceMember[]
+  sessions     Session[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model Workspace {
+  id           String                    @id @default(uuid())
+  name         String
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  members      WorkspaceMember[]
+  contacts     Contact[]
+  jobs         VerificationJob[]
+  results      VerificationResult[]
+  suppressions SuppressionEntry[]
+  settings     VerificationSettings?
+  ledger       VerificationCreditLedger[]
+
+  @@map("workspaces")
+}
+
+model WorkspaceMember {
+  id          String    @id @default(uuid())
+  workspaceId String
+  userId      String
+  role        String    @default("OWNER") // OWNER, ADMIN, MEMBER
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+  @@index([workspaceId])
+  @@map("workspace_members")
+}
+
+model Contact {
+  id                 String               @id @default(uuid())
+  workspaceId        String
+  email              String
+  normalizedEmail    String
+  verificationStatus String               @default("UNVERIFIED") // UNVERIFIED, VALID, INVALID, RISKY, UNKNOWN
+  lastVerifiedAt     DateTime?
+  subscriptionStatus String               @default("SUBSCRIBED") // SUBSCRIBED, UNSUBSCRIBED, BOUNCED, PENDING
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  workspace          Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  results            VerificationResult[]
+
+  @@unique([workspaceId, normalizedEmail])
+  @@index([workspaceId])
+  @@index([workspaceId, verificationStatus])
+  @@index([normalizedEmail])
+  @@map("contacts")
+}
+
+model VerificationJob {
+  id               String               @id @default(uuid())
+  workspaceId      String
+  filename         String
+  sourceType       String               @default("MANUAL") // CSV, MANUAL, API, IMPORT
+  status           String               @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED, CANCELLED
+  totalRecords     Int                  @default(0)
+  processedRecords Int                  @default(0)
+  validCount       Int                  @default(0)
+  invalidCount     Int                  @default(0)
+  riskyCount       Int                  @default(0)
+  unknownCount     Int                  @default(0)
+  providerJobId    String?
+  createdAt        DateTime             @default(now())
+  completedAt      DateTime?
+  errorMessage     String?
+  workspace        Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  results          VerificationResult[]
+
+  @@index([workspaceId])
+  @@index([workspaceId, status])
+  @@index([workspaceId, createdAt])
+  @@map("verification_jobs")
+}
+
+model VerificationResult {
+  id                 String           @id @default(uuid())
+  workspaceId        String
+  jobId              String
+  contactId          String?
+  email              String
+  normalizedEmail    String
+  status             String // VALID, INVALID, RISKY, UNKNOWN
+  providerStatus     String // Raw provider status (e.g. "safe", "invalid", "risky")
+  providerSubstatus  String? // Raw substatus (e.g. "mailbox_not_found", "disposable")
+  reason             String?
+  isDisposable       Boolean          @default(false)
+  isRoleBased        Boolean          @default(false)
+  isCatchAll         Boolean          @default(false)
+  providerResponse   Json?
+  verifiedAt         DateTime         @default(now())
+  workspace          Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  job                VerificationJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  contact            Contact?         @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([jobId])
+  @@index([workspaceId, jobId])
+  @@index([workspaceId, normalizedEmail])
+  @@map("verification_results")
+}
+
+model SuppressionEntry {
+  id              String    @id @default(uuid())
+  workspaceId     String
+  normalizedEmail String
+  reason          String
+  source          String    @default("MANUAL") // MANUAL, BOUNCE, COMPLAINT, UNSUBSCRIBE, SYSTEM
+  createdAt       DateTime  @default(now())
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, normalizedEmail])
+  @@index([workspaceId])
+  @@map("suppression_entries")
+}
+
+model VerificationSettings {
+  id                String    @id @default(uuid())
+  workspaceId       String    @unique
+  removeDuplicates  Boolean   @default(true)
+  excludeDisposable Boolean   @default(true)
+  flagCatchAll      Boolean   @default(true)
+  excludeInvalid    Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("verification_settings")
+}
+
+model VerificationCreditLedger {
+  id                String    @id @default(uuid())
+  workspaceId       String
+  provider          String    @default("REOON")
+  operation         String // SINGLE_VERIFY, BULK_VERIFY, REFUND
+  creditsUsed       Int       @default(0)
+  providerReference String?
+  createdAt         DateTime  @default(now())
+  workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([workspaceId, createdAt])
+  @@map("verification_credit_ledgers")
+}
