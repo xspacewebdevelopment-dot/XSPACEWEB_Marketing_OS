@@ -148,7 +148,7 @@ export default async function VerificationSettingsPage() {
           </div>
           <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
             <span className="text-[11px] text-slate-500">Verification Mode</span>
-            <p className="text-xs font-semibold uppercase text-slate-900">{providerConfig.mode}</p>
+            <p className="text-xs font-semibold uppercase text-emerald-600">Live Reoon API</p>
           </div>
           <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
             <span className="text-[11px] text-slate-500">API Key Status</span>

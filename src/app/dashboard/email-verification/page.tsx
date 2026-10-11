@@ -34,10 +34,9 @@ export default async function EmailVerificationOverviewPage() {
     riskyCount,
     unknownCount,
     recentJobs,
+    recentSingle,
   ] = await Promise.all([
-    workspaceId
-      ? prisma.verificationResult.count({ where: { workspaceId } })
-      : 0,
+    workspaceId ? prisma.verificationResult.count({ where: { workspaceId } }) : 0,
     workspaceId
       ? prisma.verificationResult.count({
           where: { workspaceId, status: "VALID" },
@@ -62,6 +61,13 @@ export default async function EmailVerificationOverviewPage() {
       ? prisma.verificationJob.findMany({
           where: { workspaceId },
           orderBy: { createdAt: "desc" },
+          take: 5,
+        })
+      : [],
+    workspaceId
+      ? prisma.verificationResult.findMany({
+          where: { workspaceId, source: "SINGLE" },
+          orderBy: { verifiedAt: "desc" },
           take: 5,
         })
       : [],
@@ -270,33 +276,33 @@ export default async function EmailVerificationOverviewPage() {
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-600">Verification Mode:</span>
-                <span className="font-semibold uppercase text-slate-900">
-                  {providerConfig.mode}
+                <span className="font-semibold uppercase text-emerald-600">
+                  Live API
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600">Phase 1 Safety:</span>
+                <span className="text-slate-600">Engine Type:</span>
                 <span className="font-semibold text-blue-600">
-                  0 Credits Consumed
+                  Real-Time SMTP
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-600">Credit Balance:</span>
                 <span className="font-medium text-slate-500">
-                  {balanceInfo.credits !== null
-                    ? `${balanceInfo.credits} credits`
+                  {balanceInfo.totalCreditsRemaining !== null
+                    ? `${balanceInfo.totalCreditsRemaining.toLocaleString()} credits`
                     : balanceInfo.status}
                 </span>
               </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-blue-50/70 border border-blue-200/60 text-[11px] text-blue-900 space-y-1">
+            <div className="p-3 rounded-lg border border-emerald-200/60 bg-emerald-50/70 text-emerald-900 text-[11px] space-y-1">
               <p className="font-semibold flex items-center gap-1.5">
-                <ShieldCheck className="h-3.5 w-3.5 text-blue-700" />
-                Phase 1 Verification Guard
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" />
+                Production Reoon Engine Active
               </p>
-              <p className="text-blue-800/90 leading-relaxed">
-                Reoon integration adapter is tested and server-safe. Real credit-consuming verification will be unlocked upon Phase 2 approval.
+              <p className="leading-relaxed opacity-90">
+                Real-time deep SMTP mailbox verification is enabled via Reoon API. Provider credits synchronize dynamically with every verification.
               </p>
             </div>
           </div>
@@ -313,7 +319,91 @@ export default async function EmailVerificationOverviewPage() {
         </div>
       </div>
 
-      {/* D. Recent Verification Jobs Table */}
+      {/* D. Recent Single Verifications Table */}
+      <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+        <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+          <div className="space-y-0.5">
+            <h2 className="text-sm font-semibold text-slate-900">
+              Recent Single Verifications
+            </h2>
+            <p className="text-[11px] text-slate-500">
+              Real-time individual address validations and mailbox checks
+            </p>
+          </div>
+          <Link
+            href="/dashboard/email-verification/single"
+            className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+          >
+            <span>Verify Single</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+
+        {recentSingle.length === 0 ? (
+          <div className="p-8 text-center space-y-2">
+            <div className="h-9 w-9 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+              <CheckCircle2 className="h-4 w-4" />
+            </div>
+            <h3 className="text-xs font-semibold text-slate-800">
+              No single email verifications yet
+            </h3>
+            <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
+              Verify an individual email to see instant deliverability breakdown and score.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                <tr>
+                  <th className="px-5 py-3">Email Address</th>
+                  <th className="px-5 py-3">Status</th>
+                  <th className="px-5 py-3">Mode</th>
+                  <th className="px-5 py-3">Score</th>
+                  <th className="px-5 py-3">Verified Date</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {recentSingle.map((res: any) => {
+                  const statusColors: Record<string, string> = {
+                    VALID: "bg-emerald-50 text-emerald-700 border-emerald-200",
+                    INVALID: "bg-rose-50 text-rose-700 border-rose-200",
+                    RISKY: "bg-amber-50 text-amber-700 border-amber-200",
+                    UNKNOWN: "bg-slate-100 text-slate-700 border-slate-200",
+                  };
+                  return (
+                    <tr key={res.id} className="hover:bg-slate-50/70">
+                      <td className="px-5 py-3 font-medium text-slate-900">
+                        {res.email}
+                      </td>
+                      <td className="px-5 py-3">
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                            statusColors[res.status] || "bg-slate-100 text-slate-700 border-slate-200"
+                          }`}
+                        >
+                          {res.status}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-slate-600 font-medium">
+                        {res.verificationMode || "POWER"}
+                      </td>
+                      <td className="px-5 py-3 text-slate-600">
+                        {res.overallScore !== null ? `${res.overallScore}/100` : "—"}
+                      </td>
+                      <td className="px-5 py-3 text-slate-500">
+                        {formatDate(res.verifiedAt)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* D2. Recent Verification Jobs Table */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden">
         <div className="p-5 border-b border-slate-100 flex items-center justify-between">
           <div className="space-y-0.5">
@@ -358,7 +448,7 @@ export default async function EmailVerificationOverviewPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {recentJobs.map((job) => (
+                {recentJobs.map((job: any) => (
                   <tr key={job.id} className="hover:bg-slate-50/70">
                     <td className="px-5 py-3 font-medium text-slate-900">
                       {job.filename}

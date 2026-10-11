@@ -3,7 +3,6 @@ import { getAuthContext } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { reoonClient } from "@/lib/reoon/client";
 
-
 export async function GET() {
   try {
     const auth = await getAuthContext();
@@ -18,7 +17,7 @@ export async function GET() {
     const { workspace } = auth;
     const workspaceId = workspace.id;
 
-    // Real database queries - will return 0 for new workspaces (no fake numbers)
+    // Real database queries reflecting actual Neon PostgreSQL records
     const [
       totalVerified,
       validCount,
@@ -26,6 +25,7 @@ export async function GET() {
       riskyCount,
       unknownCount,
       recentJobsCount,
+      singleCount,
     ] = await Promise.all([
       prisma.verificationResult.count({ where: { workspaceId } }),
       prisma.verificationResult.count({ where: { workspaceId, status: "VALID" } }),
@@ -33,12 +33,13 @@ export async function GET() {
       prisma.verificationResult.count({ where: { workspaceId, status: "RISKY" } }),
       prisma.verificationResult.count({ where: { workspaceId, status: "UNKNOWN" } }),
       prisma.verificationJob.count({ where: { workspaceId } }),
+      prisma.verificationResult.count({ where: { workspaceId, source: "SINGLE" } }),
     ]);
 
     const validityRate =
       totalVerified > 0 ? Number(((validCount / totalVerified) * 100).toFixed(1)) : 0;
 
-    // Fetch activity data (grouped by date) - will be empty array if no records
+    // Fetch activity data
     const recentResults = await prisma.verificationResult.findMany({
       where: { workspaceId },
       orderBy: { verifiedAt: "desc" },
@@ -46,6 +47,8 @@ export async function GET() {
       select: {
         verifiedAt: true,
         status: true,
+        verificationMode: true,
+        source: true,
       },
     });
 
@@ -67,13 +70,15 @@ export async function GET() {
           unknownCount,
           validityRate,
           recentJobsCount,
+          singleCount,
         },
         activity: recentResults,
         provider: {
           ...providerConfig,
           creditStatus: balanceInfo.status,
-          credits: balanceInfo.credits,
-          isMock: balanceInfo.isMock,
+          credits: balanceInfo.totalCreditsRemaining,
+          dailyCredits: balanceInfo.dailyCreditsRemaining,
+          instantCredits: balanceInfo.instantCreditsRemaining,
         },
       },
     });

@@ -13,14 +13,12 @@ interface HeaderProps {
     name: string;
   };
   onOpenMobileMenu?: () => void;
-  verificationMode?: "mock" | "live";
 }
 
 export function Header({
   user,
   workspace,
   onOpenMobileMenu,
-  verificationMode = "mock",
 }: HeaderProps) {
   return (
     <header className="h-16 border-b border-slate-200/80 bg-white sticky top-0 z-20 px-4 md:px-8 flex items-center justify-between">
@@ -48,21 +46,9 @@ export function Header({
       {/* Right side: Verification Status Badge, Help, & User */}
       <div className="flex items-center gap-3">
         {/* Reoon Provider Status Badge */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-colors bg-slate-50 text-slate-700 border-slate-200">
-          {verificationMode === "live" ? (
-            <>
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-              <span className="text-emerald-700 font-semibold">Live Mode</span>
-            </>
-          ) : (
-            <>
-              <ShieldAlert className="h-3.5 w-3.5 text-amber-500" />
-              <span className="text-amber-800 font-semibold">Mock Mode</span>
-              <span className="hidden lg:inline text-[10px] text-amber-600">
-                (0 Credits Consumed)
-              </span>
-            </>
-          )}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-emerald-50 text-emerald-700 border-emerald-200">
+          <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+          <span className="text-emerald-700 font-semibold">Reoon Active</span>
         </div>
 
         {/* Quick Help */}

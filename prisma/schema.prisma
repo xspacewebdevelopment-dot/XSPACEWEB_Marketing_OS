@@ -13,8 +13,10 @@ model User {
   passwordHash String
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
-  memberships  WorkspaceMember[]
-  sessions     Session[]
+  memberships   WorkspaceMember[]
+  sessions      Session[]
+  results       VerificationResult[]
+  ledgerEntries VerificationCreditLedger[]
 
   @@map("users")
 }
@@ -112,27 +114,49 @@ model VerificationJob {
 model VerificationResult {
   id                 String           @id @default(uuid())
   workspaceId        String
-  jobId              String
+  jobId              String?
+  userId             String?
   contactId          String?
   email              String
   normalizedEmail    String
   status             String // VALID, INVALID, RISKY, UNKNOWN
+  provider           String           @default("REOON")
+  verificationMode   String           @default("POWER") // POWER, QUICK
   providerStatus     String // Raw provider status (e.g. "safe", "invalid", "risky")
   providerSubstatus  String? // Raw substatus (e.g. "mailbox_not_found", "disposable")
   reason             String?
+  overallScore       Int?
+  isValidSyntax      Boolean?         @default(true)
   isDisposable       Boolean          @default(false)
   isRoleBased        Boolean          @default(false)
   isCatchAll         Boolean          @default(false)
+  mxAcceptsMail      Boolean?         @default(true)
+  canConnectSmtp     Boolean?
+  isDeliverable      Boolean?
+  isSpamtrap         Boolean?         @default(false)
+  isDisabled         Boolean?         @default(false)
+  hasInboxFull       Boolean?         @default(false)
+  isFreeEmail        Boolean?         @default(false)
+  domain             String?
+  mxRecords          Json?
   providerResponse   Json?
+  source             String           @default("SINGLE") // SINGLE, BULK
+  isMock             Boolean          @default(false)
   verifiedAt         DateTime         @default(now())
+  createdAt          DateTime         @default(now())
+
   workspace          Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  job                VerificationJob  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  job                VerificationJob? @relation(fields: [jobId], references: [id], onDelete: Cascade)
   contact            Contact?         @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  user               User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([workspaceId])
   @@index([jobId])
   @@index([workspaceId, jobId])
   @@index([workspaceId, normalizedEmail])
+  @@index([workspaceId, verifiedAt])
+  @@index([workspaceId, status])
+  @@index([workspaceId, isMock])
   @@map("verification_results")
 }
 
@@ -167,12 +191,15 @@ model VerificationSettings {
 model VerificationCreditLedger {
   id                String    @id @default(uuid())
   workspaceId       String
+  userId            String?
   provider          String    @default("REOON")
   operation         String // SINGLE_VERIFY, BULK_VERIFY, REFUND
   creditsUsed       Int       @default(0)
   providerReference String?
+  isMock            Boolean   @default(false)
   createdAt         DateTime  @default(now())
   workspace         Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user              User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([workspaceId])
   @@index([workspaceId, createdAt])

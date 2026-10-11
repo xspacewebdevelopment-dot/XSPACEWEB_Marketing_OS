@@ -26,7 +26,14 @@ export default function SignupPage() {
         body: JSON.stringify({ name, email, password, workspaceName }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(`Server returned unexpected response (${res.status})`);
+      }
+
       if (!res.ok) {
         throw new Error(data.error || "Signup failed");
       }

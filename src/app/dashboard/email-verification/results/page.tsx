@@ -108,7 +108,7 @@ export default async function VerificationResultsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {results.map((r) => (
+                {results.map((r: any) => (
                   <tr key={r.id}>
                     <td className="px-5 py-3 font-medium text-slate-900">{r.email}</td>
                     <td className="px-5 py-3">{r.status}</td>

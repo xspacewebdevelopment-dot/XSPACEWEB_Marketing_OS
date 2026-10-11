@@ -15,14 +15,12 @@ interface DashboardLayoutClientProps {
     id: string;
     name: string;
   };
-  verificationMode?: "mock" | "live";
 }
 
 export function DashboardLayoutClient({
   children,
   user,
   workspace,
-  verificationMode = "mock",
 }: DashboardLayoutClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -42,7 +40,6 @@ export function DashboardLayoutClient({
           user={user}
           workspace={workspace}
           onOpenMobileMenu={() => setMobileMenuOpen(true)}
-          verificationMode={verificationMode}
         />
         <main className="flex-1 flex flex-col overflow-y-auto">
           {children}

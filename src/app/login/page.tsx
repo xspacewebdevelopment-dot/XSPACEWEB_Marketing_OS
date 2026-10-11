@@ -25,7 +25,14 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(`Server returned unexpected response (${res.status})`);
+      }
+
       if (!res.ok) {
         throw new Error(data.error || "Login failed");
       }
@@ -48,7 +55,14 @@ export default function LoginPage() {
         method: "POST",
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error(`Server returned unexpected response (${res.status})`);
+      }
+
       if (!res.ok) {
         throw new Error(data.error || "Dev login failed");
       }

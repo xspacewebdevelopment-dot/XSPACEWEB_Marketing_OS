@@ -75,7 +75,7 @@ export default async function VerificationHistoryPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {jobs.map((j) => (
+                {jobs.map((j: any) => (
                   <tr key={j.id} className="hover:bg-slate-50/70">
                     <td className="px-5 py-3 font-medium text-slate-900">{j.filename}</td>
                     <td className="px-5 py-3 text-slate-600">{j.totalRecords}</td>

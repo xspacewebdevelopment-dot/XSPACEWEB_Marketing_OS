@@ -85,7 +85,7 @@ export default async function SuppressionListPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {suppressions.map((s) => (
+                {suppressions.map((s: any) => (
                   <tr key={s.id}>
                     <td className="px-5 py-3 font-medium text-slate-900">{s.normalizedEmail}</td>
                     <td className="px-5 py-3 text-slate-600">{s.reason}</td>

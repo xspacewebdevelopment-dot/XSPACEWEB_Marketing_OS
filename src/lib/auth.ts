@@ -132,7 +132,7 @@ export async function getAuthContext(): Promise<AuthContext | null> {
   const requestedWorkspaceId = cookieStore.get(ACTIVE_WORKSPACE_COOKIE)?.value;
 
   let activeMembership = requestedWorkspaceId
-    ? user.memberships.find((m) => m.workspaceId === requestedWorkspaceId)
+    ? user.memberships.find((m: { workspaceId: string }) => m.workspaceId === requestedWorkspaceId)
     : user.memberships[0];
 
   // If user has no workspace yet, create a default workspace for them
