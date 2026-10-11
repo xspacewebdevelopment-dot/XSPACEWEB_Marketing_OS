@@ -1,0 +1,389 @@
+/* Scoped Plain CSS for NeuralKinetics Full-Screen Video Hero Section */
+
+.nk-hero-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  font-family: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #000000;
+  box-sizing: border-box;
+}
+
+.nk-top-spacer {
+  height: 80px;
+  width: 100%;
+  pointer-events: none;
+}
+
+/* Fixed Navbar at Top */
+.nk-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .nk-navbar {
+    padding: 24px 32px;
+  }
+}
+
+.nk-navbar-left,
+.nk-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+/* Brand Logo */
+.nk-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #000000;
+}
+
+.nk-logo-svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.nk-brand-text {
+  display: none;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #000000;
+}
+
+@media (min-width: 768px) {
+  .nk-brand-text {
+    display: inline-block;
+  }
+}
+
+/* Menu Button */
+.nk-menu-btn {
+  background: #000000;
+  color: #ffffff;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 12px 3px 3px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nk-menu-btn:hover {
+  opacity: 0.88;
+  transform: scale(1.02);
+}
+
+.nk-menu-circle {
+  width: 28px;
+  height: 28px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+}
+
+@media (min-width: 768px) {
+  .nk-menu-circle {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.nk-menu-text {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+}
+
+/* Tags Pill (Advanced Bionics & Cognitive AI) */
+.nk-tags-pill {
+  display: none;
+  background: #F4F4F6;
+  border-radius: 9999px;
+  padding: 8px 16px;
+  align-items: center;
+  gap: 14px;
+}
+
+@media (min-width: 768px) {
+  .nk-tags-pill {
+    display: flex;
+  }
+}
+
+.nk-tag-text {
+  font-size: 11px;
+  font-weight: 500;
+  color: #111111;
+  letter-spacing: -0.01em;
+}
+
+.nk-tag-divider {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+/* Right Navbar Pill (Adaptive Systems) */
+.nk-adaptive-pill {
+  background: #F4F4F6;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 4px 3px 4px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  border: none;
+}
+
+@media (min-width: 768px) {
+  .nk-adaptive-pill {
+    padding: 3px 14px 3px 3px;
+  }
+}
+
+.nk-adaptive-pill:hover {
+  opacity: 0.88;
+}
+
+.nk-adaptive-circle {
+  width: 28px;
+  height: 28px;
+  background: #000000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+@media (min-width: 768px) {
+  .nk-adaptive-circle {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+.nk-adaptive-text {
+  display: none;
+  font-size: 11px;
+  font-weight: 500;
+  color: #111111;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 768px) {
+  .nk-adaptive-text {
+    display: inline-block;
+  }
+}
+
+/* Background Video Container */
+.nk-video-stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .nk-video-stage {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+}
+
+.nk-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Bottom Pinned Footer Content */
+.nk-footer-wrapper {
+  position: relative;
+  z-index: 30;
+  width: 100%;
+  background: linear-gradient(to top, #ffffff 0%, rgba(255, 255, 255, 0.85) 60%, rgba(255, 255, 255, 0) 100%);
+  padding: 32px 16px 24px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .nk-footer-wrapper {
+    padding: 60px 32px 36px;
+  }
+}
+
+.nk-footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .nk-footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+}
+
+/* Left Footer Block */
+.nk-footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 780px;
+}
+
+/* Subtitle */
+.nk-subtitle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nk-subtitle-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #000000;
+  display: inline-block;
+}
+
+.nk-subtitle-text {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.55);
+  letter-spacing: -0.01em;
+}
+
+/* Heading */
+.nk-heading {
+  font-weight: 300;
+  color: #000000;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  margin: 0;
+  font-size: clamp(2rem, 8vw, 4.5rem);
+}
+
+@media (min-width: 768px) {
+  .nk-heading {
+    font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  }
+}
+
+/* Action Buttons */
+.nk-buttons-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.nk-btn-primary {
+  background: #000000;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  border: 1px solid #000000;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nk-btn-primary:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.nk-btn-secondary {
+  background: transparent;
+  color: #000000;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.nk-btn-secondary:hover {
+  border-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Right Footer Block (Tag Pills) */
+.nk-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nk-tag-badge {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: #000000;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  letter-spacing: -0.01em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  user-select: none;
+}

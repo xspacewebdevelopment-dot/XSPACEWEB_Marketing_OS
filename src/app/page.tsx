@@ -1,69 +1,80 @@
-import Image from "next/image";
+import { Navbar } from "@/components/layout/Navbar";
+import { Hero } from "@/components/home/Hero";
+import { SocialProof } from "@/components/home/SocialProof";
+import { ProductOverview } from "@/components/home/ProductOverview";
+import { Statistics } from "@/components/home/Statistics";
+import { Visibility } from "@/components/home/Visibility";
+import { GrowthStack } from "@/components/home/GrowthStack";
+import { CoreFeatures } from "@/components/home/CoreFeatures";
+import { PowerPack } from "@/components/home/PowerPack";
+import { HowItWorks } from "@/components/home/HowItWorks";
+import { Testimonials } from "@/components/home/Testimonials";
+import { Integrations } from "@/components/home/Integrations";
+import { Pricing } from "@/components/home/Pricing";
+import { FAQ } from "@/components/home/FAQ";
+import { Blog } from "@/components/home/Blog";
+import { Contact } from "@/components/home/Contact";
+import { FinalCTA } from "@/components/home/FinalCTA";
+import { Footer } from "@/components/layout/Footer";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="relative min-h-screen bg-white text-slate-900 selection:bg-slate-200 selection:text-black">
+      {/* 1. Global Fixed Floating App Bar / Navigation */}
+      <Navbar />
+
+      <main>
+        {/* Full-Screen Minimal Black-and-White Hero Section with Background Video */}
+        <Hero />
+
+        {/* 4. Social Proof Infinite Marquee */}
+        <SocialProof />
+
+        {/* 5. Product Introduction & Overview Detail Cards */}
+        <ProductOverview />
+
+        {/* 6. Statistics & Credibility Counters Strip */}
+        <Statistics />
+
+        {/* 7. Sales Visibility & Operational Insights (Asymmetric Media) */}
+        <Visibility />
+
+        {/* 8. AI-Powered Growth Stack Switcher */}
+        <GrowthStack />
+
+        {/* 9. Core Features Bento Grid (6 Cards) */}
+        <CoreFeatures />
+
+        {/* 10. Power Pack Capabilities (Dual-column Sticky Storytelling) */}
+        <PowerPack />
+
+        {/* 11. How It Works (3 Connected Steps) */}
+        <HowItWorks />
+
+        {/* 12. Testimonials & Customer Results Carousel */}
+        <Testimonials />
+
+        {/* 13. Integrations Hub & Connectivity Node Grid */}
+        <Integrations />
+
+        {/* 14. Simple Pricing with Monthly/Yearly Discount Toggle */}
+        <Pricing />
+
+        {/* 15. FAQs Accordion */}
+        <FAQ />
+
+        {/* 16. Blog & Editorial Insights Cards */}
+        <Blog />
+
+        {/* 17. Contact Us Section */}
+        <Contact />
+
+        {/* 18. Final CTA Banner with Fluted Ribbon Stage */}
+        <FinalCTA />
       </main>
+
+      {/* 19. Multi-Column Footer with Watermark Branding */}
+      <Footer />
     </div>
   );
 }

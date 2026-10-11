@@ -1,6 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+<<<<<<< Updated upstream
+=======
+  /* config options here */
+  cacheComponents: true,
+  partialPrefetching: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+  },
+>>>>>>> Stashed changes
   turbopack: {
     rules: {
       "*.css": {

@@ -1,0 +1,1842 @@
+# NEXAREACH — COMPLETE WEBSITE CONTENT
+
+**Brand Name:** NexaReach
+
+**Brand Category:** AI-Powered Omnichannel Marketing Automation Platform
+
+**Primary Tagline:** One Platform. Every Channel. Smarter Growth.
+
+**Secondary Tagline:** Find. Verify. Engage. Automate. Convert.
+
+**Brand Description:**
+
+NexaReach is an AI-powered marketing automation platform that brings email marketing, WhatsApp Business communication, social media publishing, lead intelligence, workflow automation, and campaign analytics into one connected workspace.
+
+Instead of switching between multiple tools, teams can build, manage, and optimize customer engagement from a single platform.
+
+---
+
+# PAGE 1 — HOMEPAGE
+
+**Route:** `/`
+
+**SEO Title:** NexaReach | AI-Powered Marketing Automation Platform
+
+**Meta Description:** Discover NexaReach, the AI-powered marketing platform for email verification, outreach, WhatsApp campaigns, social media, lead intelligence, and automated workflows.
+
+## SECTION 1 — HERO
+
+**Eyebrow:**
+
+THE NEXT GENERATION OF MARKETING AUTOMATION
+
+**Main Heading:**
+
+Every Channel. Every Lead. One Intelligent Platform.
+
+**Alternative Hero Heading:**
+
+Your Entire Marketing Engine. Finally Connected.
+
+**Subheading:**
+
+Discover leads, verify emails, launch campaigns, automate conversations, and turn customer engagement into measurable growth — all from one AI-powered workspace.
+
+**Primary CTA:** Get Started
+
+**Secondary CTA:** Explore Features
+
+**Small Supporting Text:**
+
+Built for ambitious teams, growing businesses, and modern marketers.
+
+**Hero Visual Content:**
+
+An interactive representation of the NexaReach dashboard connecting:
+
+- Lead Intelligence
+- Email Marketing
+- WhatsApp Business
+- Social Media
+- AI Agents
+- Automation Workflows
+- Unified Analytics
+
+**Floating UI Labels:**
+
+- Lead Verified
+- Campaign Scheduled
+- AI Workflow Activated
+- New Conversation
+- Lead Qualified
+- Campaign Performance
+
+## SECTION 2 — VALUE PROPOSITION
+
+**Eyebrow:** ONE CONNECTED MARKETING WORKSPACE
+
+**Heading:**
+
+Stop Managing Tools. Start Managing Growth.
+
+**Description:**
+
+Marketing should not feel like managing ten different dashboards.
+
+NexaReach connects the tools and workflows behind customer acquisition, communication, and engagement into one intelligent platform.
+
+From discovering a potential customer to creating the perfect follow-up, every stage of your marketing journey works together.
+
+**Feature Highlight 1:**
+
+**One Connected Workspace**
+
+Manage marketing channels, leads, campaigns, and conversations without unnecessary tool switching.
+
+**Feature Highlight 2:**
+
+**Intelligence at Every Step**
+
+Use AI-powered assistance to draft messages, prioritize opportunities, and simplify everyday marketing tasks.
+
+**Feature Highlight 3:**
+
+**Automation That Works for You**
+
+Create connected workflows that handle repetitive tasks while keeping your team in control.
+
+**Feature Highlight 4:**
+
+**Insights That Drive Decisions**
+
+Understand campaign performance, audience engagement, and marketing effectiveness through a unified reporting experience.
+
+## SECTION 3 — CORE FEATURES
+
+**Eyebrow:** EVERYTHING YOU NEED TO GROW
+
+**Heading:**
+
+Powerful Tools. One Seamless Experience.
+
+**Description:**
+
+Explore an integrated suite of tools designed to help modern businesses discover opportunities, communicate effectively, and scale customer engagement.
+
+### Card 1 — Email Verification
+
+**Heading:** Reach the Right Inbox.
+
+Clean and validate email lists with syntax checks, domain and MX record checks, disposable email detection, role-account identification, catch-all analysis, and risk scoring.
+
+**Highlights:**
+
+- Individual and bulk verification
+- Email risk classification
+- Downloadable verification results
+
+**CTA:** Explore Email Verification
+
+### Card 2 — Email Marketing
+
+**Heading:** Make Every Email Count.
+
+Create, personalize, schedule, and manage email campaigns from one workspace. Build audience journeys that deliver relevant messages at the right moments.
+
+**Highlights:**
+
+- Campaigns and email sequences
+- Visual email templates
+- Personalization and follow-ups
+
+**CTA:** Explore Email Marketing
+
+### Card 3 — WhatsApp Marketing
+
+**Heading:** Turn Conversations into Connections.
+
+Engage opted-in customers through the official WhatsApp Business Platform. Create approved message templates, organize campaigns, and manage conversations at scale.
+
+**Highlights:**
+
+- WhatsApp campaigns
+- Template and audience management
+- Interactive customer messaging
+
+**CTA:** Explore WhatsApp Marketing
+
+### Card 4 — Social Media Publishing
+
+**Heading:** One Workspace. Multiple Social Channels.
+
+Plan, create, schedule, and manage social media content across supported platforms without losing track of your publishing calendar.
+
+**Highlights:**
+
+- Content calendar
+- AI-assisted content creation
+- Cross-platform publishing
+
+**CTA:** Explore Social Publishing
+
+### Card 5 — Lead Intelligence
+
+**Heading:** Better Leads. Smarter Decisions.
+
+Organize contact information, enrich lead profiles through authorized data sources, and prioritize prospects using intelligent scoring.
+
+**Highlights:**
+
+- Lead enrichment
+- Audience segmentation
+- Lead scoring and qualification
+
+**CTA:** Explore Lead Intelligence
+
+### Card 6 — Visual Automation
+
+**Heading:** Build Workflows, Not Busywork.
+
+Connect triggers, conditions, actions, and AI assistance through a visual workflow builder designed for complex marketing journeys.
+
+**Highlights:**
+
+- Drag-and-drop workflow building
+- Conditional branching
+- Multichannel actions
+
+**CTA:** Explore Automation
+
+### Card 7 — AI Marketing Agents
+
+**Heading:** Your AI-Powered Marketing Team.
+
+Create marketing content, assist with lead qualification, prepare follow-ups, and coordinate campaigns through specialized AI agents.
+
+**Highlights:**
+
+- AI Email Agent
+- AI Lead Qualification Agent
+- AI Campaign Agent
+
+**CTA:** Meet the AI Agents
+
+### Card 8 — Unified Inbox
+
+**Heading:** Every Conversation. One Place.
+
+Bring supported customer communication channels into a single organized workspace where your team can manage replies and follow-up activity.
+
+**Highlights:**
+
+- Shared conversations
+- Contact context
+- Team collaboration
+
+**CTA:** Explore Unified Inbox
+
+### Card 9 — Marketing Analytics
+
+**Heading:** Turn Performance into Progress.
+
+Understand how your campaigns perform with centralized reporting across email, WhatsApp, social engagement, and lead journeys.
+
+**Highlights:**
+
+- Campaign insights
+- Engagement tracking
+- Conversion reporting
+
+**CTA:** Explore Analytics
+
+## SECTION 4 — HOW IT WORKS
+
+**Eyebrow:** FROM FIRST CONTACT TO LASTING CUSTOMER
+
+**Heading:**
+
+From Lead to Conversion. One Connected Journey.
+
+**Description:**
+
+Build a smarter marketing process where every action contributes to the next.
+
+**Step 01 — Discover**
+
+Identify and organize promising opportunities through your lead database and authorized enrichment sources.
+
+**Step 02 — Verify**
+
+Check email addresses, identify risky contacts, and prepare cleaner lists before outreach.
+
+**Step 03 — Enrich**
+
+Add useful business context to your contact records and organize audiences based on relevant information.
+
+**Step 04 — Engage**
+
+Connect with your audience through permission-based email campaigns, WhatsApp messaging, and supported social channels.
+
+**Step 05 — Automate**
+
+Create intelligent workflows that coordinate customer journeys, timed follow-ups, and lead-handling actions.
+
+**Step 06 — Optimize**
+
+Use centralized performance insights to improve future campaigns, messaging, and engagement strategies.
+
+**CTA:** Explore the Platform
+
+## SECTION 5 — EMAIL VERIFICATION HIGHLIGHT
+
+**Eyebrow:** BUILT FOR BETTER EMAIL LIST QUALITY
+
+**Heading:**
+
+Cleaner Lists. Healthier Campaigns.
+
+**Description:**
+
+Poor-quality email data can increase bounces, waste resources, and damage sending reputation.
+
+NexaReach helps you assess email quality before launching campaigns, making it easier to identify invalid addresses, risky domains, disposable inboxes, and role-based contacts.
+
+**Feature Labels:**
+
+- Syntax Validation
+- Domain Validation
+- MX Record Checks
+- Disposable Detection
+- Role Email Identification
+- Catch-All Risk Detection
+- Email Risk Scoring
+- Bulk CSV Verification
+- Clean List Export
+
+**Dashboard Preview Labels:**
+
+Email Address | Verification Status | Risk Level
+
+Valid | Low Risk
+
+Role-Based | Medium Risk
+
+Catch-All | Medium Risk
+
+Invalid | High Risk
+
+Disposable | High Risk
+
+**CTA:** Verify Your Emails
+
+## SECTION 6 — AI AGENTS HIGHLIGHT
+
+**Eyebrow:** AI THAT WORKS WITH YOUR TEAM
+
+**Heading:**
+
+Meet Your New AI Marketing Team.
+
+**Description:**
+
+Great marketing requires creativity, consistency, and intelligent decisions.
+
+NexaReach AI Agents assist with content generation, campaign planning, lead qualification, and follow-up recommendations — helping teams spend more time on strategy and customer relationships.
+
+**AI Email Agent**
+
+Turn campaign ideas into personalized email drafts and suggested messaging improvements.
+
+**AI WhatsApp Agent**
+
+Support customer conversations with contextual reply assistance and approved automated workflows.
+
+**AI Lead Qualification Agent**
+
+Evaluate lead information and engagement signals to help teams identify promising opportunities.
+
+**AI Follow-up Agent**
+
+Recommend or trigger follow-up actions according to approved campaign rules and audience preferences.
+
+**AI Social Agent**
+
+Generate post ideas, captions, and structured content calendars for your social channels.
+
+**AI Campaign Agent**
+
+Transform a marketing goal into a campaign outline with suggested audiences, messaging, and workflows.
+
+**CTA:** Explore AI Agents
+
+## SECTION 7 — VISUAL AUTOMATION
+
+**Eyebrow:** CONNECT EVERY STEP
+
+**Heading:**
+
+If You Can Map It, You Can Automate It.
+
+**Description:**
+
+Create powerful marketing journeys through a visual automation builder that connects customer events, campaign conditions, communication channels, and AI actions.
+
+Build workflows visually, test each step, and keep control over how your marketing operations run.
+
+**Example Workflow:**
+
+New Consented Lead Added
+
+↓
+
+Verify Email
+
+↓
+
+Check Verification Status
+
+↓
+
+Add to Approved Audience Segment
+
+↓
+
+Send Welcome Email
+
+↓
+
+Wait 2 Days
+
+↓
+
+Check Engagement
+
+↓
+
+Send Relevant Follow-up or Route to Sales
+
+↓
+
+Update Lead Score
+
+**Supporting Features:**
+
+- Workflow triggers
+- Conditional branching
+- Scheduled actions
+- Audience rules
+- AI-assisted decisions
+- Campaign coordination
+- Workflow history
+
+**CTA:** Discover Visual Automation
+
+## SECTION 8 — DELIVERABILITY AND EMAIL HEALTH
+
+**Eyebrow:** BUILT FOR RESPONSIBLE SENDING
+
+**Heading:**
+
+Healthy Sending Starts with Better Visibility.
+
+**Description:**
+
+Understanding your sending infrastructure is essential to maintaining email deliverability.
+
+NexaReach brings together technical authentication checks, sending-health indicators, and actionable recommendations so teams can build sustainable email programs.
+
+**Health Monitoring Areas:**
+
+- Domain Health
+- SPF Authentication
+- DKIM Configuration
+- DMARC Policy
+- Domain Blacklist Checks
+- Bounce Rate
+- Complaint Rate
+- Sending Reputation
+- Inbox Placement Insights
+- Sending-Volume Recommendations
+
+**CTA:** Explore Deliverability
+
+## SECTION 9 — INDUSTRIES AND USE CASES
+
+**Eyebrow:** DESIGNED FOR DIFFERENT TEAMS
+
+**Heading:**
+
+Whatever You Build, Build Better Connections.
+
+**Description:**
+
+From early-stage businesses to established marketing teams, NexaReach helps organizations coordinate their customer communication and marketing operations.
+
+**Startup Teams**
+
+Launch targeted campaigns, organize prospects, and build repeatable growth workflows.
+
+**Marketing Agencies**
+
+Manage client campaigns, channels, reporting, and content production from organized workspaces.
+
+**SaaS Businesses**
+
+Coordinate onboarding, product communication, lifecycle campaigns, and customer engagement.
+
+**E-commerce Brands**
+
+Create audience segments, send permission-based promotions, and manage customer journeys.
+
+**Sales Teams**
+
+Qualify prospects, track engagement, and connect lead activity with follow-up workflows.
+
+**Growing Enterprises**
+
+Standardize cross-channel marketing operations with structured workflows and team controls.
+
+## SECTION 10 — FINAL CTA
+
+**Heading:**
+
+Your Next Stage of Growth Starts Here.
+
+**Description:**
+
+One connected workspace for smarter campaigns, better conversations, and more efficient marketing operations.
+
+Simplify the way your team reaches, engages, and converts customers.
+
+**Primary CTA:** Get Started with NexaReach
+
+**Secondary CTA:** Contact Our Team
+
+**Supporting Text:**
+
+Build meaningful customer relationships — powered by smarter marketing technology.
+
+---
+
+# PAGE 2 — ABOUT US
+
+**Route:** `/about`
+
+**SEO Title:** About NexaReach | Our Mission and Vision
+
+**Meta Description:** Discover the mission behind NexaReach and how we are building a unified AI-powered platform for modern marketing.
+
+## ABOUT HERO
+
+**Eyebrow:** ABOUT NEXAREACH
+
+**Heading:**
+
+Reimagining How Businesses Connect with People.
+
+**Description:**
+
+The future of marketing is not about using more tools. It is about making every tool, channel, and customer interaction work together.
+
+NexaReach is being built around a simple idea: businesses deserve a more intelligent, connected, and accessible way to manage marketing.
+
+Our goal is to transform fragmented marketing operations into a streamlined experience powered by automation, actionable data, and artificial intelligence.
+
+## OUR STORY
+
+**Heading:** Why NexaReach?
+
+Modern marketing teams face a growing challenge.
+
+Customer information lives in one system. Email campaigns run in another. Social media requires separate tools. WhatsApp conversations exist elsewhere. Automation is often difficult to configure, and reporting becomes fragmented across platforms.
+
+We saw an opportunity to bring these disconnected experiences together.
+
+NexaReach was conceived as a unified platform where lead intelligence, customer engagement, workflow automation, and AI assistance could operate as parts of one connected ecosystem.
+
+Rather than adding another isolated marketing tool, we are focused on creating a workspace that simplifies the entire process.
+
+## OUR MISSION
+
+**Heading:** Make Intelligent Marketing Accessible.
+
+Our mission is to help businesses simplify marketing complexity through connected technology, practical automation, and AI-powered assistance.
+
+We aim to give teams more control over their campaigns, clearer visibility into results, and more time to focus on building meaningful customer relationships.
+
+## OUR VISION
+
+**Heading:** A Future Where Marketing Works Together.
+
+We envision a marketing ecosystem where businesses can discover opportunities, understand audiences, manage conversations, and coordinate campaigns through one intelligent platform.
+
+A future where technology removes repetitive work instead of creating more of it.
+
+## OUR PRINCIPLES
+
+**Connected by Design**
+
+Marketing works better when data, communication, and workflows are integrated.
+
+**Intelligence with Purpose**
+
+AI should make marketing tasks easier, decisions clearer, and teams more effective.
+
+**Clarity over Complexity**
+
+Powerful technology should remain approachable and easy to use.
+
+**Privacy and Responsibility**
+
+Customer information, messaging consent, and responsible data practices are essential to sustainable growth.
+
+**Built to Evolve**
+
+Marketing channels and technology keep changing. Our platform vision is designed to evolve alongside them.
+
+## ABOUT FINAL CTA
+
+**Heading:** Be Part of a More Connected Marketing Future.
+
+**Description:**
+
+Explore how NexaReach is bringing marketing channels, customer intelligence, and intelligent automation together.
+
+**CTA:** Explore NexaReach
+
+---
+
+# PAGE 3 — ALL FEATURES
+
+**Route:** `/features`
+
+**SEO Title:** NexaReach Features | One Platform for Modern Marketing
+
+**Meta Description:** Explore NexaReach features for email verification, email marketing, WhatsApp campaigns, social publishing, lead enrichment, AI agents, and workflow automation.
+
+## HERO
+
+**Eyebrow:** PLATFORM CAPABILITIES
+
+**Heading:**
+
+Everything Your Marketing Needs. Working Together.
+
+**Description:**
+
+Discover a connected collection of marketing tools designed to simplify customer engagement, automate repetitive processes, and bring clarity to campaign performance.
+
+**CTA:** Explore the Platform
+
+## FEATURE CATEGORY 1 — EMAIL
+
+**Heading:** Smarter Email Operations.
+
+**Email Verification**
+
+Validate individual addresses or bulk lists with syntax, domain, MX, disposable, role-based, and catch-all checks.
+
+**Email Campaigns**
+
+Create, configure, schedule, and monitor marketing email campaigns.
+
+**Email Sequences**
+
+Design multi-step journeys that coordinate messages over time.
+
+**Automated Follow-ups**
+
+Trigger relevant follow-ups based on campaign rules and supported engagement events.
+
+**Email Templates**
+
+Create reusable email layouts for consistent communication.
+
+**AI Email Writer**
+
+Generate subject lines, campaign drafts, and personalized content suggestions.
+
+**Email Personalization**
+
+Customize messages with approved contact attributes and dynamic variables.
+
+**Campaign Experimentation**
+
+Compare email content and subject-line variations through A/B testing.
+
+**Deliverability Monitoring**
+
+Review authentication configurations, bounce patterns, and sending-health indicators.
+
+**Email Suppression Controls**
+
+Manage unsubscribes, invalid contacts, and blocked recipients to support responsible sending.
+
+## FEATURE CATEGORY 2 — WHATSAPP
+
+**Heading:** Customer Conversations That Connect.
+
+**WhatsApp Business Integration**
+
+Connect eligible business accounts through the official WhatsApp Business Platform.
+
+**Campaign Management**
+
+Create and manage permission-based customer messaging campaigns.
+
+**Template Management**
+
+Organize approved messaging templates for supported conversation categories.
+
+**Audience Segmentation**
+
+Create targeted audiences from contacts with appropriate messaging consent.
+
+**Scheduled Messaging**
+
+Plan approved messages around campaign timing requirements.
+
+**Interactive Messaging**
+
+Use supported media formats, call-to-action buttons, and interactive message experiences.
+
+**WhatsApp Flows**
+
+Create structured customer interactions where supported by the official platform.
+
+**Campaign Reporting**
+
+Track available delivery, read, and reply signals.
+
+**Opt-out Management**
+
+Respect customer preferences and maintain suppression controls.
+
+## FEATURE CATEGORY 3 — SOCIAL
+
+**Heading:** Your Social Presence. Simplified.
+
+**Instagram Management**
+
+Plan content, prepare captions, organize reels, and schedule supported content types.
+
+**Facebook Publishing**
+
+Manage Page content, publishing plans, and supported engagement interactions.
+
+**LinkedIn Publishing**
+
+Prepare professional content and publish through approved integrations where platform permissions allow.
+
+**X Publishing**
+
+Manage supported posts, threads, and publishing schedules through authorized integrations.
+
+**Content Calendar**
+
+Organize marketing content across connected channels in one view.
+
+**AI Caption Generation**
+
+Turn ideas into platform-specific captions and post drafts.
+
+**Content Approval**
+
+Review and approve scheduled content before publication.
+
+**Social Analytics**
+
+Review available engagement and publishing metrics.
+
+## FEATURE CATEGORY 4 — LEAD INTELLIGENCE
+
+**Heading:** Better Information. Better Opportunities.
+
+**Contact Management**
+
+Keep lead profiles and contact activity organized.
+
+**Lead Lists**
+
+Import, categorize, and manage audience lists.
+
+**Lead Enrichment**
+
+Add relevant business information through authorized enrichment sources.
+
+**Lead Verification**
+
+Connect email verification outcomes with your lead records.
+
+**Audience Segmentation**
+
+Group contacts based on relevant attributes, preferences, and activity.
+
+**AI Lead Scoring**
+
+Prioritize contacts using configurable qualification signals.
+
+**Lead Qualification**
+
+Structure the process of identifying potentially valuable sales opportunities.
+
+## FEATURE CATEGORY 5 — AUTOMATION
+
+**Heading:** Automate the Work Behind Your Marketing.
+
+**Visual Workflow Builder**
+
+Build automated journeys using connected nodes and workflow actions.
+
+**Triggers**
+
+Start workflows using supported events and conditions.
+
+**Conditions**
+
+Route contacts through different workflow paths based on relevant rules.
+
+**Delays and Scheduling**
+
+Control when workflow actions take place.
+
+**Multichannel Coordination**
+
+Connect supported marketing channels through one workflow.
+
+**Workflow Templates**
+
+Start from reusable automation patterns.
+
+**Execution History**
+
+Inspect workflow outcomes and troubleshoot failed actions.
+
+## FEATURE CATEGORY 6 — AI
+
+**Heading:** Intelligence Integrated into Every Workflow.
+
+**AI Campaign Builder**
+
+Transform marketing objectives into campaign drafts and structured plans.
+
+**AI Email Agent**
+
+Generate email campaign content and improvement suggestions.
+
+**AI WhatsApp Agent**
+
+Assist with customer-facing responses and approved conversation workflows.
+
+**AI Lead Qualification Agent**
+
+Analyze configured lead signals to support prioritization.
+
+**AI Follow-up Agent**
+
+Help determine appropriate follow-up content and timing.
+
+**AI Social Agent**
+
+Generate content ideas, captions, and publishing schedules.
+
+**AI Assistant**
+
+Get contextual help with marketing tasks and platform workflows.
+
+## FEATURE CATEGORY 7 — INBOX AND ANALYTICS
+
+**Heading:** One Clear View of Customer Engagement.
+
+**Unified Inbox**
+
+Organize supported customer conversations in one workspace.
+
+**Campaign Analytics**
+
+Monitor campaign reach, engagement, and outcomes.
+
+**Email Analytics**
+
+Track available delivery, bounce, click, and engagement metrics.
+
+**WhatsApp Analytics**
+
+Understand available messaging delivery and conversation activity.
+
+**Social Analytics**
+
+Review supported content and audience engagement metrics.
+
+**Lead Analytics**
+
+Understand contact movement through your marketing processes.
+
+**CTA:** Start Exploring NexaReach
+
+---
+
+# PAGE 4 — EMAIL VERIFICATION
+
+**Route:** `/features/email-verification`
+
+**Hero Heading:**
+
+Every Great Campaign Starts with a Cleaner List.
+
+**Subheading:**
+
+Identify invalid addresses, risky email patterns, disposable accounts, and potential delivery concerns before your next campaign.
+
+**Primary CTA:** Verify Emails
+
+**Secondary CTA:** Explore Bulk Verification
+
+## THE PROBLEM
+
+**Heading:** Bad Email Data Costs More Than You Think.
+
+Invalid and outdated contacts can increase bounce rates, reduce campaign efficiency, and create avoidable sending risks.
+
+Email verification gives marketers a clearer picture of list quality before launching outreach.
+
+## HOW VERIFICATION WORKS
+
+**Step 1:** Upload a CSV file or enter an individual email address.
+
+**Step 2:** Check address syntax and domain formatting.
+
+**Step 3:** Validate domain DNS and MX records.
+
+**Step 4:** Identify disposable and role-based email addresses.
+
+**Step 5:** Assess catch-all domains and other mailbox risk indicators.
+
+**Step 6:** Calculate verification and risk classifications.
+
+**Step 7:** Review results and export a cleaner audience list.
+
+## RESULT CATEGORIES
+
+**Valid**
+
+The address passes the available verification checks.
+
+**Invalid**
+
+The address fails one or more required validation checks.
+
+**Role-Based**
+
+The email appears associated with a shared or functional inbox, such as sales@ or support@.
+
+**Disposable**
+
+The address belongs to a known temporary email provider.
+
+**Catch-All**
+
+The domain may accept messages for many or all local parts, making mailbox existence uncertain.
+
+**Risky**
+
+The address has signals that suggest additional delivery caution.
+
+**Important Note:** Verification improves list quality but cannot guarantee mailbox existence, successful delivery, or inbox placement.
+
+## ADDITIONAL FEATURES
+
+Bulk CSV Upload
+
+Individual Email Verification
+
+Batch Processing
+
+Verification Progress Tracking
+
+Risk-Based Filtering
+
+CSV Export
+
+Verification History
+
+## FINAL CTA
+
+**Heading:** Know Your List Before You Send.
+
+**CTA:** Start Verifying
+
+---
+
+# PAGE 5 — EMAIL MARKETING
+
+**Route:** `/features/email-marketing`
+
+**Hero Heading:**
+
+Email Campaigns That Work Smarter.
+
+**Subheading:**
+
+Create meaningful customer communication with personalized campaigns, reusable templates, automated sequences, and actionable campaign insights.
+
+**CTA:** Explore Email Marketing
+
+## SECTION — CAMPAIGN BUILDER
+
+**Heading:** From Idea to Inbox, Without the Complexity.
+
+Plan campaigns, choose the right audience, customize your content, and schedule delivery from one streamlined workspace.
+
+## SECTION — PERSONALIZATION
+
+**Heading:** Make Every Message Feel Relevant.
+
+Bring approved audience data into your email content through dynamic variables and personalized messaging.
+
+## SECTION — AUTOMATION
+
+**Heading:** The Right Message. At the Right Moment.
+
+Build structured email journeys for onboarding, product education, newsletters, reminders, and customer lifecycle communication.
+
+## SECTION — AI CONTENT
+
+**Heading:** Better Ideas Begin with AI.
+
+Use AI assistance to draft email copy, explore subject lines, refine tone, and speed up campaign preparation.
+
+## SECTION — DELIVERABILITY
+
+**Heading:** Built for Healthier Sending.
+
+Manage unsubscribe requests, monitor bounces, maintain suppression lists, and review sending-health indicators.
+
+## SECTION — ANALYTICS
+
+**Heading:** Learn from Every Campaign.
+
+Review available delivery, click, and engagement signals to better understand campaign performance.
+
+**Final CTA:** Create Your Next Campaign
+
+---
+
+# PAGE 6 — WHATSAPP MARKETING
+
+**Route:** `/features/whatsapp`
+
+**Hero Heading:**
+
+Build Stronger Customer Relationships Through WhatsApp.
+
+**Subheading:**
+
+Connect with opted-in customers using organized messaging campaigns, approved templates, interactive experiences, and automated customer journeys.
+
+**CTA:** Explore WhatsApp Campaigns
+
+## SECTION — CAMPAIGNS
+
+**Heading:** Conversations Designed for Real Engagement.
+
+Create customer communication campaigns with approved templates, audience segments, and campaign schedules.
+
+## SECTION — PERSONALIZATION
+
+**Heading:** Make Every Conversation More Meaningful.
+
+Personalize approved messages using relevant customer information and predefined dynamic fields.
+
+## SECTION — INTERACTIVE COMMUNICATION
+
+**Heading:** Go Beyond Plain Text.
+
+Use supported media messages, interactive buttons, and WhatsApp Flows to build richer customer experiences.
+
+## SECTION — AUTOMATION
+
+**Heading:** Keep Conversations Moving.
+
+Coordinate approved messaging workflows, customer replies, and contact updates using event-driven automation.
+
+## SECTION — ANALYTICS
+
+**Heading:** Understand Every Interaction.
+
+View supported delivery, read, response, and campaign performance indicators.
+
+**Platform Note:**
+
+WhatsApp messaging requires an eligible WhatsApp Business Platform account, appropriate customer opt-in, and compliance with Meta's messaging rules. Template approval, supported features, and messaging charges are governed by Meta.
+
+**Final CTA:** Connect with Customers on WhatsApp
+
+---
+
+# PAGE 7 — SOCIAL MEDIA PUBLISHING
+
+**Route:** `/features/social-publishing`
+
+**Hero Heading:**
+
+Create Once. Plan Smarter. Publish Everywhere You Can.
+
+**Subheading:**
+
+Bring your social content planning, AI-assisted creation, publishing schedules, and performance reporting into one organized workspace.
+
+**CTA:** Explore Social Publishing
+
+## SECTION — CONTENT CALENDAR
+
+**Heading:** See Your Entire Content Strategy at a Glance.
+
+Plan upcoming posts, organize campaigns, and coordinate content across connected social channels.
+
+## SECTION — AI CONTENT ASSISTANCE
+
+**Heading:** More Ideas. Less Creative Block.
+
+Generate caption drafts, post concepts, hashtags, and content outlines tailored to your brand voice.
+
+## SECTION — SCHEDULING
+
+**Heading:** Plan Ahead and Stay Consistent.
+
+Prepare and schedule content using each platform's officially supported publishing capabilities.
+
+## SECTION — CONTENT APPROVAL
+
+**Heading:** Keep Your Brand Voice Consistent.
+
+Review drafts and approve content before it goes live.
+
+## SUPPORTED PLATFORM CATEGORIES
+
+**Instagram**
+
+Post planning, supported publishing, reel workflows, content ideas, and insights.
+
+**Facebook**
+
+Page publishing, content planning, supported interactions, and analytics.
+
+**LinkedIn**
+
+Authorized organization publishing, professional content planning, and supported reporting.
+
+**X**
+
+Supported post and thread publishing, content scheduling, and engagement insights.
+
+**Platform Note:**
+
+Publishing permissions, account eligibility, media support, and available analytics depend on each network's official APIs and approved access.
+
+**Final CTA:** Simplify Your Social Strategy
+
+---
+
+# PAGE 8 — LEAD INTELLIGENCE
+
+**Route:** `/features/lead-intelligence`
+
+**Hero Heading:**
+
+Know Your Leads. Understand Your Opportunities.
+
+**Subheading:**
+
+Organize contacts, improve data quality, build meaningful audience segments, and help your team focus on prospects that matter.
+
+**CTA:** Explore Lead Intelligence
+
+## SECTION — CONTACT MANAGEMENT
+
+**Heading:** Your Customer Data, Better Organized.
+
+Build a structured workspace for contact records, company information, communication preferences, and engagement history.
+
+## SECTION — ENRICHMENT
+
+**Heading:** Turn Contact Records into Useful Context.
+
+Enhance lead profiles with relevant business attributes from authorized data sources.
+
+**Potential Data Fields:**
+
+- Name
+- Company
+- Job Title
+- Website
+- Industry
+- Business Location
+- Company Size
+- Business Email
+- Email Verification Status
+- Authorized Social Profile Links
+
+## SECTION — SEGMENTATION
+
+**Heading:** Reach People with Greater Relevance.
+
+Create audience segments using business attributes, preferences, qualification criteria, and supported engagement signals.
+
+## SECTION — AI LEAD SCORING
+
+**Heading:** Give Every Opportunity the Right Attention.
+
+Use configurable scoring models and AI-assisted analysis to support lead prioritization.
+
+## SECTION — WORKFLOW CONNECTION
+
+**Heading:** From Lead Information to Next Action.
+
+Connect lead records with approved email journeys, WhatsApp workflows, sales handoffs, and campaign analytics.
+
+**Final CTA:** Build a Smarter Lead Pipeline
+
+---
+
+# PAGE 9 — VISUAL AUTOMATION
+
+**Route:** `/automation`
+
+**Hero Heading:**
+
+Marketing Automation That Thinks Beyond a Single Channel.
+
+**Subheading:**
+
+Design customer journeys visually using connected triggers, conditions, communication actions, and AI-powered assistance.
+
+**CTA:** Explore Workflows
+
+## SECTION — VISUAL BUILDER
+
+**Heading:** Build Complex Journeys with Simple Connections.
+
+Create workflows through an intuitive canvas that makes each marketing action easy to understand.
+
+## SECTION — TRIGGERS
+
+**Heading:** Every Journey Starts Somewhere.
+
+Trigger workflows from events such as new contacts, form submissions, audience changes, campaign interactions, or scheduled conditions.
+
+## SECTION — CONDITIONS
+
+**Heading:** Give Every Customer a Relevant Path.
+
+Create branching workflows based on consent status, verification results, lead scores, available engagement signals, and other supported conditions.
+
+## SECTION — ACTIONS
+
+**Heading:** Turn Marketing Logic into Real Actions.
+
+Configure supported email sends, WhatsApp messages, contact updates, workflow delays, notifications, and AI-assisted actions.
+
+## SECTION — HUMAN CONTROL
+
+**Heading:** Automation Without Losing Control.
+
+Introduce approvals, audience eligibility checks, rate limits, and workflow monitoring where appropriate.
+
+## SECTION — TEMPLATES
+
+**Heading:** Start Faster with Ready-Made Workflows.
+
+Explore reusable workflows for welcome journeys, lead qualification, customer onboarding, campaign coordination, and approved follow-ups.
+
+**Final CTA:** Build Your First Workflow
+
+---
+
+# PAGE 10 — AI AGENTS
+
+**Route:** `/ai-agents`
+
+**Hero Heading:**
+
+Meet the Intelligence Behind Your Marketing.
+
+**Subheading:**
+
+Specialized AI agents help your team create, coordinate, and optimize marketing activities — turning ambitious campaign ideas into actionable workflows.
+
+**CTA:** Explore AI Agents
+
+## AI EMAIL AGENT
+
+**Heading:** Your Creative Partner for Better Email.
+
+Create campaign drafts, experiment with subject lines, improve messaging, and prepare personalized variations.
+
+## AI WHATSAPP AGENT
+
+**Heading:** Smarter Assistance for Customer Conversations.
+
+Generate contextual replies, support frequently asked questions, and help coordinate compliant messaging workflows.
+
+## AI LEAD QUALIFICATION AGENT
+
+**Heading:** Understand Which Opportunities Deserve Attention.
+
+Analyze available contact attributes and configured engagement signals to support lead qualification.
+
+## AI FOLLOW-UP AGENT
+
+**Heading:** Stay Relevant Without Repeating Yourself.
+
+Recommend follow-up timing and message content based on engagement context, audience preferences, and campaign rules.
+
+## AI SOCIAL AGENT
+
+**Heading:** Create More Content with Less Effort.
+
+Generate campaign ideas, platform-specific captions, publishing plans, and content variations.
+
+## AI CAMPAIGN AGENT
+
+**Heading:** From a Simple Goal to a Connected Campaign.
+
+Describe a marketing objective and receive a structured campaign proposal covering suggested audiences, channels, content, and automation opportunities.
+
+**Example Prompt:**
+
+"Create a launch campaign for my new SaaS product targeting startup founders."
+
+**Suggested AI Output:**
+
+- Campaign objective
+- Audience segmentation
+- Email content drafts
+- Approved WhatsApp messaging plan
+- Social content calendar
+- Follow-up workflow
+- Measurement recommendations
+
+## RESPONSIBLE AI
+
+**Heading:** AI Assistance. Human Direction.
+
+NexaReach's AI experience is designed around transparent controls, configurable rules, and human oversight for consequential decisions and outbound communication.
+
+**Final CTA:** Discover AI-Powered Marketing
+
+---
+
+# PAGE 11 — UNIFIED INBOX
+
+**Route:** `/features/unified-inbox`
+
+**Hero Heading:**
+
+Customer Conversations, Finally Connected.
+
+**Subheading:**
+
+Organize supported customer messages, conversation history, and follow-up activity in a single workspace built for efficient teamwork.
+
+## FEATURE SECTIONS
+
+**One Conversation Workspace**
+
+Reduce fragmentation between supported messaging channels.
+
+**Contextual Contact Profiles**
+
+See relevant contact information alongside conversation history.
+
+**Team Collaboration**
+
+Assign conversations and coordinate customer responses.
+
+**AI-Assisted Replies**
+
+Prepare response suggestions while keeping message approval and communication controls in place.
+
+**Conversation Status**
+
+Organize conversations into relevant working states.
+
+**Workflow Integration**
+
+Connect inbound customer activity with lead updates and supported automation actions.
+
+**Final CTA:** Bring Conversations Together
+
+---
+
+# PAGE 12 — ANALYTICS
+
+**Route:** `/features/analytics`
+
+**Hero Heading:**
+
+See the Bigger Picture Behind Every Campaign.
+
+**Subheading:**
+
+Bring marketing performance into focus with reporting across connected communication channels, campaign journeys, and audience engagement.
+
+## ANALYTICS MODULES
+
+**Campaign Overview**
+
+Understand campaign progress and available performance indicators.
+
+**Email Performance**
+
+Review sending, delivery, bounce, and available engagement data.
+
+**WhatsApp Performance**
+
+Track supported messaging delivery and conversation outcomes.
+
+**Social Performance**
+
+Explore available impressions, interactions, and content engagement.
+
+**Lead Performance**
+
+Understand audience growth, lead qualification, and campaign attribution where data is available.
+
+**Workflow Performance**
+
+Review automation executions, outcomes, and failed actions.
+
+**AI Insights**
+
+Receive assistance interpreting performance trends and identifying potential improvements.
+
+**Reporting Note:**
+
+Analytics availability depends on connected platform permissions, supported event data, tracking consent, and the reporting capabilities of each integration.
+
+**Final CTA:** Make Better Marketing Decisions
+
+---
+
+# PAGE 13 — SOLUTIONS
+
+**Route:** `/solutions`
+
+**Hero Heading:**
+
+Built Around the Way Your Business Grows.
+
+**Subheading:**
+
+Whether you're launching your first campaign or coordinating multiple channels, NexaReach helps simplify marketing operations.
+
+## SOLUTION 1 — STARTUPS
+
+**Heading:** Move Faster with a Leaner Marketing Stack.
+
+Organize prospects, prepare campaigns, streamline onboarding communication, and coordinate growth activity without juggling disconnected tools.
+
+**CTA:** Explore Startup Solutions
+
+## SOLUTION 2 — MARKETING AGENCIES
+
+**Heading:** Manage More Campaigns with Greater Clarity.
+
+Centralize client-facing campaign operations, content scheduling, lead workflows, and performance reporting.
+
+**CTA:** Explore Agency Solutions
+
+## SOLUTION 3 — E-COMMERCE
+
+**Heading:** Turn Customer Engagement into Lasting Relationships.
+
+Create permission-based promotional journeys, audience segments, customer updates, and lifecycle communication.
+
+**CTA:** Explore E-commerce Solutions
+
+## SOLUTION 4 — SAAS BUSINESSES
+
+**Heading:** Make Every Stage of the Customer Journey Count.
+
+Coordinate product onboarding, customer education, lifecycle messaging, and engagement analysis.
+
+**CTA:** Explore SaaS Solutions
+
+## SOLUTION 5 — SALES TEAMS
+
+**Heading:** Focus on Conversations That Move Opportunities Forward.
+
+Improve contact quality, organize lead information, prioritize follow-ups, and connect marketing activity with sales workflows.
+
+**CTA:** Explore Sales Solutions
+
+---
+
+# PAGE 14 — PRICING
+
+**Route:** `/pricing`
+
+**Hero Heading:**
+
+Flexible Plans for Every Stage of Growth.
+
+**Subheading:**
+
+Choose the tools and capacity that fit your business, with a platform designed to support your marketing needs as they evolve.
+
+*Pricing amounts and entitlements should be finalized before publishing.*
+
+## PLAN 1 — STARTER
+
+**Tagline:** The Essentials for Getting Started.
+
+**Description:**
+
+A focused workspace for individuals and small teams beginning their marketing journey.
+
+**Potential Plan Features:**
+
+- Email verification allowance
+- Contact management
+- Basic email campaigns
+- Reusable email templates
+- Basic reporting
+- Standard support
+
+**CTA:** Choose Starter
+
+## PLAN 2 — GROWTH
+
+**Tagline:** More Power for Growing Teams.
+
+**Description:**
+
+Advanced marketing tools designed for businesses expanding customer engagement.
+
+**Potential Plan Features:**
+
+- Increased email verification capacity
+- Email sequences
+- Audience segmentation
+- Advanced campaign analytics
+- Workflow automation
+- AI content assistance
+- Supported channel integrations
+
+**CTA:** Choose Growth
+
+## PLAN 3 — PRO
+
+**Tagline:** Advanced Automation for Ambitious Teams.
+
+**Description:**
+
+A connected marketing workspace for teams coordinating sophisticated customer journeys.
+
+**Potential Plan Features:**
+
+- Higher usage allowances
+- Advanced workflow logic
+- Expanded AI agent capabilities
+- Multichannel campaign coordination
+- Advanced reporting
+- Team collaboration
+- Priority support
+
+**CTA:** Choose Pro
+
+## PLAN 4 — ENTERPRISE
+
+**Tagline:** Built for Larger Marketing Operations.
+
+**Description:**
+
+Explore tailored usage capacity, administrative controls, support arrangements, and integration requirements.
+
+**Potential Plan Features:**
+
+- Custom usage allowances
+- Advanced access controls
+- Enterprise onboarding
+- Custom integrations
+- Dedicated account support options
+- Tailored commercial arrangements
+
+**CTA:** Contact Sales
+
+## PRICING FOOTNOTE
+
+Plan availability, feature allowances, integrations, AI usage, and third-party messaging charges depend on the selected plan and applicable provider terms.
+
+---
+
+# PAGE 15 — CONTACT
+
+**Route:** `/contact`
+
+**Hero Heading:**
+
+Let's Build Better Marketing Together.
+
+**Subheading:**
+
+Have a question about NexaReach, interested in exploring the platform, or want to discuss your business requirements? We'd love to hear from you.
+
+## CONTACT OPTIONS
+
+**General Inquiries**
+
+Questions about NexaReach and the platform.
+
+**Sales and Product Discussions**
+
+Explore potential solutions for your marketing operations.
+
+**Technical Support**
+
+Get assistance with product features and account-related questions.
+
+**Partnerships**
+
+Discuss collaboration and integration opportunities.
+
+## FORM HEADING
+
+Tell Us What You're Looking For.
+
+**Form Fields:**
+
+- Full Name
+- Work Email
+- Company Name
+- Subject
+- Your Message
+
+**Submit Button:** Send Message
+
+**Success Message:**
+
+Thank you for contacting NexaReach. Your message has been received.
+
+---
+
+# PAGE 16 — FREQUENTLY ASKED QUESTIONS
+
+**Route:** `/help`
+
+## What is NexaReach?
+
+NexaReach is an AI-powered omnichannel marketing platform designed to bring lead intelligence, email marketing, WhatsApp communication, social publishing, workflow automation, and analytics into a connected workspace.
+
+## Who is NexaReach for?
+
+NexaReach is designed for startups, marketing teams, agencies, SaaS businesses, sales teams, and organizations looking to simplify their marketing operations.
+
+## Can I verify emails in bulk?
+
+The planned email verification module supports uploading CSV lists, processing batches, reviewing risk classifications, and exporting results.
+
+## Does email verification guarantee successful delivery?
+
+No. Email verification can identify certain address and domain risks, but it cannot guarantee mailbox existence, successful message delivery, or inbox placement.
+
+## Can I automate email follow-ups?
+
+NexaReach's automation capabilities are designed to support scheduled sequences and rule-based follow-ups for eligible contacts.
+
+## Does NexaReach support WhatsApp Business?
+
+The WhatsApp module is designed around Meta's official WhatsApp Business Platform. Availability depends on supported integration access, account eligibility, and applicable platform rules.
+
+## Can I manage multiple social media platforms?
+
+NexaReach's social publishing vision includes supported integrations for Instagram, Facebook, LinkedIn, and X. Available actions depend on authorized API permissions and supported account types.
+
+## Can AI create campaigns?
+
+The AI Campaign Agent is designed to convert marketing goals into draft campaign plans, including content suggestions, audience ideas, and workflow recommendations.
+
+## Is NexaReach suitable for agencies?
+
+The platform is intended to support agencies managing campaigns, lead data, communication workflows, and marketing analytics. Dedicated multi-client controls should be described separately when available.
+
+## How does NexaReach handle unsubscribes?
+
+The email marketing system is designed to maintain unsubscribe and suppression records so future marketing sends can respect recipient preferences.
+
+## Will I need external accounts for social and WhatsApp integrations?
+
+Yes. Most channel integrations require an eligible external account and authorization through the relevant platform.
+
+## Does NexaReach support customer data privacy?
+
+NexaReach is designed around privacy-conscious data handling, communication preferences, and access controls. Specific compliance commitments should be published only after the relevant policies and safeguards have been implemented and reviewed.
+
+## Can I track marketing performance?
+
+The analytics modules are designed to consolidate available campaign, messaging, workflow, and engagement reporting from connected services.
+
+---
+
+# PAGE 17 — FOOTER CONTENT
+
+## BRAND DESCRIPTION
+
+**NexaReach**
+
+One Platform. Every Channel. Smarter Growth.
+
+AI-powered tools for connected marketing, customer engagement, and intelligent automation.
+
+## PRODUCT
+
+- Email Verification
+- Email Marketing
+- WhatsApp Marketing
+- Social Publishing
+- Lead Intelligence
+- Visual Automation
+- AI Agents
+- Unified Inbox
+- Analytics
+
+## COMPANY
+
+- About Us
+- Solutions
+- Pricing
+- Contact
+- Help Center
+
+## RESOURCES
+
+- Documentation
+- Blog
+- FAQs
+- Getting Started
+- Product Updates
+
+## LEGAL
+
+- Privacy Policy
+- Terms of Service
+- Cookie Policy
+- Acceptable Use Policy
+- Data Processing Addendum
+
+## NEWSLETTER
+
+**Heading:** Stay Ahead of What's Next.
+
+**Description:**
+
+Get product updates, marketing insights, and useful automation ideas delivered to your inbox.
+
+**Email Placeholder:** Enter your email address
+
+**CTA:** Subscribe
+
+**Consent Note:**
+
+By subscribing, you agree to receive NexaReach updates. You can unsubscribe at any time.
+
+## FOOTER BOTTOM
+
+© NexaReach. All rights reserved.
+
+Built for smarter marketing. Designed for meaningful connections.
+
+---
+
+# PAGE 18 — COMING SOON / WAITLIST (OPTIONAL)
+
+**Route:** `/waitlist`
+
+**Hero Heading:**
+
+The Future of Connected Marketing Is Taking Shape.
+
+**Description:**
+
+NexaReach is bringing customer intelligence, multichannel communication, and intelligent automation into one connected platform.
+
+Join our early-access list to hear about product updates and availability.
+
+**Email Field:** Enter your work email
+
+**Primary CTA:** Join the Waitlist
+
+**Confirmation Text:**
+
+You're on the list. We'll keep you updated on NexaReach's progress and early-access opportunities.
+
+---
+
+# ADDITIONAL BRAND MICROCOPY
+
+## Loading Messages
+
+Preparing your workspace...
+
+Analyzing email quality...
+
+Processing your contact list...
+
+Building your campaign...
+
+Loading your marketing insights...
+
+## Empty States
+
+**No Campaigns Yet**
+
+Your next great campaign starts here.
+
+**CTA:** Create Campaign
+
+**No Contacts Found**
+
+Start building your audience by adding your first contact list.
+
+**CTA:** Add Contacts
+
+**No Workflows Yet**
+
+Create your first automation and connect your marketing activities.
+
+**CTA:** Build Workflow
+
+**No Conversations Yet**
+
+Customer conversations will appear here when supported messaging channels are connected.
+
+**CTA:** Connect a Channel
+
+## DASHBOARD WELCOME TEXT
+
+**Heading:** Welcome to NexaReach.
+
+**Subheading:** Your marketing workspace is ready. Let's turn ideas into meaningful customer engagement.
+
+## SHORT MARKETING LINES
+
+Smarter Marketing Starts Here.
+
+Your Growth. Connected.
+
+One Workspace. Limitless Possibilities.
+
+Less Busywork. More Meaningful Marketing.
+
+Turn Leads into Relationships.
+
+Connect the Journey. Simplify the Work.
+
+Intelligent Marketing, Made Practical.
+
+Built to Engage. Designed to Grow.
+
+From First Contact to Lasting Connection.
+
+The Marketing Workspace You've Been Waiting For.
