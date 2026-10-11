@@ -9,36 +9,27 @@
     "lint": "eslint"
   },
   "dependencies": {
-<<<<<<< Updated upstream
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/bcryptjs": "^2.4.6",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/pg": "^8.23.1",
     "bcryptjs": "^3.0.3",
+    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "dotenv": "^18.0.7",
     "inngest": "^4.23.0",
     "lucide-react": "^1.55.0",
-=======
-    "@types/canvas-confetti": "^1.9.0",
-    "canvas-confetti": "^1.9.4",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.55.0",
     "motion": "^14.1.0",
->>>>>>> Stashed changes
     "next": "16.4.0",
     "pg": "^8.23.1",
     "postcss": "^8.5.29",
     "prisma": "^7.10.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-<<<<<<< Updated upstream
     "tailwind-merge": "^3.7.0",
     "zod": "^4.6.5"
-=======
-    "tailwind-merge": "^3.7.0"
->>>>>>> Stashed changes
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",

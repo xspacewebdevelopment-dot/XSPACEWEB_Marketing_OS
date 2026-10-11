@@ -1,11 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-<<<<<<< Updated upstream
-=======
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
   images: {
     remotePatterns: [
       {
@@ -14,7 +9,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
->>>>>>> Stashed changes
   turbopack: {
     rules: {
       "*.css": {

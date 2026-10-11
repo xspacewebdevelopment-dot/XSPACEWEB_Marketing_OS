@@ -1,20 +1,9 @@
 @import "tailwindcss";
 
 :root {
-<<<<<<< Updated upstream
-  --background: #f8fafc;
-  --foreground: #0f172a;
-}
-
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-=======
   --background: #FFFFFF;
   --background-secondary: #F8FAFC;
+  --foreground: #0F172A;
   --brand-blue: #315BFF;
   --brand-violet: #7545FF;
   --brand-red: #FF4566;
@@ -23,6 +12,14 @@ body {
   --surface-light: #F1F5F9;
   --surface-border: rgba(0, 0, 0, 0.08);
   --gradient-primary: linear-gradient(110deg, #315BFF 0%, #7545FF 55%, #FF4566 100%);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @theme inline {
@@ -34,115 +31,34 @@ body {
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-surface-light: var(--surface-light);
-  --font-sans: var(--font-inter);
+  --color-surface-border: var(--surface-border);
 }
 
-* {
-  box-sizing: border-box;
+/* Custom Utilities */
+.container-custom {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
-body {
-  background-color: #FFFFFF;
-  color: #0F172A;
-  font-family: var(--font-inter), 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  overflow-x: hidden;
+.text-gradient {
+  background: linear-gradient(135deg, #0F172A 0%, #315BFF 60%, #7545FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Custom text gradient */
 .text-gradient-brand {
-  background: linear-gradient(110deg, #315BFF 0%, #7545FF 55%, #FF4566 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.text-gradient-blue {
-  background: linear-gradient(120deg, #2563EB 0%, #315BFF 60%, #7545FF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.bg-radial-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(49, 91, 255, 0.06) 0%, transparent 70%);
 }
 
-.text-gradient-dark {
-  background: linear-gradient(180deg, #0F172A 0%, #334155 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Background ribbons / fluted glass columns for light theme */
-.fluted-ribbon-stage {
-  background: repeating-linear-gradient(
-    90deg,
-    rgba(49, 91, 255, 0.02) 0px,
-    rgba(49, 91, 255, 0.02) 48px,
-    rgba(117, 69, 255, 0.03) 48px,
-    rgba(117, 69, 255, 0.03) 96px,
-    rgba(255, 69, 102, 0.02) 96px,
-    rgba(255, 69, 102, 0.02) 144px
-  );
-  position: relative;
-}
-
-/* Glass cards (Light mode) */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.glass-panel-light {
-  background: #FFFFFF;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  color: #0F172A;
-}
-
-.glass-panel-hover {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.glass-panel-hover:hover {
-  border-color: rgba(49, 91, 255, 0.4);
-  box-shadow: 0 12px 30px -10px rgba(49, 91, 255, 0.15);
-  transform: translateY(-2px);
-}
-
-/* Subtle dot grid for light mode */
-.bg-dot-grid {
-  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
-
-/* Marquee keyframes */
-@keyframes marquee-scroll {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-marquee {
-  display: flex;
-  width: max-content;
-  animation: marquee-scroll 32s linear infinite;
-}
-
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #F1F5F9;
-}
-::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
->>>>>>> Stashed changes
+.border-subtle {
+  border-color: rgba(0, 0, 0, 0.08);
 }
