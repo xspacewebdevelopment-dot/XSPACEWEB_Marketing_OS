@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #FFFFFF;
+  --background-secondary: #F8FAFC;
+  --foreground: #0F172A;
+  --brand-blue: #315BFF;
+  --brand-violet: #7545FF;
+  --brand-red: #FF4566;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --surface-light: #F1F5F9;
+  --surface-border: rgba(0, 0, 0, 0.08);
+  --gradient-primary: linear-gradient(110deg, #315BFF 0%, #7545FF 55%, #FF4566 100%);
 }
 
 body {
@@ -11,4 +20,45 @@ body {
   font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-violet: var(--brand-violet);
+  --color-brand-red: var(--brand-red);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-surface-light: var(--surface-light);
+  --color-surface-border: var(--surface-border);
+}
+
+/* Custom Utilities */
+.container-custom {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #0F172A 0%, #315BFF 60%, #7545FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-brand {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-radial-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(49, 91, 255, 0.06) 0%, transparent 70%);
+}
+
+.border-subtle {
+  border-color: rgba(0, 0, 0, 0.08);
 }

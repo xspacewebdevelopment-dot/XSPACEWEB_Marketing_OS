@@ -5,6 +5,7 @@ import "./globals.css";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
 });
 
 const geistSans = Geist({
@@ -18,8 +19,44 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NexaReach Marketing OS",
-  description: "Enterprise Multi-Channel Marketing OS & Verification Platform",
+  metadataBase: new URL("https://nexareach.io"),
+  title: "NexaReach | AI-Powered Marketing Automation Platform",
+  description:
+    "Discover NexaReach, the AI-powered marketing platform for email verification, outreach, WhatsApp campaigns, social media, lead intelligence, and automated workflows.",
+  keywords: [
+    "NexaReach",
+    "Marketing Automation",
+    "Email Verification",
+    "WhatsApp Marketing",
+    "Social Media Publishing",
+    "Lead Intelligence",
+    "AI Marketing Agents",
+    "Omnichannel Marketing",
+  ],
+  authors: [{ name: "NexaReach" }],
+  openGraph: {
+    title: "NexaReach — One Platform. Every Channel. Smarter Growth.",
+    description:
+      "Discover leads, verify emails, launch campaigns, automate conversations, and turn customer engagement into measurable growth — all from one AI-powered workspace.",
+    url: "https://nexareach.io",
+    siteName: "NexaReach",
+    images: [
+      {
+        url: "/images/team-collaboration.jpg",
+        width: 1200,
+        height: 630,
+        alt: "NexaReach AI Marketing Platform",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NexaReach — One Platform. Every Channel. Smarter Growth.",
+    description:
+      "Discover leads, verify emails, launch campaigns, and automate conversations from one connected workspace.",
+  },
 };
 
 export default function RootLayout({
@@ -30,9 +67,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased scroll-smooth`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#ffffff] text-[#0F172A] font-sans selection:bg-[#000000] selection:text-white">
+        {children}
+      </body>
     </html>
   );
 }
