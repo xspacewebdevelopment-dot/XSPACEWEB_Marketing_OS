@@ -46,10 +46,7 @@ function getPrismaClient(): PrismaClient {
 }
 
 function getValidPrismaClient(): PrismaClient {
-  if (
-    !globalForPrisma.prisma ||
-    (process.env.NODE_ENV !== "production" && !(globalForPrisma.prisma as any).campaign)
-  ) {
+  if (!globalForPrisma.prisma || !(globalForPrisma.prisma as any).campaign) {
     globalForPrisma.prisma = getPrismaClient();
   }
   return globalForPrisma.prisma;
