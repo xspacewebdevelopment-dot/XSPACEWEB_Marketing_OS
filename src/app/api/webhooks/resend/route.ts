@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+interface ResendWebhookData {
+  email_id?: string;
+  to?: string[];
+  from?: string;
+  subject?: string;
+  created_at?: string;
+  [key: string]: unknown;
+}
+
+interface ResendWebhookPayload {
+  type?: string;
+  created_at?: string;
+  data?: ResendWebhookData;
+}
+
 /**
  * Resend Webhook Ingestion Endpoint
  * Cleanly prepared for future authenticated webhook delivery events.
@@ -10,9 +25,9 @@ import { prisma } from "@/lib/prisma";
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();
-    let payload: any;
+    let payload: ResendWebhookPayload;
     try {
-      payload = JSON.parse(rawBody);
+      payload = JSON.parse(rawBody) as ResendWebhookPayload;
     } catch {
       return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
@@ -20,7 +35,6 @@ export async function POST(request: NextRequest) {
     const eventType = payload.type; // e.g. "email.delivered", "email.opened", "email.clicked", "email.bounced"
     const data = payload.data || {};
     const emailId = data.email_id;
-    const recipient = data.to?.[0];
 
     if (!eventType || !emailId) {
       return NextResponse.json(
@@ -47,7 +61,7 @@ export async function POST(request: NextRequest) {
           eventType: normalizedType,
           provider: "RESEND",
           providerMessageId: emailId,
-          metadata: data,
+          metadata: JSON.parse(JSON.stringify(data)),
         },
       });
 
@@ -145,10 +159,11 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ received: true, processed: Boolean(snapshot) }, { status: 200 });
-  } catch (err: any) {
-    console.error("Resend Webhook Ingestion Error:", err);
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : "Webhook processing error";
+    console.error("Resend Webhook Ingestion Error:", errorMessage);
     return NextResponse.json(
-      { error: err.message || "Webhook processing error" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
