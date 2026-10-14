@@ -282,7 +282,11 @@ function CampaignWizardContent() {
         return false;
       }
     } else if (step === 3) {
-      if (!formData.compiledHtml || formData.compiledHtml.trim().length < 10) {
+      const hasDesign = Boolean(
+        formData.templateId ||
+        (formData.compiledHtml && formData.compiledHtml.trim().length >= 10)
+      );
+      if (!hasDesign) {
         showNotice("error", "Please select a template design or edit in studio.");
         return false;
       }
@@ -297,6 +301,32 @@ function CampaignWizardContent() {
 
   const handleNext = async () => {
     if (!validateCurrentStep(currentStep)) return;
+
+    // Ensure template HTML is synced if templateId is chosen but compiledHtml was empty
+    if (
+      currentStep === 3 &&
+      formData.templateId &&
+      (!formData.compiledHtml || formData.compiledHtml.trim().length < 10)
+    ) {
+      try {
+        const res = await fetch(`/api/dashboard/email-marketing/templates/${formData.templateId}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data?.compiledHtml) {
+            formData.compiledHtml = json.data.compiledHtml;
+            formData.editorJson = json.data.editorJson;
+            setFormData((prev) => ({
+              ...prev,
+              compiledHtml: json.data.compiledHtml,
+              editorJson: json.data.editorJson,
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Could not sync template HTML on next:", err);
+      }
+    }
+
     await handleSaveDraft(true);
     setCurrentStep((prev) => Math.min(STEPS.length, prev + 1));
   };

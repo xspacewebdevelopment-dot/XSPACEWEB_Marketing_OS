@@ -108,6 +108,8 @@ export async function GET(request: NextRequest) {
         status: true,
         subject: true,
         preheader: true,
+        compiledHtml: true,
+        editorJson: true,
         thumbnail: true,
         tags: true,
         isStarred: true,

@@ -63,11 +63,29 @@ export function Step3Template({
     loadTemplates();
   }, []);
 
-  const handleSelectWorkspaceTemplate = (tmpl: any) => {
+  const handleSelectWorkspaceTemplate = async (tmpl: any) => {
+    let html = tmpl.compiledHtml || "";
+    let json = tmpl.editorJson || null;
+
+    if (!html || html.trim().length < 10) {
+      try {
+        const res = await fetch(`/api/dashboard/email-marketing/templates/${tmpl.id}`);
+        if (res.ok) {
+          const tJson = await res.json();
+          if (tJson.data?.compiledHtml) {
+            html = tJson.data.compiledHtml;
+            json = tJson.data.editorJson;
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch full template html:", err);
+      }
+    }
+
     onChange({
       templateId: tmpl.id,
-      compiledHtml: tmpl.compiledHtml || "",
-      editorJson: tmpl.editorJson,
+      compiledHtml: html,
+      editorJson: json,
     });
   };
 
@@ -279,7 +297,9 @@ export function Step3Template({
 
                       <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500">
                         <span>Updated {new Date(tmpl.updatedAt).toLocaleDateString()}</span>
-                        <span className="text-blue-600 font-semibold">Select Design</span>
+                        <span className={isSelected ? "text-blue-700 font-bold" : "text-blue-600 font-semibold"}>
+                          {isSelected ? "Selected ✓" : "Select Design"}
+                        </span>
                       </div>
                     </div>
                   );
