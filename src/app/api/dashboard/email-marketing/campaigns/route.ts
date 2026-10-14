@@ -32,73 +32,82 @@ export async function GET(request: NextRequest) {
       isArchived,
     });
 
-    // Calculate aggregated KPIs strictly from real stored database counts
-    const [
-      totalCampaigns,
-      aggregateStats,
-      draftCount,
-      scheduledCount,
-      sendingCount,
-      sentCount,
-      failedCount,
-      archivedCount,
-    ] = await Promise.all([
-      prisma.campaign.count({
-        where: { workspaceId, isArchived: false },
-      }),
-      prisma.campaign.aggregate({
-        where: { workspaceId },
-        _sum: {
-          submittedCount: true,
-          deliveredCount: true,
-          openedCount: true,
-          clickedCount: true,
-          bouncedCount: true,
-        },
-      }),
-      prisma.campaign.count({
-        where: { workspaceId, status: "DRAFT", isArchived: false },
-      }),
-      prisma.campaign.count({
-        where: { workspaceId, status: "SCHEDULED", isArchived: false },
-      }),
-      prisma.campaign.count({
-        where: { workspaceId, status: { in: ["SENDING", "QUEUED"] }, isArchived: false },
-      }),
-      prisma.campaign.count({
-        where: { workspaceId, status: "COMPLETED", isArchived: false },
-      }),
-      prisma.campaign.count({
-        where: { workspaceId, status: "FAILED", isArchived: false },
-      }),
-      prisma.campaign.count({
-        where: { workspaceId, isArchived: true },
-      }),
-    ]);
+    // Calculate aggregated KPIs safely
+    let totalCampaigns = 0;
+    let draftCount = 0;
+    let scheduledCount = 0;
+    let sendingCount = 0;
+    let sentCount = 0;
+    let failedCount = 0;
+    let archivedCount = 0;
+    let emailsSubmitted = 0;
+    let delivered = 0;
+    let opens = 0;
+    let clicks = 0;
+    let bounces = 0;
 
-    const sumStats = aggregateStats?._sum || {};
+    try {
+      const counts = await Promise.all([
+        prisma.campaign.count({ where: { workspaceId, isArchived: false } }),
+        prisma.campaign.count({ where: { workspaceId, status: "DRAFT", isArchived: false } }),
+        prisma.campaign.count({ where: { workspaceId, status: "SCHEDULED", isArchived: false } }),
+        prisma.campaign.count({ where: { workspaceId, status: { in: ["SENDING", "QUEUED"] }, isArchived: false } }),
+        prisma.campaign.count({ where: { workspaceId, status: "COMPLETED", isArchived: false } }),
+        prisma.campaign.count({ where: { workspaceId, status: "FAILED", isArchived: false } }),
+        prisma.campaign.count({ where: { workspaceId, isArchived: true } }),
+      ]);
+
+      totalCampaigns = counts[0] || 0;
+      draftCount = counts[1] || 0;
+      scheduledCount = counts[2] || 0;
+      sendingCount = counts[3] || 0;
+      sentCount = counts[4] || 0;
+      failedCount = counts[5] || 0;
+      archivedCount = counts[6] || 0;
+
+      if (totalCampaigns > 0) {
+        const aggregateStats = await prisma.campaign.aggregate({
+          where: { workspaceId },
+          _sum: {
+            submittedCount: true,
+            deliveredCount: true,
+            openedCount: true,
+            clickedCount: true,
+            bouncedCount: true,
+          },
+        });
+        emailsSubmitted = aggregateStats._sum?.submittedCount || 0;
+        delivered = aggregateStats._sum?.deliveredCount || 0;
+        opens = aggregateStats._sum?.openedCount || 0;
+        clicks = aggregateStats._sum?.clickedCount || 0;
+        bounces = aggregateStats._sum?.bouncedCount || 0;
+      }
+    } catch (kpiErr) {
+      console.warn("KPI aggregate query warning:", kpiErr);
+    }
+
     const kpis = {
-      totalCampaigns: totalCampaigns || 0,
-      emailsSubmitted: sumStats.submittedCount || 0,
-      delivered: sumStats.deliveredCount || 0,
-      opens: sumStats.openedCount || 0,
-      clicks: sumStats.clickedCount || 0,
-      bounces: sumStats.bouncedCount || 0,
+      totalCampaigns,
+      emailsSubmitted,
+      delivered,
+      opens,
+      clicks,
+      bounces,
       tabs: {
-        all: totalCampaigns || 0,
-        drafts: draftCount || 0,
-        scheduled: scheduledCount || 0,
-        sending: sendingCount || 0,
-        sent: sentCount || 0,
-        failed: failedCount || 0,
-        archived: archivedCount || 0,
+        all: totalCampaigns,
+        drafts: draftCount,
+        scheduled: scheduledCount,
+        sending: sendingCount,
+        sent: sentCount,
+        failed: failedCount,
+        archived: archivedCount,
       },
     };
 
     return NextResponse.json({
       success: true,
-      data: result.campaigns,
-      pagination: result.pagination,
+      data: result?.campaigns || [],
+      pagination: result?.pagination || { page, limit, total: 0, totalPages: 1 },
       kpis,
     });
   } catch (err: any) {
