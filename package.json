@@ -13,7 +13,8 @@
     "test:phase4": "tsx tests/phase4-results-cleaning.test.ts",
     "test:phase5": "tsx tests/phase5-suppression-list.test.ts",
     "test:templates": "tsx tests/email-templates.test.ts",
-    "test:all": "tsx tests/phase2-single-verification.test.ts && tsx tests/phase3-bulk-verification.test.ts && tsx tests/phase5-suppression-list.test.ts && tsx tests/email-templates.test.ts",
+    "test:deliverability": "tsx tests/deliverability.test.ts",
+    "test:all": "tsx tests/phase2-single-verification.test.ts && tsx tests/phase3-bulk-verification.test.ts && tsx tests/phase5-suppression-list.test.ts && tsx tests/email-templates.test.ts && tsx tests/deliverability.test.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

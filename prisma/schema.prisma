@@ -19,6 +19,7 @@ model User {
   jobs          VerificationJob[]
   ledgerEntries VerificationCreditLedger[]
   templates     EmailTemplate[]
+  emailSends    EmailSendRecord[]
 
   @@map("users")
 }
@@ -52,6 +53,9 @@ model Workspace {
   settings     VerificationSettings?
   ledger       VerificationCreditLedger[]
   templates    EmailTemplate[]
+  sendingDomains SendingDomain[]
+  emailSends     EmailSendRecord[]
+  webhookEvents  EmailWebhookEvent[]
 
   @@map("workspaces")
 }
@@ -337,5 +341,82 @@ model EmailTemplate {
   @@index([workspaceId, status])
   @@index([workspaceId, updatedAt])
   @@map("email_templates")
+}
+
+model SendingDomain {
+  id             String            @id @default(uuid())
+  workspaceId    String
+  domain         String
+  status         String            @default("PENDING") // PENDING, VERIFIED, PARTIALLY_VERIFIED, FAILED, NOT_STARTED
+  resendDomainId String?
+  region         String            @default("us-east-1")
+  spfStatus      String            @default("PENDING") // VERIFIED, PENDING, FAILED, MISSING
+  dkimStatus     String            @default("PENDING") // VERIFIED, PENDING, FAILED, MISSING
+  dmarcStatus    String            @default("PENDING") // VERIFIED, PENDING, FAILED, MISSING
+  dnsRecords     Json?
+  lastCheckedAt  DateTime?
+  errorMessage   String?
+  isDefault      Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  workspace      Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  sends          EmailSendRecord[]
+
+  @@unique([workspaceId, domain])
+  @@index([workspaceId])
+  @@index([workspaceId, status])
+  @@map("sending_domains")
+}
+
+model EmailSendRecord {
+  id              String         @id @default(uuid())
+  workspaceId     String
+  userId          String?
+  sendingDomainId String?
+  resendId        String?        @unique
+  recipientEmail  String
+  normalizedEmail String
+  senderEmail     String
+  subject         String
+  status          String         @default("SENT") // QUEUED, SENT, DELIVERED, BOUNCED, COMPLAINED, FAILED
+  source          String         @default("TEST") // TEST, CAMPAIGN, SEQUENCE, TRANSACTIONAL
+  errorMessage    String?
+  rawResponse     Json?
+  deliveredAt     DateTime?
+  bouncedAt       DateTime?
+  complainedAt    DateTime?
+  bounceDetails   Json?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  workspace       Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user            User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sendingDomain   SendingDomain? @relation(fields: [sendingDomainId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([workspaceId, status])
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, normalizedEmail])
+  @@index([resendId])
+  @@map("email_send_records")
+}
+
+model EmailWebhookEvent {
+  id          String     @id @default(uuid())
+  workspaceId String?
+  resendId    String?
+  eventType   String     // email.sent, email.delivered, email.bounced, email.complained, email.delivery_delayed
+  payload     Json
+  processed   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([resendId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("email_webhook_events")
 }
 

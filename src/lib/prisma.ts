@@ -45,7 +45,16 @@ function getPrismaClient(): PrismaClient {
   return new PrismaClient({ adapter });
 }
 
-export const prisma = globalForPrisma.prisma ?? getPrismaClient();
+// In development, ensure the cached Prisma client has newly generated models (sendingDomain, emailSendRecord)
+const cachedPrisma = globalForPrisma.prisma as (PrismaClient & Record<string, unknown>) | undefined;
+const isStale = Boolean(
+  cachedPrisma &&
+    (!cachedPrisma.sendingDomain ||
+      !cachedPrisma.emailSendRecord ||
+      !cachedPrisma.emailWebhookEvent)
+);
+
+export const prisma = (!cachedPrisma || isStale) ? getPrismaClient() : cachedPrisma;
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
