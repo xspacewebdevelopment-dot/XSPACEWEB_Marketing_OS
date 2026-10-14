@@ -3,6 +3,9 @@ import { z } from "zod";
 import { getAuthContext } from "@/lib/auth";
 import { resendService } from "@/lib/resend/client";
 import { interpolatePersonalization, wrapInEmailContainer } from "@/lib/templates/compiler";
+import { deliverabilityService } from "@/lib/services/deliverability";
+import { prisma } from "@/lib/prisma";
+import { normalizeEmail } from "@/lib/utils";
 
 const testSendSchema = z.object({
   recipientEmail: z.string().email("Please provide a valid recipient email address"),
@@ -29,6 +32,30 @@ export async function POST(request: NextRequest) {
           isConfigured: false,
         },
         { status: 500 }
+      );
+    }
+
+    const senderAddress = resendService.getSenderAddress();
+
+    // 1. Deliverability Pre-Send Safety Guard
+    const safetyCheck = await deliverabilityService.checkPreSendDeliverability(
+      auth.workspace.id,
+      senderAddress,
+      [validated.recipientEmail]
+    );
+
+    // Apply automatic blocking for critical safety conditions (e.g. active suppression entries)
+    if (!safetyCheck.canSend) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: safetyCheck.criticalIssues.join(" ") || "Sending blocked by deliverability safety policy.",
+          isBlockedBySafety: true,
+          criticalIssues: safetyCheck.criticalIssues,
+          warnings: safetyCheck.warnings,
+          suppressedRecipients: safetyCheck.suppressedRecipients,
+        },
+        { status: 400 }
       );
     }
 
@@ -59,14 +86,32 @@ export async function POST(request: NextRequest) {
       company: customCompany,
     });
 
+    const fullSubject = `[TEST] ${personalizedSubject}`;
+
     // Send via verified Resend sender
     const result = await resendService.sendEmail({
       to: validated.recipientEmail,
-      subject: `[TEST] ${personalizedSubject}`,
+      subject: fullSubject,
       html: fullHtml,
     });
 
     if (!result.success) {
+      // Record failed dispatch in database
+      await prisma.emailSendRecord.create({
+        data: {
+          workspaceId: auth.workspace.id,
+          userId: auth.user.id,
+          recipientEmail: validated.recipientEmail,
+          normalizedEmail: normalizeEmail(validated.recipientEmail),
+          senderEmail: result.from,
+          subject: fullSubject,
+          status: "FAILED",
+          source: "TEST",
+          errorMessage: result.error || "Resend API rejected the test send request",
+          rawResponse: result.rawResponse ? (result.rawResponse as any) : undefined,
+        },
+      });
+
       return NextResponse.json(
         {
           success: false,
@@ -74,19 +119,38 @@ export async function POST(request: NextRequest) {
           rawResponse: result.rawResponse,
           from: result.from,
           to: result.to,
+          warnings: safetyCheck.warnings,
         },
         { status: 400 }
       );
     }
 
+    // Persist successful dispatch in EmailSendRecord
+    const sendRecord = await prisma.emailSendRecord.create({
+      data: {
+        workspaceId: auth.workspace.id,
+        userId: auth.user.id,
+        resendId: result.messageId,
+        recipientEmail: validated.recipientEmail,
+        normalizedEmail: normalizeEmail(validated.recipientEmail),
+        senderEmail: result.from,
+        subject: fullSubject,
+        status: "SENT",
+        source: "TEST",
+        rawResponse: result.rawResponse ? (result.rawResponse as any) : undefined,
+      },
+    });
+
     return NextResponse.json({
       success: true,
+      sendRecordId: sendRecord.id,
       messageId: result.messageId,
       from: result.from,
       to: result.to,
-      subject: `[TEST] ${personalizedSubject}`,
+      subject: fullSubject,
       sentAt: new Date().toISOString(),
       rawResponse: result.rawResponse,
+      warnings: safetyCheck.warnings,
       note: "Request accepted by Resend API. The email was dispatched to the upstream provider queue.",
     });
   } catch (err: any) {
