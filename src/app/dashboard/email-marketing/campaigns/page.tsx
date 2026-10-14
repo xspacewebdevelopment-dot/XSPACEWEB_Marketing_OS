@@ -89,7 +89,23 @@ export default function CampaignsDashboardPage() {
       setCampaigns(json?.data || []);
       setPagination(json?.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 });
       if (json?.kpis) {
-        setKpis(json.kpis);
+        setKpis({
+          totalCampaigns: json.kpis.totalCampaigns ?? 0,
+          emailsSubmitted: json.kpis.emailsSubmitted ?? 0,
+          delivered: json.kpis.delivered ?? 0,
+          opens: json.kpis.opens ?? 0,
+          clicks: json.kpis.clicks ?? 0,
+          bounces: json.kpis.bounces ?? 0,
+          tabs: {
+            all: json.kpis.tabs?.all ?? 0,
+            drafts: json.kpis.tabs?.drafts ?? 0,
+            scheduled: json.kpis.tabs?.scheduled ?? 0,
+            sending: json.kpis.tabs?.sending ?? 0,
+            sent: json.kpis.tabs?.sent ?? 0,
+            failed: json.kpis.tabs?.failed ?? 0,
+            archived: json.kpis.tabs?.archived ?? 0,
+          },
+        });
       }
     } catch (err: any) {
       console.error(err);

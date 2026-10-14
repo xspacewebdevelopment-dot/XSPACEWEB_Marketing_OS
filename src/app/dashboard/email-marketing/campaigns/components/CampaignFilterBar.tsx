@@ -35,14 +35,24 @@ export function CampaignFilterBar({
   onRefresh,
   refreshing,
 }: CampaignFilterBarProps) {
+  const counts = tabCounts || {
+    all: 0,
+    drafts: 0,
+    scheduled: 0,
+    sending: 0,
+    sent: 0,
+    failed: 0,
+    archived: 0,
+  };
+
   const tabs = [
-    { id: "ALL", label: "All Campaigns", count: tabCounts.all },
-    { id: "DRAFT", label: "Drafts", count: tabCounts.drafts },
-    { id: "SCHEDULED", label: "Scheduled", count: tabCounts.scheduled },
-    { id: "SENDING", label: "Sending", count: tabCounts.sending },
-    { id: "COMPLETED", label: "Sent", count: tabCounts.sent },
-    { id: "FAILED", label: "Failed", count: tabCounts.failed },
-    { id: "ARCHIVED", label: "Archived", count: tabCounts.archived },
+    { id: "ALL", label: "All Campaigns", count: counts.all ?? 0 },
+    { id: "DRAFT", label: "Drafts", count: counts.drafts ?? 0 },
+    { id: "SCHEDULED", label: "Scheduled", count: counts.scheduled ?? 0 },
+    { id: "SENDING", label: "Sending", count: counts.sending ?? 0 },
+    { id: "COMPLETED", label: "Sent", count: counts.sent ?? 0 },
+    { id: "FAILED", label: "Failed", count: counts.failed ?? 0 },
+    { id: "ARCHIVED", label: "Archived", count: counts.archived ?? 0 },
   ];
 
   return (
