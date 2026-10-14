@@ -80,12 +80,15 @@ export default function CampaignsDashboardPage() {
       params.set("limit", "10");
 
       const res = await fetch(`/api/dashboard/email-marketing/campaigns?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to load campaigns");
+      const json = await res.json().catch(() => null);
 
-      const json = await res.json();
-      setCampaigns(json.data || []);
-      setPagination(json.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 });
-      if (json.kpis) {
+      if (!res.ok) {
+        throw new Error(json?.error || `Failed to load campaigns (HTTP ${res.status})`);
+      }
+
+      setCampaigns(json?.data || []);
+      setPagination(json?.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 });
+      if (json?.kpis) {
         setKpis(json.kpis);
       }
     } catch (err: any) {
@@ -207,7 +210,7 @@ export default function CampaignsDashboardPage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in duration-300">
       {/* Toast Notification */}
       {notice && (
         <div

@@ -76,21 +76,22 @@ export async function GET(request: NextRequest) {
       }),
     ]);
 
+    const sumStats = aggregateStats?._sum || {};
     const kpis = {
-      totalCampaigns,
-      emailsSubmitted: aggregateStats._sum.submittedCount || 0,
-      delivered: aggregateStats._sum.deliveredCount || 0,
-      opens: aggregateStats._sum.openedCount || 0,
-      clicks: aggregateStats._sum.clickedCount || 0,
-      bounces: aggregateStats._sum.bouncedCount || 0,
+      totalCampaigns: totalCampaigns || 0,
+      emailsSubmitted: sumStats.submittedCount || 0,
+      delivered: sumStats.deliveredCount || 0,
+      opens: sumStats.openedCount || 0,
+      clicks: sumStats.clickedCount || 0,
+      bounces: sumStats.bouncedCount || 0,
       tabs: {
-        all: totalCampaigns,
-        drafts: draftCount,
-        scheduled: scheduledCount,
-        sending: sendingCount,
-        sent: sentCount,
-        failed: failedCount,
-        archived: archivedCount,
+        all: totalCampaigns || 0,
+        drafts: draftCount || 0,
+        scheduled: scheduledCount || 0,
+        sending: sendingCount || 0,
+        sent: sentCount || 0,
+        failed: failedCount || 0,
+        archived: archivedCount || 0,
       },
     };
 
