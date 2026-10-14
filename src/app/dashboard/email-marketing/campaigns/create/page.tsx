@@ -204,24 +204,24 @@ function CampaignWizardContent() {
         if (!silent) setSavingDraft(true);
 
         const payload = {
-          name: formData.name.trim() || `Untitled Campaign (${new Date().toLocaleDateString()})`,
-          description: formData.description,
-          type: formData.type,
-          fromName: formData.fromName,
-          fromEmail: formData.fromEmail,
-          replyTo: formData.replyTo,
-          subject: formData.subject,
-          preheader: formData.preheader,
-          templateId: formData.templateId,
-          compiledHtml: formData.compiledHtml,
-          editorJson: formData.editorJson,
-          plainText: formData.plainText,
-          audienceConfig: formData.audienceConfig,
-          utmParams: formData.utmParams,
-          trackingSettings: formData.trackingSettings,
-          postalAddress: formData.postalAddress,
-          batchSize: formData.batchSize,
-          batchDelayMs: formData.batchDelayMs,
+          name: formData.name?.trim() || `Untitled Campaign (${new Date().toLocaleDateString()})`,
+          description: formData.description || null,
+          type: formData.type || "NEWSLETTER",
+          fromName: formData.fromName?.trim() || "Marketing",
+          fromEmail: formData.fromEmail?.trim() || "marketing@xspacecode.com",
+          replyTo: formData.replyTo?.trim() || null,
+          subject: formData.subject?.trim() || "",
+          preheader: formData.preheader?.trim() || null,
+          templateId: formData.templateId || null,
+          compiledHtml: formData.compiledHtml || null,
+          editorJson: formData.editorJson || null,
+          plainText: formData.plainText || null,
+          audienceConfig: formData.audienceConfig || {},
+          utmParams: formData.utmParams || {},
+          trackingSettings: formData.trackingSettings || { trackOpens: false, trackClicks: false },
+          postalAddress: formData.postalAddress?.trim() || null,
+          batchSize: formData.batchSize || 100,
+          batchDelayMs: formData.batchDelayMs || 1000,
         };
 
         if (campaignId) {
@@ -231,8 +231,11 @@ function CampaignWizardContent() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
-          if (!res.ok) throw new Error("Failed to update campaign draft");
-          if (!silent) showNotice("success", "Campaign draft saved.");
+          const json = await res.json().catch(() => null);
+          if (!res.ok) {
+            throw new Error(json?.error || "Failed to update campaign draft");
+          }
+          if (!silent) showNotice("success", "Draft saved.");
           return campaignId;
         } else {
           // Create new
@@ -241,24 +244,33 @@ function CampaignWizardContent() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
+          const json = await res.json().catch(() => null);
           if (!res.ok) {
-            const json = await res.json();
-            throw new Error(json.error || "Failed to create campaign draft");
+            throw new Error(json?.error || "Failed to create campaign draft");
           }
-          const json = await res.json();
-          const newId = json.data?.id;
-          setCampaignId(newId);
-          if (!silent) showNotice("success", "Draft created.");
+          const newId = json?.data?.id;
+          if (newId) {
+            setCampaignId(newId);
+            if (typeof window !== "undefined") {
+              window.history.replaceState(
+                null,
+                "",
+                `/dashboard/email-marketing/campaigns/create?id=${newId}&step=${currentStep}`
+              );
+            }
+          }
+          if (!silent) showNotice("success", "Draft saved.");
           return newId;
         }
       } catch (err: any) {
-        if (!silent) showNotice("error", err.message);
+        console.warn("Save draft error:", err);
+        if (!silent) showNotice("error", err.message || "Failed to save draft");
         return null;
       } finally {
         if (!silent) setSavingDraft(false);
       }
     },
-    [campaignId, formData]
+    [campaignId, formData, currentStep]
   );
 
   // Validate step transitions
@@ -337,9 +349,13 @@ function CampaignWizardContent() {
 
   // Launch Live Sending
   const handleSendNow = async () => {
-    const savedId = await handleSaveDraft(true);
-    const targetId = savedId || campaignId;
-    if (!targetId) throw new Error("Campaign ID missing");
+    let targetId = campaignId;
+    if (!targetId) {
+      targetId = await handleSaveDraft(true);
+    }
+    if (!targetId) {
+      throw new Error("Could not save campaign before dispatching. Please try saving draft.");
+    }
 
     const res = await fetch(`/api/dashboard/email-marketing/campaigns/${targetId}/send`, {
       method: "POST",
@@ -347,17 +363,22 @@ function CampaignWizardContent() {
       body: JSON.stringify({ confirmed: true }),
     });
 
-    const json = await res.json();
-    if (!res.ok) throw new Error(json.error || "Failed to initiate sending");
+    const json = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(json?.error || "Failed to initiate sending");
 
+    showNotice("success", "Campaign launched successfully!");
     router.push(`/dashboard/email-marketing/campaigns/${targetId}`);
   };
 
   // Schedule Campaign
   const handleScheduleSend = async (scheduledAtIso: string, timezone: string) => {
-    const savedId = await handleSaveDraft(true);
-    const targetId = savedId || campaignId;
-    if (!targetId) throw new Error("Campaign ID missing");
+    let targetId = campaignId;
+    if (!targetId) {
+      targetId = await handleSaveDraft(true);
+    }
+    if (!targetId) {
+      throw new Error("Could not save campaign before scheduling. Please try saving draft.");
+    }
 
     const res = await fetch(`/api/dashboard/email-marketing/campaigns/${targetId}/schedule`, {
       method: "POST",
@@ -369,9 +390,10 @@ function CampaignWizardContent() {
       }),
     });
 
-    const json = await res.json();
-    if (!res.ok) throw new Error(json.error || "Failed to schedule campaign");
+    const json = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(json?.error || "Failed to schedule campaign");
 
+    showNotice("success", "Campaign scheduled successfully!");
     router.push(`/dashboard/email-marketing/campaigns/${targetId}`);
   };
 

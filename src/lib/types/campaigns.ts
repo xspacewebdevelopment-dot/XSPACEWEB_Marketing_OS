@@ -169,7 +169,7 @@ export const CAMPAIGN_STATUS_BADGES: Record<
 
 // Zod schemas for request validation
 export const createCampaignSchema = z.object({
-  name: z.string().min(1, "Campaign name is required").max(200),
+  name: z.string().max(200).optional().default("New Campaign"),
   description: z.string().max(1000).optional().nullable(),
   type: z
     .enum([
@@ -180,10 +180,10 @@ export const createCampaignSchema = z.object({
       "RE_ENGAGEMENT",
     ])
     .default("NEWSLETTER"),
-  fromName: z.string().min(1, "From Name is required").max(100),
-  fromEmail: z.string().email("Valid From Email is required"),
-  replyTo: z.string().email("Valid Reply-To is required").optional().nullable().or(z.literal("")),
-  subject: z.string().min(1, "Subject line is required").max(300),
+  fromName: z.string().max(100).optional().default("Marketing"),
+  fromEmail: z.string().optional().default("marketing@xspacecode.com"),
+  replyTo: z.string().optional().nullable().or(z.literal("")),
+  subject: z.string().max(300).optional().default(""),
   preheader: z.string().max(300).optional().nullable(),
   templateId: z.string().optional().nullable(),
   compiledHtml: z.string().optional().nullable(),
