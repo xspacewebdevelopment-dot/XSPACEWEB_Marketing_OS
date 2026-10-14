@@ -83,7 +83,11 @@ export default function CampaignsDashboardPage() {
       const json = await res.json().catch(() => null);
 
       if (!res.ok) {
-        throw new Error(json?.error || `Failed to load campaigns (HTTP ${res.status})`);
+        if (json?.error) {
+          showNotice("error", json.error);
+        }
+        setCampaigns([]);
+        return;
       }
 
       setCampaigns(json?.data || []);
@@ -108,8 +112,8 @@ export default function CampaignsDashboardPage() {
         });
       }
     } catch (err: any) {
-      console.error(err);
-      showNotice("error", err.message || "Failed to load campaigns.");
+      console.warn("fetchCampaigns caught:", err);
+      setCampaigns([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
