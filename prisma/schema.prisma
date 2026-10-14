@@ -19,6 +19,7 @@ model User {
   jobs          VerificationJob[]
   ledgerEntries VerificationCreditLedger[]
   templates     EmailTemplate[]
+  campaigns     Campaign[]
 
   @@map("users")
 }
@@ -52,6 +53,8 @@ model Workspace {
   settings     VerificationSettings?
   ledger       VerificationCreditLedger[]
   templates    EmailTemplate[]
+  campaigns    Campaign[]
+  campaignSendingJobs CampaignSendingJob[]
 
   @@map("workspaces")
 }
@@ -95,6 +98,7 @@ model Contact {
   workspace          Workspace               @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   results            VerificationResult[]
   lists              ContactListMembership[]
+  campaignSnapshots  CampaignRecipientSnapshot[]
 
   @@unique([workspaceId, normalizedEmail])
   @@index([workspaceId])
@@ -337,5 +341,177 @@ model EmailTemplate {
   @@index([workspaceId, status])
   @@index([workspaceId, updatedAt])
   @@map("email_templates")
+}
+
+model Campaign {
+  id                String                     @id @default(uuid())
+  workspaceId       String
+  userId            String?
+  name              String
+  description       String?
+  type              String                     @default("NEWSLETTER") // NEWSLETTER, PROMOTIONAL, PRODUCT_UPDATE, EVENT_INVITATION, RE_ENGAGEMENT
+  status            String                     @default("DRAFT") // DRAFT, SCHEDULED, QUEUED, SENDING, COMPLETED, PAUSED, CANCELLED, FAILED, ARCHIVED
+  fromName          String
+  fromEmail         String
+  replyTo           String?
+  subject           String
+  preheader         String?
+  templateId        String?
+  compiledHtml      String?                    @db.Text
+  editorJson        Json?
+  plainText         String?                    @db.Text
+  audienceConfig    Json?
+  utmParams         Json?
+  trackingSettings  Json?
+  postalAddress     String?
+  batchSize         Int                        @default(100)
+  batchDelayMs      Int                        @default(1000)
+  scheduledAt       DateTime?
+  timezone          String?                    @default("UTC")
+  startedAt         DateTime?
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  pausedAt          DateTime?
+  errorMessage      String?
+  totalRecipients   Int                        @default(0)
+  submittedCount    Int                        @default(0)
+  deliveredCount    Int                        @default(0)
+  openedCount       Int                        @default(0)
+  clickedCount      Int                        @default(0)
+  bouncedCount      Int                        @default(0)
+  complainedCount   Int                        @default(0)
+  unsubscribedCount Int                        @default(0)
+  failedCount       Int                        @default(0)
+  isArchived        Boolean                    @default(false)
+  createdAt         DateTime                   @default(now())
+  updatedAt         DateTime                   @updatedAt
+
+  workspace         Workspace                  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user              User?                      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  snapshots         CampaignRecipientSnapshot[]
+  sendingJobs       CampaignSendingJob[]
+  events            EmailEvent[]
+  metrics           CampaignMetric[]
+
+  @@index([workspaceId])
+  @@index([workspaceId, status])
+  @@index([workspaceId, isArchived])
+  @@index([workspaceId, createdAt])
+  @@map("campaigns")
+}
+
+model CampaignRecipientSnapshot {
+  id                 String                @id @default(uuid())
+  campaignId         String
+  contactId          String?
+  email              String
+  normalizedEmail    String
+  firstName          String?
+  lastName           String?
+  company            String?
+  city               String?
+  customFields       Json?
+  unsubscribeToken   String                @unique @default(uuid())
+  status             String                @default("PENDING") // PENDING, SUBMITTED, DELIVERED, FAILED, EXCLUDED, BOUNCED, COMPLAINED, UNSUBSCRIBED
+  exclusionReason    String?
+  providerMessageId  String?
+  errorMessage       String?
+  submittedAt        DateTime?
+  deliveredAt        DateTime?
+  openedAt           DateTime?
+  clickedAt          DateTime?
+  bouncedAt          DateTime?
+  unsubscribedAt     DateTime?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  campaign           Campaign              @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  contact            Contact?              @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  sendingAttempts    EmailSendingAttempt[]
+
+  @@index([campaignId])
+  @@index([campaignId, status])
+  @@index([normalizedEmail])
+  @@index([unsubscribeToken])
+  @@map("campaign_recipient_snapshots")
+}
+
+model CampaignSendingJob {
+  id             String    @id @default(uuid())
+  campaignId     String
+  workspaceId    String
+  idempotencyKey String    @unique
+  batchIndex     Int       @default(0)
+  totalBatches   Int       @default(1)
+  status         String    @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED, PAUSED, CANCELLED
+  processedCount Int       @default(0)
+  failedCount    Int       @default(0)
+  errorMessage   String?
+  createdAt      DateTime  @default(now())
+  completedAt    DateTime?
+
+  campaign       Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  workspace      Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([workspaceId])
+  @@index([status])
+  @@map("campaign_sending_jobs")
+}
+
+model EmailSendingAttempt {
+  id                String                    @id @default(uuid())
+  campaignId        String
+  snapshotId        String
+  recipientEmail    String
+  status            String                    // SUBMITTED, FAILED
+  provider          String                    @default("RESEND")
+  providerMessageId String?
+  responseCode      Int?
+  error             String?
+  attemptNumber     Int                       @default(1)
+  createdAt         DateTime                  @default(now())
+
+  snapshot          CampaignRecipientSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([snapshotId])
+  @@map("email_sending_attempts")
+}
+
+model EmailEvent {
+  id                String    @id @default(uuid())
+  campaignId        String
+  recipientEmail    String
+  eventType         String    // SUBMITTED, DELIVERED, OPENED, CLICKED, BOUNCED, COMPLAINED, UNSUBSCRIBED
+  provider          String    @default("RESEND")
+  providerMessageId String?
+  metadata          Json?
+  createdAt         DateTime  @default(now())
+
+  campaign          Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([recipientEmail])
+  @@index([eventType])
+  @@map("email_events")
+}
+
+model CampaignMetric {
+  id           String    @id @default(uuid())
+  campaignId   String
+  recordedAt   DateTime  @default(now())
+  submitted    Int       @default(0)
+  delivered    Int       @default(0)
+  opens        Int       @default(0)
+  clicks       Int       @default(0)
+  bounces      Int       @default(0)
+  unsubscribes Int       @default(0)
+
+  campaign     Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([campaignId, recordedAt])
+  @@map("campaign_metrics")
 }
 

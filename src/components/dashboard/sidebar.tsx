@@ -54,6 +54,7 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
 
   const isEmailVerification = pathname.startsWith("/dashboard/email-verification");
   const isTemplates = pathname.startsWith("/dashboard/email-marketing/templates");
+  const isCampaigns = pathname.startsWith("/dashboard/email-marketing/campaigns");
 
   const handleLogout = async () => {
     try {
@@ -156,7 +157,20 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
             {emailMarketingOpen && (
               <div className="pl-6 pr-1 pt-1 space-y-0.5 border-l border-slate-800 ml-4">
                 <DisabledItem icon={BarChart3} label="Overview" />
-                <DisabledItem icon={Send} label="Campaigns" />
+                {/* Email Campaigns - ACTIVE FEATURE */}
+                <Link
+                  href="/dashboard/email-marketing/campaigns"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isCampaigns
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  <span>Campaigns</span>
+                </Link>
                 <DisabledItem icon={GitBranch} label="Sequences" />
 
                 {/* Email Templates - ACTIVE FEATURE */}

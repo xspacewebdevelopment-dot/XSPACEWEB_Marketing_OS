@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -273,7 +273,9 @@ function rgbToHex(rgb: string): string {
 export default function EmailTemplateEditorPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const templateId = params?.id as string;
+  const returnUrl = searchParams.get("returnUrl");
 
   // Editor states
   const [template, setTemplate] = useState<{
@@ -866,12 +868,12 @@ export default function EmailTemplateEditorPage() {
       <div className="h-16 px-6 bg-[#0a1829] border-b border-slate-800 flex items-center justify-between shrink-0 shadow-xs z-20">
         <div className="flex items-center gap-4">
           <Link
-            href="/dashboard/email-marketing/templates"
+            href={returnUrl || "/dashboard/email-marketing/templates"}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 transition-colors text-xs font-semibold border border-slate-700/60"
-            title="Return to Templates Gallery"
+            title={returnUrl ? "Return to Campaign Builder" : "Return to Templates Gallery"}
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>Templates</span>
+            <span>{returnUrl ? "Campaign" : "Templates"}</span>
           </Link>
 
           <div>
