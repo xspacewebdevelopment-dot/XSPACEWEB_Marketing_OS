@@ -56,17 +56,29 @@ export function Step2Audience({
           fetch("/api/dashboard/contacts?limit=100"),
         ]);
 
+        let listsCount = 0;
+        let contactsCount = 0;
+
         if (listsRes.ok) {
           const lJson = await listsRes.json();
-          setAvailableLists(lJson.data || []);
+          const lists = lJson.lists || lJson.data || [];
+          setAvailableLists(lists);
+          listsCount = lists.length;
         }
         if (segmentsRes.ok) {
           const sJson = await segmentsRes.json();
-          setAvailableSegments(sJson.data || []);
+          setAvailableSegments(sJson.segments || sJson.data || []);
         }
         if (contactsRes.ok) {
           const cJson = await contactsRes.json();
-          setAvailableContacts(cJson.data || []);
+          const contacts = cJson.contacts || cJson.data || [];
+          setAvailableContacts(contacts);
+          contactsCount = contacts.length;
+        }
+
+        // If no static lists exist, but individual contacts exist, auto-switch to contacts tab
+        if (listsCount === 0 && contactsCount > 0) {
+          setActiveAudienceTab("contacts");
         }
       } catch (err) {
         console.error("Failed to load audience resources:", err);
@@ -117,8 +129,10 @@ export function Step2Audience({
     const q = contactSearch.toLowerCase();
     return availableContacts.filter(
       (c) =>
-        c.email.toLowerCase().includes(q) ||
+        (c.email && c.email.toLowerCase().includes(q)) ||
         (c.name && c.name.toLowerCase().includes(q)) ||
+        (c.firstName && c.firstName.toLowerCase().includes(q)) ||
+        (c.lastName && c.lastName.toLowerCase().includes(q)) ||
         (c.company && c.company.toLowerCase().includes(q))
     );
   }, [availableContacts, contactSearch]);
@@ -188,7 +202,12 @@ export function Step2Audience({
             }`}
           >
             <Layers className="h-3.5 w-3.5" />
-            <span>Contact Lists ({selectedListIds.length})</span>
+            <span>Contact Lists ({availableLists.length})</span>
+            {selectedListIds.length > 0 && (
+              <span className="text-[10px] px-1.5 py-0.2 bg-blue-100 text-blue-800 rounded-full font-bold">
+                {selectedListIds.length} selected
+              </span>
+            )}
           </button>
           <button
             type="button"
@@ -200,7 +219,12 @@ export function Step2Audience({
             }`}
           >
             <Filter className="h-3.5 w-3.5" />
-            <span>Dynamic Segments ({selectedSegmentIds.length})</span>
+            <span>Dynamic Segments ({availableSegments.length})</span>
+            {selectedSegmentIds.length > 0 && (
+              <span className="text-[10px] px-1.5 py-0.2 bg-blue-100 text-blue-800 rounded-full font-bold">
+                {selectedSegmentIds.length} selected
+              </span>
+            )}
           </button>
           <button
             type="button"
@@ -212,7 +236,12 @@ export function Step2Audience({
             }`}
           >
             <Users className="h-3.5 w-3.5" />
-            <span>Individual Contacts ({selectedContactIds.length})</span>
+            <span>Individual Contacts ({availableContacts.length})</span>
+            {selectedContactIds.length > 0 && (
+              <span className="text-[10px] px-1.5 py-0.2 bg-blue-100 text-blue-800 rounded-full font-bold">
+                {selectedContactIds.length} selected
+              </span>
+            )}
           </button>
           <button
             type="button"
@@ -224,7 +253,12 @@ export function Step2Audience({
             }`}
           >
             <UserX className="h-3.5 w-3.5 text-rose-600" />
-            <span>Exclusions ({excludedListIds.length})</span>
+            <span>Exclusions</span>
+            {(excludedListIds.length > 0 || excludedContactIds.length > 0) && (
+              <span className="text-[10px] px-1.5 py-0.2 bg-rose-100 text-rose-800 rounded-full font-bold">
+                {excludedListIds.length + excludedContactIds.length}
+              </span>
+            )}
           </button>
         </div>
 
@@ -232,8 +266,27 @@ export function Step2Audience({
         {activeAudienceTab === "lists" && (
           <div className="space-y-3">
             {availableLists.length === 0 ? (
-              <div className="p-8 text-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 text-xs">
-                No contact lists created yet in this workspace. Create lists in the Lists & Segments module.
+              <div className="p-8 text-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 text-xs space-y-3">
+                <p className="font-semibold text-slate-800">No static contact lists found in this workspace.</p>
+                {availableContacts.length > 0 ? (
+                  <div className="pt-1 space-y-3">
+                    <p className="text-slate-500">
+                      You have <strong>{availableContacts.length} individual contacts</strong> in your workspace directory. You can select them directly in the Individual Contacts tab.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setActiveAudienceTab("contacts")}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition shadow-xs cursor-pointer inline-flex items-center gap-2"
+                    >
+                      <Users className="h-3.5 w-3.5" />
+                      Switch to Individual Contacts ({availableContacts.length})
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-slate-500">
+                    Create lists in the Lists & Segments module or add contacts to get started.
+                  </p>
+                )}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -303,9 +356,11 @@ export function Step2Audience({
                       />
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-semibold truncate text-slate-900">{seg.name}</div>
-                        <div className="text-[10px] text-slate-500 mt-0.5">
-                          {seg.description || "Dynamic conditions filter"}
-                        </div>
+                        {seg.description && (
+                          <div className="text-[10px] text-slate-500 mt-0.5">
+                            {seg.description}
+                          </div>
+                        )}
                         <div className="text-[10px] text-indigo-600 font-semibold mt-2 font-mono">
                           {seg.matchingCount ?? 0} matching contacts
                         </div>
@@ -321,47 +376,108 @@ export function Step2Audience({
         {/* TAB 3: CONTACTS */}
         {activeAudienceTab === "contacts" && (
           <div className="space-y-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search individual contacts by email, name or company..."
-                value={contactSearch}
-                onChange={(e) => setContactSearch(e.target.value)}
-                className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-xs"
-              />
+            <div className="flex items-center justify-between gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search individual contacts by email, name or company..."
+                  value={contactSearch}
+                  onChange={(e) => setContactSearch(e.target.value)}
+                  className="w-full bg-white border border-slate-300 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500 shadow-xs"
+                />
+              </div>
+              {filteredContacts.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const allFilteredIds = filteredContacts.map((c) => c.id);
+                    const allSelected = allFilteredIds.every((id) =>
+                      selectedContactIds.includes(id)
+                    );
+                    if (allSelected) {
+                      // Deselect all filtered
+                      onChange({
+                        ...audienceConfig,
+                        contactIds: selectedContactIds.filter(
+                          (id) => !allFilteredIds.includes(id)
+                        ),
+                      });
+                    } else {
+                      // Select all filtered (union)
+                      const next = Array.from(
+                        new Set([...selectedContactIds, ...allFilteredIds])
+                      );
+                      onChange({ ...audienceConfig, contactIds: next });
+                    }
+                  }}
+                  className="px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 transition shadow-xs shrink-0 cursor-pointer"
+                >
+                  {filteredContacts.every((c) => selectedContactIds.includes(c.id))
+                    ? "Deselect All"
+                    : `Select All (${filteredContacts.length})`}
+                </button>
+              )}
             </div>
 
-            <div className="max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white divide-y divide-slate-100 shadow-xs">
-              {filteredContacts.slice(0, 50).map((contact) => {
-                const isChecked = selectedContactIds.includes(contact.id);
-                return (
-                  <div
-                    key={contact.id}
-                    onClick={() => toggleContact(contact.id)}
-                    className="p-2.5 px-3.5 flex items-center justify-between hover:bg-slate-50 cursor-pointer transition-colors text-xs"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <input
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => {}}
-                        className="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
-                      />
-                      <div className="truncate">
-                        <span className="font-semibold text-slate-900 mr-2">{contact.email}</span>
-                        {contact.name && (
-                          <span className="text-slate-500 text-[11px]">({contact.name})</span>
+            {availableContacts.length === 0 ? (
+              <div className="p-8 text-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 text-xs">
+                No contacts found in this workspace. Add contacts in the Contacts module first.
+              </div>
+            ) : filteredContacts.length === 0 ? (
+              <div className="p-8 text-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 text-xs">
+                No contacts match your search query &quot;{contactSearch}&quot;.
+              </div>
+            ) : (
+              <div className="max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white divide-y divide-slate-100 shadow-xs">
+                {filteredContacts.slice(0, 100).map((contact) => {
+                  const isChecked = selectedContactIds.includes(contact.id);
+                  const displayName =
+                    contact.name ||
+                    [contact.firstName, contact.lastName].filter(Boolean).join(" ");
+                  return (
+                    <div
+                      key={contact.id}
+                      onClick={() => toggleContact(contact.id)}
+                      className={`p-2.5 px-3.5 flex items-center justify-between hover:bg-slate-50 cursor-pointer transition-colors text-xs ${
+                        isChecked ? "bg-blue-50/50" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {}}
+                          className="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
+                        />
+                        <div className="truncate">
+                          <span className="font-semibold text-slate-900 mr-2">{contact.email}</span>
+                          {displayName && (
+                            <span className="text-slate-500 text-[11px] mr-2">({displayName})</span>
+                          )}
+                          {contact.company && (
+                            <span className="text-slate-400 text-[10px] hidden sm:inline">
+                              • {contact.company}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {contact.verificationStatus === "VALID" ? (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+                            Valid
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 font-medium">
+                            {contact.verificationStatus || "Unverified"}
+                          </span>
                         )}
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                      {contact.verificationStatus}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
