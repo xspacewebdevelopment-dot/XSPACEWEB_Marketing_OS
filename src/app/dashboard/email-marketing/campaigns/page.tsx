@@ -207,35 +207,37 @@ export default function CampaignsDashboardPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* Toast Notification */}
       {notice && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border text-xs font-semibold shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 ${
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border text-xs font-semibold shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-200 ${
             notice.type === "success"
-              ? "bg-emerald-950/90 border-emerald-500/50 text-emerald-200"
-              : "bg-rose-950/90 border-rose-500/50 text-rose-200"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-rose-50 border-rose-200 text-rose-800"
           }`}
         >
           {notice.type === "success" ? (
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
           ) : (
-            <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
+            <AlertCircle className="h-4 w-4 text-rose-600 shrink-0" />
           )}
           <span>{notice.message}</span>
         </div>
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
         <div>
-          <h1 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            Email Campaigns
-            <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
-              Live Engine
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Email Campaigns
+            </h1>
+            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
+              Core Engine
             </span>
-          </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          </div>
+          <p className="text-xs text-slate-500 mt-1 max-w-2xl">
             Build, test, schedule and dispatch high-converting email campaigns with durable Inngest batching and real-time suppression exclusion.
           </p>
         </div>

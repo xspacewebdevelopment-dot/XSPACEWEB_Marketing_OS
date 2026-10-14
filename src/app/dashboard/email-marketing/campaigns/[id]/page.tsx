@@ -175,44 +175,44 @@ export default function CampaignMonitorPage({
       {/* Toast Notice */}
       {notice && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border text-xs font-semibold shadow-2xl animate-in fade-in duration-200 ${
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border text-xs font-semibold shadow-xl animate-in fade-in duration-200 ${
             notice.type === "success"
-              ? "bg-emerald-950/90 border-emerald-500/50 text-emerald-200"
-              : "bg-rose-950/90 border-rose-500/50 text-rose-200"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-rose-50 border-rose-200 text-rose-800"
           }`}
         >
           {notice.type === "success" ? (
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           ) : (
-            <AlertCircle className="h-4 w-4 text-rose-400" />
+            <AlertCircle className="h-4 w-4 text-rose-600" />
           )}
           <span>{notice.text}</span>
         </div>
       )}
 
       {/* TOP HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div className="flex items-center gap-3.5">
           <Link
             href="/dashboard/email-marketing/campaigns"
-            className="p-2 rounded-lg border border-slate-800 bg-[#0a1829] hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            className="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-900 shadow-xs transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
 
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-lg font-bold text-white tracking-tight">{campaign?.name}</h1>
+              <h1 className="text-xl font-bold text-slate-900 tracking-tight">{campaign?.name}</h1>
               <span
                 className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusBadge.bg} ${statusBadge.color} ${statusBadge.border}`}
               >
                 {campaign?.status === "SENDING" && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-ping" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-ping" />
                 )}
                 {statusBadge.label}
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Subject: &ldquo;{campaign?.subject}&rdquo; &bull; Sender: {campaign?.fromName} &lt;{campaign?.fromEmail}&gt;
             </p>
           </div>
@@ -223,9 +223,9 @@ export default function CampaignMonitorPage({
           {campaign?.status === "SENDING" && (
             <button
               onClick={handlePause}
-              className="px-3.5 py-1.5 rounded-lg border border-orange-800/60 bg-orange-950/30 hover:bg-orange-900/40 text-orange-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-1.5 rounded-lg border border-orange-300 bg-orange-50 hover:bg-orange-100 text-orange-800 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
             >
-              <Pause className="h-3.5 w-3.5" />
+              <Pause className="h-3.5 w-3.5 text-orange-600" />
               <span>Pause Sending</span>
             </button>
           )}
@@ -233,9 +233,9 @@ export default function CampaignMonitorPage({
           {campaign?.status === "PAUSED" && (
             <button
               onClick={handleResume}
-              className="px-3.5 py-1.5 rounded-lg border border-emerald-800/60 bg-emerald-950/30 hover:bg-emerald-900/40 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
             >
-              <Play className="h-3.5 w-3.5" />
+              <Play className="h-3.5 w-3.5 text-emerald-600" />
               <span>Resume Sending</span>
             </button>
           )}
@@ -245,16 +245,16 @@ export default function CampaignMonitorPage({
             campaign?.status === "PAUSED") && (
             <button
               onClick={handleCancel}
-              className="px-3 py-1.5 rounded-lg border border-rose-800/60 bg-rose-950/30 hover:bg-rose-900/40 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1.5 rounded-lg border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-800 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
             >
-              <XCircle className="h-3.5 w-3.5" />
+              <XCircle className="h-3.5 w-3.5 text-rose-600" />
               <span>Cancel</span>
             </button>
           )}
 
           <button
             onClick={handleDuplicate}
-            className="px-3 py-1.5 rounded-lg border border-slate-800 bg-[#0a1829] hover:bg-slate-800 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
           >
             <Copy className="h-3.5 w-3.5" />
             <span>Duplicate</span>
@@ -262,7 +262,7 @@ export default function CampaignMonitorPage({
 
           <Link
             href={`/dashboard/email-marketing/campaigns/${id}/report`}
-            className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-blue-600/20 transition-colors"
+            className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs shadow-blue-500/20 transition-colors"
           >
             <BarChart2 className="h-3.5 w-3.5" />
             <span>View Report</span>
@@ -272,71 +272,71 @@ export default function CampaignMonitorPage({
 
       {/* SCHEDULED BANNER (If Scheduled) */}
       {campaign?.status === "SCHEDULED" && campaign?.scheduledAt && (
-        <div className="p-4 rounded-xl bg-amber-950/30 border border-amber-900/60 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <div className="h-9 w-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
               <Calendar className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-xs font-bold text-white">Campaign Scheduled for Automated Dispatch</div>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                Target launch: <strong className="text-amber-300">{new Date(campaign.scheduledAt).toUTCString()}</strong> ({campaign.timezone || "UTC"})
+              <div className="text-xs font-bold text-amber-950">Campaign Scheduled for Automated Dispatch</div>
+              <p className="text-[11px] text-amber-800 mt-0.5">
+                Target launch: <strong className="text-amber-900">{new Date(campaign.scheduledAt).toUTCString()}</strong> ({campaign.timezone || "UTC"})
               </p>
             </div>
           </div>
-          <span className="text-[11px] font-mono text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20">
+          <span className="text-[11px] font-mono text-amber-800 bg-white px-2.5 py-1 rounded-md border border-amber-200 shadow-xs">
             Durable Inngest Sleep Active
           </span>
         </div>
       )}
 
       {/* REAL PROGRESS BAR */}
-      <div className="p-5 rounded-xl bg-[#09192d]/60 border border-slate-800/80 space-y-3">
+      <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4 text-blue-400" />
-            <span className="font-bold uppercase tracking-wider text-slate-300">
+            <Activity className="h-4 w-4 text-blue-600" />
+            <span className="font-bold uppercase tracking-wider text-slate-700">
               Live Sending Progress
             </span>
           </div>
-          <span className="font-mono font-bold text-white text-sm">
+          <span className="font-mono font-bold text-slate-900 text-sm">
             {counts?.progressPercent ?? 0}% Completed
           </span>
         </div>
 
-        <div className="h-3 rounded-full bg-slate-900 overflow-hidden border border-slate-800">
+        <div className="h-3 rounded-full bg-slate-100 overflow-hidden border border-slate-200">
           <div
             className={`h-full rounded-full transition-all duration-300 ${
               campaign?.status === "COMPLETED"
                 ? "bg-emerald-500"
                 : campaign?.status === "PAUSED"
                 ? "bg-orange-500"
-                : "bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-500"
+                : "bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600"
             }`}
             style={{ width: `${counts?.progressPercent ?? 0}%` }}
           />
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2 text-xs">
-          <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
-            <span className="text-[10px] text-slate-400 block">Total Audience</span>
-            <span className="text-sm font-bold text-white">{counts?.total ?? 0}</span>
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-[10px] text-slate-500 font-medium block">Total Audience</span>
+            <span className="text-base font-bold text-slate-900">{counts?.total ?? 0}</span>
           </div>
-          <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
-            <span className="text-[10px] text-slate-400 block">Pending Queue</span>
-            <span className="text-sm font-bold text-slate-300">{counts?.pending ?? 0}</span>
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
+            <span className="text-[10px] text-slate-500 font-medium block">Pending Queue</span>
+            <span className="text-base font-bold text-slate-700">{counts?.pending ?? 0}</span>
           </div>
-          <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
-            <span className="text-[10px] text-slate-400 block">Submitted (Resend)</span>
-            <span className="text-sm font-bold text-blue-400">{counts?.submitted ?? 0}</span>
+          <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-200">
+            <span className="text-[10px] text-blue-700 font-medium block">Submitted (Resend)</span>
+            <span className="text-base font-bold text-blue-800">{counts?.submitted ?? 0}</span>
           </div>
-          <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800">
-            <span className="text-[10px] text-slate-400 block">Failed Submissions</span>
-            <span className="text-sm font-bold text-rose-400">{counts?.failed ?? 0}</span>
+          <div className="p-3 rounded-xl bg-rose-50/60 border border-rose-200">
+            <span className="text-[10px] text-rose-700 font-medium block">Failed Submissions</span>
+            <span className="text-base font-bold text-rose-800">{counts?.failed ?? 0}</span>
           </div>
-          <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 col-span-2 sm:col-span-1">
-            <span className="text-[10px] text-slate-400 block">Excluded / Suppressed</span>
-            <span className="text-sm font-bold text-amber-400">{counts?.excluded ?? 0}</span>
+          <div className="p-3 rounded-xl bg-amber-50/60 border border-amber-200 col-span-2 sm:col-span-1">
+            <span className="text-[10px] text-amber-700 font-medium block">Excluded / Suppressed</span>
+            <span className="text-base font-bold text-amber-800">{counts?.excluded ?? 0}</span>
           </div>
         </div>
       </div>
@@ -344,39 +344,39 @@ export default function CampaignMonitorPage({
       {/* TWO COLUMN GRID: Live Activity & Provider Errors */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Activity Stream */}
-        <div className="p-4 rounded-xl bg-[#09192d]/60 border border-slate-800/80 space-y-3">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300">
-              <Clock className="h-4 w-4 text-indigo-400" />
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
+              <Clock className="h-4 w-4 text-indigo-600" />
               <span>Real-Time Activity Stream</span>
             </div>
-            <span className="text-[10px] text-slate-400">Latest Database Events</span>
+            <span className="text-[10px] text-slate-500">Latest Database Events</span>
           </div>
 
           {recentEvents.length === 0 ? (
-            <p className="text-xs text-slate-400 py-6 text-center">No sending activity logged yet.</p>
+            <p className="text-xs text-slate-500 py-8 text-center">No sending activity logged yet.</p>
           ) : (
             <div className="space-y-2 max-h-72 overflow-y-auto font-mono text-[11px]">
               {recentEvents.map((evt: any) => (
                 <div
                   key={evt.id}
-                  className="p-2 rounded bg-slate-900/60 border border-slate-800 flex items-center justify-between text-slate-300"
+                  className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between text-slate-700"
                 >
                   <div className="flex items-center gap-2 truncate">
                     <span
                       className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
                         evt.eventType === "SUBMITTED"
-                          ? "bg-blue-500/20 text-blue-300"
+                          ? "bg-blue-100 text-blue-700"
                           : evt.eventType === "UNSUBSCRIBED"
-                          ? "bg-rose-500/20 text-rose-300"
-                          : "bg-emerald-500/20 text-emerald-300"
+                          ? "bg-rose-100 text-rose-700"
+                          : "bg-emerald-100 text-emerald-700"
                       }`}
                     >
                       {evt.eventType}
                     </span>
                     <span className="truncate">{evt.recipientEmail}</span>
                   </div>
-                  <span className="text-[10px] text-slate-400 shrink-0">
+                  <span className="text-[10px] text-slate-500 shrink-0">
                     {new Date(evt.createdAt).toLocaleTimeString()}
                   </span>
                 </div>
@@ -386,20 +386,20 @@ export default function CampaignMonitorPage({
         </div>
 
         {/* Provider Error Logs */}
-        <div className="p-4 rounded-xl bg-[#09192d]/60 border border-slate-800/80 space-y-3">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-300">
-              <AlertOctagon className="h-4 w-4 text-rose-400" />
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
+              <AlertOctagon className="h-4 w-4 text-rose-600" />
               <span>Provider Errors & Rejections</span>
             </div>
-            <span className="text-[10px] text-rose-400 font-mono">
+            <span className="text-[10px] text-rose-700 font-mono font-medium">
               {recentErrors.length} Captured
             </span>
           </div>
 
           {recentErrors.length === 0 ? (
-            <div className="p-6 text-center rounded-lg bg-emerald-950/15 border border-emerald-900/30 text-emerald-400 text-xs flex items-center justify-center gap-2">
-              <CheckCircle2 className="h-4 w-4" />
+            <div className="p-6 text-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-center gap-2">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
               <span>Zero provider submission errors detected.</span>
             </div>
           ) : (
@@ -407,15 +407,15 @@ export default function CampaignMonitorPage({
               {recentErrors.map((err: any) => (
                 <div
                   key={err.id}
-                  className="p-2.5 rounded bg-rose-950/20 border border-rose-900/50 space-y-1"
+                  className="p-3 rounded-lg bg-rose-50 border border-rose-200 space-y-1"
                 >
-                  <div className="flex justify-between font-mono text-[11px] text-slate-300">
-                    <span className="font-semibold text-rose-300">{err.email}</span>
-                    <span className="text-[10px] text-slate-400">
+                  <div className="flex justify-between font-mono text-[11px] text-slate-700">
+                    <span className="font-semibold text-rose-700">{err.email}</span>
+                    <span className="text-[10px] text-slate-500">
                       {new Date(err.updatedAt).toLocaleTimeString()}
                     </span>
                   </div>
-                  <p className="text-[11px] text-rose-400/90 font-mono">
+                  <p className="text-[11px] text-rose-800 font-mono">
                     {err.errorMessage || "Unknown provider rejection"}
                   </p>
                 </div>

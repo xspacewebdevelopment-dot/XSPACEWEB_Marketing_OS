@@ -94,39 +94,44 @@ export function CampaignsTable({
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-slate-800 bg-[#09192d]/50 p-12 text-center">
-        <div className="h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-xs text-slate-400 font-medium">Loading campaign records...</p>
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-xs p-16 text-center">
+        <div className="h-6 w-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-xs text-slate-500 font-medium">Loading campaign records from PostgreSQL...</p>
       </div>
     );
   }
 
   if (campaigns.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-800 bg-[#09192d]/50 p-12 text-center space-y-3">
-        <div className="h-10 w-10 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
-          <Send className="h-5 w-5" />
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-xs p-16 text-center space-y-3">
+        <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto text-blue-600">
+          <Send className="h-6 w-6" />
         </div>
-        <h3 className="text-sm font-semibold text-white">No campaigns found</h3>
-        <p className="text-xs text-slate-400 max-w-sm mx-auto">
-          No email campaigns match your current filters. Create a new campaign to begin reaching your audience.
-        </p>
-        <Link
-          href="/dashboard/email-marketing/campaigns/create"
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs shadow-md shadow-blue-600/20 transition-colors"
-        >
-          Create First Campaign
-        </Link>
+        <div className="space-y-1">
+          <h3 className="text-sm font-bold text-slate-900">No campaigns found</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            No email campaigns match your current filters. Create a new campaign to begin reaching your audience.
+          </p>
+        </div>
+        <div className="pt-2">
+          <Link
+            href="/dashboard/email-marketing/campaigns/create"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
+          >
+            <Send className="h-3.5 w-3.5" />
+            <span>Create First Campaign</span>
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-[#09192d]/60 overflow-hidden select-none">
+    <div className="rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden select-none">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
-            <tr className="border-b border-slate-800/80 bg-[#0a1829]/90 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold text-slate-600 uppercase tracking-wider">
               <th className="py-3 px-4">Campaign & Subject</th>
               <th className="py-3 px-3">Type</th>
               <th className="py-3 px-3">Status</th>
@@ -139,7 +144,7 @@ export function CampaignsTable({
               <th className="py-3 px-3 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60">
+          <tbody className="divide-y divide-slate-100">
             {campaigns.map((camp) => {
               const badge = CAMPAIGN_STATUS_BADGES[camp.status] || {
                 label: camp.status,
@@ -170,7 +175,7 @@ export function CampaignsTable({
               return (
                 <tr
                   key={camp.id}
-                  className="hover:bg-slate-800/30 transition-colors group"
+                  className="hover:bg-slate-50/80 transition-colors group"
                 >
                   {/* Name & Subject */}
                   <td className="py-3.5 px-4 max-w-xs">
@@ -181,11 +186,11 @@ export function CampaignsTable({
                             ? `/dashboard/email-marketing/campaigns/create?id=${camp.id}`
                             : `/dashboard/email-marketing/campaigns/${camp.id}`
                         }
-                        className="font-semibold text-white group-hover:text-blue-400 transition-colors truncate"
+                        className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors truncate"
                       >
                         {camp.name}
                       </Link>
-                      <span className="text-[11px] text-slate-400 truncate mt-0.5" title={camp.subject}>
+                      <span className="text-[11px] text-slate-500 truncate mt-0.5" title={camp.subject}>
                         {camp.subject}
                       </span>
                       <span className="text-[10px] text-slate-400 truncate">
@@ -196,7 +201,7 @@ export function CampaignsTable({
 
                   {/* Type */}
                   <td className="py-3.5 px-3 whitespace-nowrap">
-                    <span className="text-slate-300 font-medium">
+                    <span className="text-slate-700 font-medium">
                       {CAMPAIGN_TYPE_LABELS[camp.type] || camp.type}
                     </span>
                   </td>
@@ -204,29 +209,29 @@ export function CampaignsTable({
                   {/* Status Badge */}
                   <td className="py-3.5 px-3 whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${badge.bg} ${badge.color} ${badge.border}`}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${badge.bg} ${badge.color} ${badge.border}`}
                     >
                       {camp.status === "SENDING" && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-ping" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 animate-ping" />
                       )}
                       {badge.label}
                     </span>
                   </td>
 
                   {/* Recipients */}
-                  <td className="py-3.5 px-3 text-right font-mono text-slate-300">
+                  <td className="py-3.5 px-3 text-right font-mono text-slate-700">
                     {camp.totalRecipients.toLocaleString()}
                   </td>
 
                   {/* Submitted */}
-                  <td className="py-3.5 px-3 text-right font-mono text-blue-400 font-medium">
+                  <td className="py-3.5 px-3 text-right font-mono text-blue-600 font-semibold">
                     {camp.submittedCount.toLocaleString()}
                   </td>
 
                   {/* Delivered */}
                   <td className="py-3.5 px-3 text-right font-mono">
                     {camp.deliveredCount > 0 ? (
-                      <span className="text-emerald-400">{camp.deliveredCount.toLocaleString()}</span>
+                      <span className="text-emerald-600 font-semibold">{camp.deliveredCount.toLocaleString()}</span>
                     ) : (
                       <span className="text-slate-400">—</span>
                     )}
@@ -234,24 +239,24 @@ export function CampaignsTable({
 
                   {/* Open Rate */}
                   <td className="py-3.5 px-3 text-right font-mono">
-                    <span className={openRate !== "—" ? "text-purple-400 font-medium" : "text-slate-400"}>
+                    <span className={openRate !== "—" ? "text-purple-600 font-semibold" : "text-slate-400"}>
                       {openRate}
                     </span>
                   </td>
 
                   {/* Click Rate */}
                   <td className="py-3.5 px-3 text-right font-mono">
-                    <span className={clickRate !== "—" ? "text-teal-400 font-medium" : "text-slate-400"}>
+                    <span className={clickRate !== "—" ? "text-teal-600 font-semibold" : "text-slate-400"}>
                       {clickRate}
                     </span>
                   </td>
 
                   {/* Timing */}
-                  <td className="py-3.5 px-4 whitespace-nowrap text-slate-400 text-[11px]">
+                  <td className="py-3.5 px-4 whitespace-nowrap text-slate-500 text-[11px]">
                     {camp.completedAt ? (
                       <span>Sent {new Date(camp.completedAt).toLocaleDateString([], { month: "short", day: "numeric" })}</span>
                     ) : camp.scheduledAt ? (
-                      <span className="text-amber-400 flex items-center gap-1">
+                      <span className="text-amber-700 flex items-center gap-1 font-medium">
                         <Calendar className="h-3 w-3" />
                         {new Date(camp.scheduledAt).toLocaleDateString([], { month: "short", day: "numeric" })}
                       </span>
@@ -267,7 +272,7 @@ export function CampaignsTable({
                       {camp.status === "DRAFT" ? (
                         <Link
                           href={`/dashboard/email-marketing/campaigns/create?id=${camp.id}`}
-                          className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-medium flex items-center gap-1 border border-slate-700/60"
+                          className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold flex items-center gap-1 border border-slate-200 transition-colors"
                         >
                           <Edit2 className="h-3 w-3" />
                           <span>Edit</span>
@@ -275,7 +280,7 @@ export function CampaignsTable({
                       ) : (
                         <Link
                           href={`/dashboard/email-marketing/campaigns/${camp.id}`}
-                          className="px-2 py-1 rounded bg-blue-950/40 hover:bg-blue-900/40 text-blue-300 text-[11px] font-medium flex items-center gap-1 border border-blue-800/40"
+                          className="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-semibold flex items-center gap-1 border border-blue-200 transition-colors"
                         >
                           <Activity className="h-3 w-3" />
                           <span>Monitor</span>
@@ -286,7 +291,7 @@ export function CampaignsTable({
                       <button
                         onClick={() => setActiveMenuId(activeMenuId === camp.id ? null : camp.id)}
                         disabled={isBusy}
-                        className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                        className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
                       >
                         <MoreVertical className="h-3.5 w-3.5" />
                       </button>
@@ -294,33 +299,33 @@ export function CampaignsTable({
                       {/* Context Menu Popup */}
                       {activeMenuId === camp.id && (
                         <div
-                          className="absolute right-3 top-10 w-44 bg-[#0a1829] border border-slate-700 rounded-lg shadow-xl z-30 py-1 text-left text-xs divide-y divide-slate-800/80"
+                          className="absolute right-3 top-10 w-44 bg-white border border-slate-200 rounded-xl shadow-xl z-30 py-1 text-left text-xs divide-y divide-slate-100"
                           onMouseLeave={() => setActiveMenuId(null)}
                         >
                           <div className="py-1">
                             {camp.status === "DRAFT" && (
                               <Link
                                 href={`/dashboard/email-marketing/campaigns/create?id=${camp.id}`}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
+                                className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-700 hover:bg-slate-50 transition-colors"
                               >
-                                <Edit2 className="h-3.5 w-3.5 text-blue-400" />
+                                <Edit2 className="h-3.5 w-3.5 text-blue-600" />
                                 <span>Continue Editing</span>
                               </Link>
                             )}
 
                             <Link
                               href={`/dashboard/email-marketing/campaigns/${camp.id}`}
-                              className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
+                              className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-700 hover:bg-slate-50 transition-colors"
                             >
-                              <Activity className="h-3.5 w-3.5 text-indigo-400" />
+                              <Activity className="h-3.5 w-3.5 text-indigo-600" />
                               <span>Live Monitor</span>
                             </Link>
 
                             <Link
                               href={`/dashboard/email-marketing/campaigns/${camp.id}/report`}
-                              className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-200 hover:bg-slate-800/80 transition-colors"
+                              className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-700 hover:bg-slate-50 transition-colors"
                             >
-                              <BarChart2 className="h-3.5 w-3.5 text-emerald-400" />
+                              <BarChart2 className="h-3.5 w-3.5 text-emerald-600" />
                               <span>View Report</span>
                             </Link>
                           </div>
@@ -330,9 +335,9 @@ export function CampaignsTable({
                             {camp.status === "SENDING" && (
                               <button
                                 onClick={() => handleAction(() => onPause(camp.id), camp.id)}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-orange-300 hover:bg-slate-800/80 transition-colors text-left"
+                                className="w-full px-3 py-1.5 flex items-center gap-2 text-amber-700 hover:bg-amber-50 transition-colors text-left cursor-pointer"
                               >
-                                <Pause className="h-3.5 w-3.5 text-orange-400" />
+                                <Pause className="h-3.5 w-3.5 text-amber-600" />
                                 <span>Pause Sending</span>
                               </button>
                             )}
@@ -340,9 +345,9 @@ export function CampaignsTable({
                             {camp.status === "PAUSED" && (
                               <button
                                 onClick={() => handleAction(() => onResume(camp.id), camp.id)}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-emerald-300 hover:bg-slate-800/80 transition-colors text-left"
+                                className="w-full px-3 py-1.5 flex items-center gap-2 text-emerald-700 hover:bg-emerald-50 transition-colors text-left cursor-pointer"
                               >
-                                <Play className="h-3.5 w-3.5 text-emerald-400" />
+                                <Play className="h-3.5 w-3.5 text-emerald-600" />
                                 <span>Resume Sending</span>
                               </button>
                             )}
@@ -352,27 +357,27 @@ export function CampaignsTable({
                               camp.status === "PAUSED") && (
                               <button
                                 onClick={() => handleAction(() => onCancel(camp.id), camp.id)}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-rose-300 hover:bg-slate-800/80 transition-colors text-left"
+                                className="w-full px-3 py-1.5 flex items-center gap-2 text-rose-700 hover:bg-rose-50 transition-colors text-left cursor-pointer"
                               >
-                                <XCircle className="h-3.5 w-3.5 text-rose-400" />
+                                <XCircle className="h-3.5 w-3.5 text-rose-600" />
                                 <span>Cancel Campaign</span>
                               </button>
                             )}
 
                             <button
                               onClick={() => handleAction(() => onDuplicate(camp.id), camp.id)}
-                              className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-300 hover:bg-slate-800/80 transition-colors text-left"
+                              className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-700 hover:bg-slate-50 transition-colors text-left cursor-pointer"
                             >
-                              <Copy className="h-3.5 w-3.5 text-slate-400" />
+                              <Copy className="h-3.5 w-3.5 text-slate-500" />
                               <span>Duplicate Campaign</span>
                             </button>
 
                             {!camp.isArchived && camp.status === "COMPLETED" && (
                               <button
                                 onClick={() => handleAction(() => onArchive(camp.id), camp.id)}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-300 hover:bg-slate-800/80 transition-colors text-left"
+                                className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-700 hover:bg-slate-50 transition-colors text-left cursor-pointer"
                               >
-                                <Archive className="h-3.5 w-3.5 text-slate-400" />
+                                <Archive className="h-3.5 w-3.5 text-slate-500" />
                                 <span>Archive</span>
                               </button>
                             )}
@@ -385,9 +390,9 @@ export function CampaignsTable({
                             <div className="py-1">
                               <button
                                 onClick={() => handleAction(() => onDelete(camp.id), camp.id)}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-rose-400 hover:bg-rose-950/30 transition-colors text-left"
+                                className="w-full px-3 py-1.5 flex items-center gap-2 text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
                               >
-                                <Trash2 className="h-3.5 w-3.5" />
+                                <Trash2 className="h-3.5 w-3.5 text-rose-500" />
                                 <span>Delete Campaign</span>
                               </button>
                             </div>
@@ -405,7 +410,7 @@ export function CampaignsTable({
 
       {/* Pagination Footer */}
       {pagination.totalPages > 1 && (
-        <div className="px-4 py-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 bg-[#0a1829]/60">
+        <div className="px-4 py-3.5 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 bg-slate-50/50">
           <div>
             Showing {(pagination.page - 1) * pagination.limit + 1} to{" "}
             {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
@@ -415,17 +420,17 @@ export function CampaignsTable({
             <button
               onClick={() => onPageChange(pagination.page - 1)}
               disabled={pagination.page <= 1}
-              className="p-1.5 rounded border border-slate-800 hover:bg-slate-800 disabled:opacity-40 disabled:pointer-events-none text-slate-300"
+              className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none text-slate-600 shadow-xs cursor-pointer"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
-            <span className="px-2 font-mono text-slate-200">
+            <span className="px-2 font-mono text-slate-700 font-semibold">
               Page {pagination.page} of {pagination.totalPages}
             </span>
             <button
               onClick={() => onPageChange(pagination.page + 1)}
               disabled={pagination.page >= pagination.totalPages}
-              className="p-1.5 rounded border border-slate-800 hover:bg-slate-800 disabled:opacity-40 disabled:pointer-events-none text-slate-300"
+              className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 disabled:opacity-40 disabled:pointer-events-none text-slate-600 shadow-xs cursor-pointer"
             >
               <ChevronRight className="h-3.5 w-3.5" />
             </button>

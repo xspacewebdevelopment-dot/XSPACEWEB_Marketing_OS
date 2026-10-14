@@ -354,45 +354,45 @@ function CampaignWizardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#061321] text-slate-200 flex flex-col select-none">
+    <div className="min-h-screen bg-slate-50/50 text-slate-900 flex flex-col select-none">
       {/* Toast Notice */}
       {notice && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border text-xs font-semibold shadow-2xl animate-in fade-in duration-200 ${
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border text-xs font-semibold shadow-lg animate-in fade-in duration-200 ${
             notice.type === "success"
-              ? "bg-emerald-950/90 border-emerald-500/50 text-emerald-200"
-              : "bg-rose-950/90 border-rose-500/50 text-rose-200"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-rose-50 border-rose-200 text-rose-800"
           }`}
         >
           {notice.type === "success" ? (
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           ) : (
-            <AlertCircle className="h-4 w-4 text-rose-400" />
+            <AlertCircle className="h-4 w-4 text-rose-600" />
           )}
           <span>{notice.text}</span>
         </div>
       )}
 
       {/* TOP WIZARD APP BAR */}
-      <header className="h-16 border-b border-slate-800 bg-[#09192d]/80 px-6 flex items-center justify-between shrink-0 sticky top-0 z-30 backdrop-blur-md">
+      <header className="h-16 border-b border-slate-200 bg-white px-6 flex items-center justify-between shrink-0 sticky top-0 z-30 shadow-xs">
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/email-marketing/campaigns"
-            className="p-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+            className="p-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 shadow-xs transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
 
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-sm text-white truncate max-w-xs">
+              <span className="font-bold text-sm text-slate-900 truncate max-w-xs">
                 {formData.name || "New Campaign"}
               </span>
-              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/20">
+              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                 {formData.type}
               </span>
             </div>
-            <span className="text-[10px] text-slate-400">
+            <span className="text-[11px] text-slate-500">
               5-Step Campaign Builder &bull; Inngest Batch Dispatch
             </span>
           </div>
@@ -403,19 +403,19 @@ function CampaignWizardContent() {
           type="button"
           onClick={() => handleSaveDraft(false)}
           disabled={savingDraft}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-semibold text-slate-200 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-xs transition-colors cursor-pointer"
         >
           {savingDraft ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            <Loader2 className="h-3.5 w-3.5 animate-spin text-blue-600" />
           ) : (
-            <Save className="h-3.5 w-3.5 text-blue-400" />
+            <Save className="h-3.5 w-3.5 text-blue-600" />
           )}
           <span>Save Draft</span>
         </button>
       </header>
 
       {/* STEP PROGRESS TRACKER */}
-      <div className="border-b border-slate-800 bg-[#071321] px-6 py-3 shrink-0">
+      <div className="border-b border-slate-200 bg-white px-6 py-3.5 shrink-0 shadow-xs">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           {STEPS.map((step, idx) => {
             const isCompleted = currentStep > step.id;
@@ -432,33 +432,33 @@ function CampaignWizardContent() {
                   disabled={!isCompleted && !isCurrent}
                   className={`flex items-center gap-2.5 text-left transition-all ${
                     isCurrent
-                      ? "text-blue-400 font-bold"
+                      ? "text-blue-600 font-bold"
                       : isCompleted
-                      ? "text-slate-300 hover:text-white cursor-pointer"
+                      ? "text-slate-700 hover:text-slate-900 cursor-pointer"
                       : "text-slate-400 opacity-60 cursor-not-allowed"
                   }`}
                 >
                   <div
                     className={`h-7 w-7 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
                       isCurrent
-                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/30"
+                        ? "bg-blue-600 text-white shadow-xs"
                         : isCompleted
-                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                        : "bg-slate-800 text-slate-400 border border-slate-700"
+                        ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                        : "bg-slate-100 text-slate-500 border border-slate-200"
                     }`}
                   >
                     {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : step.id}
                   </div>
                   <div className="hidden sm:block">
                     <div className="text-xs leading-none">{step.label}</div>
-                    <div className="text-[10px] text-slate-400 mt-1 leading-none">{step.desc}</div>
+                    <div className="text-[10px] text-slate-500 mt-1 leading-none">{step.desc}</div>
                   </div>
                 </button>
 
                 {idx < STEPS.length - 1 && (
                   <div
                     className={`flex-1 h-0.5 mx-3 sm:mx-4 transition-all ${
-                      isCompleted ? "bg-emerald-500/40" : "bg-slate-800"
+                      isCompleted ? "bg-emerald-400" : "bg-slate-200"
                     }`}
                   />
                 )}
@@ -547,18 +547,18 @@ function CampaignWizardContent() {
       </main>
 
       {/* BOTTOM WIZARD NAVIGATION BAR */}
-      <footer className="h-16 border-t border-slate-800 bg-[#09192d]/80 px-6 flex items-center justify-between shrink-0 sticky bottom-0 z-20 backdrop-blur-md">
+      <footer className="h-16 border-t border-slate-200 bg-white px-6 flex items-center justify-between shrink-0 sticky bottom-0 z-20 shadow-xs">
         <button
           type="button"
           onClick={handleBack}
           disabled={currentStep === 1}
-          className="px-4 py-2 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 disabled:pointer-events-none text-xs font-semibold text-slate-300 transition-colors"
+          className="px-4 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none text-xs font-semibold text-slate-700 shadow-xs transition-colors cursor-pointer"
         >
           &larr; Back
         </button>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-400 font-mono">
+          <span className="text-xs text-slate-500 font-mono">
             Step {currentStep} of {STEPS.length}
           </span>
 
@@ -566,7 +566,7 @@ function CampaignWizardContent() {
             <button
               type="button"
               onClick={handleNext}
-              className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-600/20 flex items-center gap-1.5 transition-colors"
+              className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs shadow-blue-500/20 flex items-center gap-1.5 transition-colors cursor-pointer"
             >
               <span>Continue</span>
               <ChevronRight className="h-3.5 w-3.5" />
@@ -582,9 +582,9 @@ export default function CampaignWizardPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-[#070f1e] flex flex-col items-center justify-center p-8 text-slate-300">
+        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 text-slate-700">
           <div className="flex items-center gap-3">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
+            <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
             <span className="text-sm font-medium">Loading Campaign Builder...</span>
           </div>
         </div>
