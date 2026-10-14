@@ -79,9 +79,9 @@ export default function DeliverabilityDashboardPage() {
 
   if (loading && !overviewData) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] text-slate-400">
-        <RefreshCw className="h-8 w-8 animate-spin text-blue-500 mb-3" />
-        <p className="text-sm font-semibold text-slate-200">
+      <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] text-slate-500">
+        <RefreshCw className="h-8 w-8 animate-spin text-blue-600 mb-3" />
+        <p className="text-sm font-bold text-slate-800">
           Running authoritative DNS and provider diagnostics...
         </p>
         <p className="text-xs text-slate-500 mt-1">
@@ -94,14 +94,14 @@ export default function DeliverabilityDashboardPage() {
   if (error && !overviewData) {
     return (
       <div className="flex-1 p-6 flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <div className="h-12 w-12 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center mb-3">
+        <div className="h-12 w-12 rounded-2xl bg-rose-50 text-rose-600 border border-rose-200 flex items-center justify-center mb-3">
           <AlertTriangle className="h-6 w-6" />
         </div>
-        <h2 className="text-base font-bold text-slate-100">Unable to Load Deliverability Data</h2>
-        <p className="text-xs text-slate-400 max-w-md mt-1 mb-4">{error}</p>
+        <h2 className="text-base font-bold text-slate-900">Unable to Load Deliverability Data</h2>
+        <p className="text-xs text-slate-500 max-w-md mt-1 mb-4">{error}</p>
         <button
           onClick={() => fetchOverview()}
-          className="px-4 py-2 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-500 transition-colors"
+          className="px-4 py-2 rounded-xl text-xs font-bold bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-xs cursor-pointer"
         >
           Retry Diagnostics
         </button>
@@ -110,29 +110,34 @@ export default function DeliverabilityDashboardPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col space-y-6 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
+    <div className="flex-1 flex flex-col space-y-6 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full select-none">
       {/* Top Breadcrumb & Page Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <Link href="/dashboard" className="hover:text-slate-200 transition-colors">
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <Link href="/dashboard" className="hover:text-blue-600 transition-colors">
               Dashboard
             </Link>
             <span>/</span>
-            <span>Email Marketing</span>
+            <Link href="/dashboard/email-marketing" className="hover:text-blue-600 transition-colors">
+              Email Marketing
+            </Link>
             <span>/</span>
-            <span className="text-blue-400 font-medium">Deliverability</span>
+            <span className="text-blue-600 font-semibold">Deliverability</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 mt-1 flex items-center gap-2.5">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 mt-1 flex items-center gap-2.5">
             <Radio className="h-6 w-6 text-blue-600" />
             Email Deliverability & Domain Authentication
           </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Monitor sender reputation, authenticate DNS protocols (SPF, DKIM, DMARC), and optimize list hygiene for maximum inbox placement.
+          </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => setIsAddDomainModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-500 hover:to-indigo-500 shadow-md shadow-blue-600/20 transition-all"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-500 hover:to-indigo-500 shadow-xs shadow-blue-500/20 transition-all cursor-pointer"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Add Domain</span>
@@ -158,7 +163,7 @@ export default function DeliverabilityDashboardPage() {
       )}
 
       {/* Navigation Tabs */}
-      <div className="border-b border-slate-850 flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+      <div className="border-b border-slate-200 flex items-center gap-1 overflow-x-auto text-xs pb-0">
         {[
           { key: "overview", label: "Overview", icon: Radio },
           {
@@ -192,20 +197,20 @@ export default function DeliverabilityDashboardPage() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-t-lg font-medium border-b-2 transition-all whitespace-nowrap ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-t-xl font-semibold border-b-2 transition-all whitespace-nowrap cursor-pointer ${
                 isActive
-                  ? "border-blue-500 text-blue-600 bg-white font-semibold shadow-xs"
-                  : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100/50"
+                  ? "border-blue-600 text-blue-600 bg-blue-50/50 font-bold"
+                  : "border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-50"
               }`}
             >
               <Icon className="h-4 w-4" />
               <span>{tab.label}</span>
               {tab.badge !== undefined && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                     isActive
-                      ? "bg-blue-100 text-blue-700 font-bold"
-                      : "bg-slate-200 text-slate-600"
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-slate-100 text-slate-600 border border-slate-200"
                   }`}
                 >
                   {tab.badge}
@@ -229,7 +234,7 @@ export default function DeliverabilityDashboardPage() {
                   </h3>
                   <button
                     onClick={() => setActiveTab("recommendations")}
-                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer"
                   >
                     <span>View all recommendations</span>
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -245,16 +250,16 @@ export default function DeliverabilityDashboardPage() {
               {/* Quick Split: Sending Domains Summary & Recent Sending */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Sending Domains Glance */}
-                <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm text-slate-100 flex flex-col justify-between">
+                <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs text-slate-800 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                      <h4 className="font-bold text-xs uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                        <Globe className="h-4 w-4 text-blue-400" />
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                      <h4 className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                        <Globe className="h-4 w-4 text-blue-600" />
                         Registered Domains ({overviewData.domains.total})
                       </h4>
                       <button
                         onClick={() => setActiveTab("domains")}
-                        className="text-xs text-blue-400 hover:text-blue-300 font-medium"
+                        className="text-xs text-blue-600 hover:text-blue-700 font-semibold cursor-pointer"
                       >
                         Manage Domains
                       </button>
@@ -264,28 +269,28 @@ export default function DeliverabilityDashboardPage() {
                       {overviewData.domains.list.slice(0, 3).map((d: any) => (
                         <div
                           key={d.id}
-                          className="p-3 rounded-lg bg-slate-950/60 border border-slate-800 flex items-center justify-between"
+                          className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between"
                         >
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="font-mono text-xs font-bold text-white">
+                              <span className="font-mono text-xs font-bold text-slate-900">
                                 {d.domain}
                               </span>
                               {d.isDefault && (
-                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">
+                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-bold border border-blue-200">
                                   Default
                                 </span>
                               )}
                             </div>
-                            <span className="text-[11px] text-slate-400 block mt-0.5">
+                            <span className="text-[11px] text-slate-500 block mt-0.5">
                               SPF: {d.spfStatus} • DKIM: {d.dkimStatus} • DMARC: {d.dmarcStatus}
                             </span>
                           </div>
                           <span
-                            className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase ${
+                            className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase border ${
                               d.status === "VERIFIED"
-                                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                                : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                                : "bg-amber-50 text-amber-700 border-amber-200"
                             }`}
                           >
                             {d.status}
@@ -298,7 +303,7 @@ export default function DeliverabilityDashboardPage() {
                   <div className="pt-4 mt-2">
                     <button
                       onClick={() => setIsAddDomainModalOpen(true)}
-                      className="w-full py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white border border-slate-700 transition-colors"
+                      className="w-full py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors cursor-pointer"
                     >
                       + Add Another Domain
                     </button>
@@ -306,16 +311,16 @@ export default function DeliverabilityDashboardPage() {
                 </div>
 
                 {/* Email Verification List Health Glance */}
-                <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm text-slate-100 flex flex-col justify-between">
+                <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs text-slate-800 flex flex-col justify-between">
                   <div>
-                    <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                      <h4 className="font-bold text-xs uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                        <Users className="h-4 w-4 text-emerald-400" />
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                      <h4 className="font-bold text-xs uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                        <Users className="h-4 w-4 text-emerald-600" />
                         List Health Breakdown
                       </h4>
                       <button
                         onClick={() => setActiveTab("list-health")}
-                        className="text-xs text-blue-400 hover:text-blue-300 font-medium"
+                        className="text-xs text-blue-600 hover:text-blue-700 font-semibold cursor-pointer"
                       >
                         Inspect List Health
                       </button>
@@ -323,12 +328,12 @@ export default function DeliverabilityDashboardPage() {
 
                     <div className="space-y-3 mt-4">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-slate-400">Valid Mailboxes</span>
-                        <span className="font-bold text-emerald-400">
+                        <span className="text-slate-500 font-medium">Valid Mailboxes</span>
+                        <span className="font-bold text-emerald-700">
                           {overviewData.listHealth.validCount}
                         </span>
                       </div>
-                      <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden flex">
+                      <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden flex">
                         <div
                           style={{
                             width: `${
@@ -368,21 +373,21 @@ export default function DeliverabilityDashboardPage() {
                       </div>
 
                       <div className="grid grid-cols-3 gap-2 pt-2 text-[11px] text-center">
-                        <div className="p-2 rounded bg-slate-950/60 border border-slate-800">
-                          <span className="text-slate-400 block">Catch-All</span>
-                          <span className="font-bold text-amber-400">
+                        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-slate-500 block text-[10px] font-semibold uppercase">Catch-All</span>
+                          <span className="font-bold text-amber-700 text-sm">
                             {overviewData.listHealth.catchAllCount}
                           </span>
                         </div>
-                        <div className="p-2 rounded bg-slate-950/60 border border-slate-800">
-                          <span className="text-slate-400 block">Invalid</span>
-                          <span className="font-bold text-rose-400">
+                        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-slate-500 block text-[10px] font-semibold uppercase">Invalid</span>
+                          <span className="font-bold text-rose-700 text-sm">
                             {overviewData.listHealth.invalidCount}
                           </span>
                         </div>
-                        <div className="p-2 rounded bg-slate-950/60 border border-slate-800">
-                          <span className="text-slate-400 block">Suppressed</span>
-                          <span className="font-bold text-purple-400">
+                        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                          <span className="text-slate-500 block text-[10px] font-semibold uppercase">Suppressed</span>
+                          <span className="font-bold text-purple-700 text-sm">
                             {overviewData.listHealth.suppressionCount}
                           </span>
                         </div>
@@ -393,7 +398,7 @@ export default function DeliverabilityDashboardPage() {
                   <div className="pt-4 mt-2">
                     <Link
                       href="/dashboard/email-verification"
-                      className="block text-center w-full py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white border border-slate-700 transition-colors"
+                      className="block text-center w-full py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors"
                     >
                       Run Bulk Verification via Reoon
                     </Link>

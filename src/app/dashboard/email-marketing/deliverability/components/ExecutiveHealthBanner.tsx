@@ -75,21 +75,25 @@ export function ExecutiveHealthBanner({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-[#071321] via-[#091b2f] to-[#040d17] p-6 shadow-xl text-slate-100">
-      {/* Background Glow Effect */}
-      <div className="absolute top-0 right-0 -mt-12 -mr-12 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/3 -mb-16 h-48 w-48 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
-
+    <div
+      className={`relative overflow-hidden rounded-2xl border p-6 shadow-xs transition-all ${
+        overallColor === "emerald"
+          ? "border-emerald-200/90 bg-gradient-to-br from-emerald-50/40 via-white to-slate-50/60"
+          : overallColor === "amber"
+          ? "border-amber-200/90 bg-gradient-to-br from-amber-50/40 via-white to-slate-50/60"
+          : "border-rose-200/90 bg-gradient-to-br from-rose-50/40 via-white to-slate-50/60"
+      }`}
+    >
       <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         {/* Left Side: Status & Overview */}
         <div className="flex items-start gap-4 max-w-2xl">
           <div
-            className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-lg ${
+            className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-2xs ${
               overallColor === "emerald"
-                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-emerald-500/10"
+                ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
                 : overallColor === "amber"
-                ? "bg-amber-500/15 text-amber-400 border border-amber-500/30 shadow-amber-500/10"
-                : "bg-rose-500/15 text-rose-400 border border-rose-500/30 shadow-rose-500/10"
+                ? "bg-amber-50 text-amber-600 border border-amber-200"
+                : "bg-rose-50 text-rose-600 border border-rose-200"
             }`}
           >
             {overallColor === "emerald" ? (
@@ -103,54 +107,54 @@ export function ExecutiveHealthBanner({
 
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200/80">
                 Email Deliverability Control Center
               </span>
               <span
                 className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
                   overallColor === "emerald"
-                    ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                     : overallColor === "amber"
-                    ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
-                    : "bg-rose-500/20 text-rose-400 border-rose-500/30"
+                    ? "bg-amber-50 text-amber-700 border-amber-200"
+                    : "bg-rose-50 text-rose-700 border-rose-200"
                 }`}
               >
                 {overallHealth}
               </span>
             </div>
 
-            <h1 className="text-xl font-bold text-white mt-1.5 tracking-tight">
+            <h1 className="text-xl font-bold text-slate-900 mt-1.5 tracking-tight">
               {healthTitle}
             </h1>
-            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
               {healthDesc}
             </p>
 
             {/* Live DNS Verification Badges */}
             <div className="flex items-center gap-2.5 mt-3 flex-wrap text-xs">
-              <span className="text-slate-400 text-[11px]">Default Sending Domain:</span>
+              <span className="text-slate-500 text-[11px] font-medium">Default Sending Domain:</span>
               {defaultDomain ? (
-                <div className="flex items-center gap-2 bg-slate-900/80 px-2.5 py-1 rounded-md border border-slate-800">
-                  <Globe className="h-3.5 w-3.5 text-blue-400" />
-                  <span className="font-mono text-white text-[11px] font-semibold">
+                <div className="flex items-center gap-2 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200 text-slate-800 shadow-2xs">
+                  <Globe className="h-3.5 w-3.5 text-blue-600" />
+                  <span className="font-mono text-slate-900 text-[11px] font-bold">
                     {defaultDomain.domain}
                   </span>
                   <div className="flex items-center gap-1.5 ml-1 text-[10px] font-mono">
-                    <span className={spfVerified ? "text-emerald-400 font-bold" : "text-amber-400"}>
+                    <span className={spfVerified ? "text-emerald-700 font-bold" : "text-amber-700 font-semibold"}>
                       SPF {spfVerified ? "✓" : "⏳"}
                     </span>
-                    <span>•</span>
-                    <span className={dkimVerified ? "text-emerald-400 font-bold" : "text-amber-400"}>
+                    <span className="text-slate-300">•</span>
+                    <span className={dkimVerified ? "text-emerald-700 font-bold" : "text-amber-700 font-semibold"}>
                       DKIM {dkimVerified ? "✓" : "⏳"}
                     </span>
-                    <span>•</span>
-                    <span className={dmarcVerified ? "text-emerald-400 font-bold" : "text-amber-400"}>
+                    <span className="text-slate-300">•</span>
+                    <span className={dmarcVerified ? "text-emerald-700 font-bold" : "text-amber-700 font-semibold"}>
                       DMARC {dmarcVerified ? "✓" : "⏳"}
                     </span>
                   </div>
                 </div>
               ) : (
-                <span className="text-xs text-amber-400 italic">None configured</span>
+                <span className="text-xs text-amber-700 italic">None configured</span>
               )}
             </div>
           </div>
@@ -161,15 +165,15 @@ export function ExecutiveHealthBanner({
           <button
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:text-white hover:bg-slate-700 border border-slate-700 shadow-sm transition-all disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs hover:shadow-xs transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin text-blue-400" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin text-blue-600" : "text-slate-500"}`} />
             <span>{isRefreshing ? "Running Diagnostics..." : "Refresh Live Diagnostics"}</span>
           </button>
 
-          <div className="text-[11px] text-slate-400 text-right">
+          <div className="text-[11px] text-slate-500 text-right">
             <span>Provider Engine: </span>
-            <strong className="text-slate-200 font-mono">Resend + Reoon</strong>
+            <strong className="text-slate-800 font-mono">Resend + Reoon</strong>
             <div className="text-[10px] text-slate-400 mt-0.5">
               Strict truthfulness: Zero simulated metrics
             </div>

@@ -154,79 +154,105 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
       {/* List Quality Metrics Header */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {/* Valid */}
-        <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-emerald-300 transition-all flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-slate-400">Valid Mailboxes</span>
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Valid Mailboxes</span>
+            <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+            </div>
           </div>
-          <span className="text-xl font-bold text-emerald-400 mt-2">{stats.validCount}</span>
-          <span className="text-[10px] text-slate-400 mt-0.5">High deliverability</span>
+          <div>
+            <span className="text-xl font-bold text-slate-900 mt-2 block tracking-tight">{stats.validCount}</span>
+            <span className="text-[10px] text-emerald-700 font-medium">High deliverability</span>
+          </div>
         </div>
 
         {/* Catch-All */}
-        <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-amber-300 transition-all flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-slate-400">Catch-All</span>
-            <AlertTriangle className="h-4 w-4 text-amber-400" />
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Catch-All</span>
+            <div className="p-1.5 rounded-lg bg-amber-50 text-amber-600 border border-amber-100">
+              <AlertTriangle className="h-3.5 w-3.5" />
+            </div>
           </div>
-          <span className="text-xl font-bold text-amber-400 mt-2">{stats.catchAllCount}</span>
-          <span className="text-[10px] text-slate-400 mt-0.5">Uncertain status</span>
+          <div>
+            <span className="text-xl font-bold text-slate-900 mt-2 block tracking-tight">{stats.catchAllCount}</span>
+            <span className="text-[10px] text-amber-700 font-medium">Uncertain status</span>
+          </div>
         </div>
 
         {/* Invalid */}
-        <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-rose-300 transition-all flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-slate-400">Invalid</span>
-            <XCircle className="h-4 w-4 text-rose-400" />
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Invalid</span>
+            <div className="p-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-100">
+              <XCircle className="h-3.5 w-3.5" />
+            </div>
           </div>
-          <span className="text-xl font-bold text-rose-400 mt-2">{stats.invalidCount}</span>
-          <span className="text-[10px] text-slate-400 mt-0.5">Hard bounce risk</span>
+          <div>
+            <span className="text-xl font-bold text-slate-900 mt-2 block tracking-tight">{stats.invalidCount}</span>
+            <span className="text-[10px] text-rose-700 font-medium">Hard bounce risk</span>
+          </div>
         </div>
 
         {/* Disposable */}
-        <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-orange-300 transition-all flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-slate-400">Disposable</span>
-            <AlertOctagon className="h-4 w-4 text-orange-400" />
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Disposable</span>
+            <div className="p-1.5 rounded-lg bg-orange-50 text-orange-600 border border-orange-100">
+              <AlertOctagon className="h-3.5 w-3.5" />
+            </div>
           </div>
-          <span className="text-xl font-bold text-orange-400 mt-2">{stats.disposableCount}</span>
-          <span className="text-[10px] text-slate-400 mt-0.5">Temporary mail</span>
+          <div>
+            <span className="text-xl font-bold text-slate-900 mt-2 block tracking-tight">{stats.disposableCount}</span>
+            <span className="text-[10px] text-orange-700 font-medium">Temporary mail</span>
+          </div>
         </div>
 
         {/* Unknown */}
-        <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-slate-300 transition-all flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-slate-400">Unknown</span>
-            <HelpCircle className="h-4 w-4 text-slate-400" />
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Unknown</span>
+            <div className="p-1.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200">
+              <HelpCircle className="h-3.5 w-3.5" />
+            </div>
           </div>
-          <span className="text-xl font-bold text-slate-300 mt-2">{stats.unknownCount}</span>
-          <span className="text-[10px] text-slate-400 mt-0.5">Timeout / DNS fail</span>
+          <div>
+            <span className="text-xl font-bold text-slate-900 mt-2 block tracking-tight">{stats.unknownCount}</span>
+            <span className="text-[10px] text-slate-500 font-medium">Timeout / DNS fail</span>
+          </div>
         </div>
 
         {/* Active Suppressions */}
-        <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col">
+        <div className="p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-2xs hover:border-purple-300 transition-all flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-slate-400">Suppressed</span>
-            <ShieldBan className="h-4 w-4 text-purple-400" />
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Suppressed</span>
+            <div className="p-1.5 rounded-lg bg-purple-50 text-purple-600 border border-purple-100">
+              <ShieldBan className="h-3.5 w-3.5" />
+            </div>
           </div>
-          <span className="text-xl font-bold text-purple-400 mt-2">{stats.suppressionCount}</span>
-          <span className="text-[10px] text-slate-400 mt-0.5">Protected from sends</span>
+          <div>
+            <span className="text-xl font-bold text-slate-900 mt-2 block tracking-tight">{stats.suppressionCount}</span>
+            <span className="text-[10px] text-purple-700 font-medium">Protected from sends</span>
+          </div>
         </div>
       </div>
 
       {/* Reoon Transparency Alert */}
-      <div className="p-4 rounded-xl border border-blue-900/40 bg-blue-950/20 text-slate-300 flex items-start gap-3">
-        <ShieldCheck className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
-        <div className="text-xs space-y-1">
-          <p className="font-semibold text-white">Genuine Reoon Verification Insights</p>
-          <p className="text-slate-400 leading-relaxed">
+      <div className="p-4 rounded-2xl border border-blue-200/80 bg-blue-50/50 text-slate-700 flex items-start gap-3">
+        <div className="p-1.5 rounded-lg bg-blue-100 text-blue-700 shrink-0 mt-0.5">
+          <ShieldCheck className="h-4 w-4" />
+        </div>
+        <div className="text-xs space-y-0.5">
+          <p className="font-bold text-slate-900">Genuine Reoon Verification Insights</p>
+          <p className="text-slate-600 leading-relaxed">
             NexaReach presents actual Reoon verification attributes. Catch-all and unknown addresses are <strong>never</strong> reinterpreted as guaranteed deliverable. Sending to unverified catch-alls increases bounce exposure.
           </p>
         </div>
       </div>
 
       {/* Interactive Controls & Filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-slate-900 border border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs">
         {/* Category Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           {[
@@ -242,15 +268,15 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
                 setFilter(tab.key);
                 setPage(1);
               }}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
                 filter === tab.key
-                  ? "bg-blue-600 text-white font-semibold shadow-sm"
-                  : "bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-750"
+                  ? "bg-blue-600 text-white font-bold shadow-xs"
+                  : "bg-slate-100 text-slate-600 hover:text-slate-900 hover:bg-slate-200/70 border border-slate-200/60"
               }`}
             >
               <span>{tab.label}</span>
-              <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                filter === tab.key ? "bg-white/20 text-white" : "bg-slate-700 text-slate-300"
+              <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                filter === tab.key ? "bg-white/20 text-white" : "bg-white text-slate-700 border border-slate-200 shadow-2xs"
               }`}>
                 {tab.count}
               </span>
@@ -270,14 +296,14 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-8 pr-3 py-1.5 rounded-lg text-xs bg-slate-950 border border-slate-800 text-slate-200 placeholder:text-slate-500 focus:outline-hidden focus:border-blue-500"
+              className="w-full pl-8 pr-3 py-1.5 rounded-xl text-xs bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
           {selectedEmails.length > 0 && filter !== "SUPPRESSED" && (
             <button
               onClick={() => handleOpenSuppressModal(filter === "INVALID" ? "INVALID" : "RISKY")}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-500 transition-colors whitespace-nowrap shadow-sm"
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-600 text-white hover:bg-rose-500 transition-colors whitespace-nowrap shadow-xs cursor-pointer"
             >
               Suppress Selected ({selectedEmails.length})
             </button>
@@ -285,7 +311,7 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
 
           <Link
             href="/dashboard/email-verification"
-            className="p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white border border-slate-700"
+            className="p-1.5 rounded-xl bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-2xs transition-colors"
             title="Open Email Verification Center"
           >
             <ExternalLink className="h-4 w-4" />
@@ -294,10 +320,10 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
       </div>
 
       {/* Risky Contacts Table */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 overflow-hidden shadow-sm">
+      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-800/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+          <table className="w-full text-left text-xs text-slate-700">
+            <thead className="bg-slate-50/80 text-[11px] uppercase tracking-wider text-slate-500 border-b border-slate-200 font-semibold">
               <tr>
                 {filter !== "SUPPRESSED" && (
                   <th className="py-2.5 px-3 w-8">
@@ -305,7 +331,7 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
                       type="checkbox"
                       checked={items.length > 0 && selectedEmails.length === items.length}
                       onChange={selectAllCurrentPage}
-                      className="rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-0"
+                      className="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
                     />
                   </th>
                 )}
@@ -317,20 +343,20 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
                 <th className="py-2.5 px-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 font-sans text-xs">
+            <tbody className="divide-y divide-slate-100 font-sans text-xs">
               {loading ? (
                 <tr>
                   <td colSpan={7} className="text-center py-12 text-slate-500">
-                    <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2 text-blue-500" />
+                    <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2 text-blue-600" />
                     <span>Loading contact deliverability records...</span>
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="text-center py-12 text-slate-500">
-                    <ShieldCheck className="h-8 w-8 mx-auto mb-2 text-emerald-500/40" />
-                    <p className="font-medium text-slate-300">No matching contacts found</p>
-                    <p className="text-[11px] text-slate-400 mt-1">
+                    <ShieldCheck className="h-8 w-8 mx-auto mb-2 text-emerald-500/60" />
+                    <p className="font-bold text-slate-800">No matching contacts found</p>
+                    <p className="text-[11px] text-slate-500 mt-1">
                       {filter === "INVALID"
                         ? "Great news: Zero invalid mailboxes detected in this view."
                         : "No contacts match the current deliverability filter."}
@@ -346,8 +372,8 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
                   return (
                     <tr
                       key={item.id}
-                      className={`hover:bg-slate-800/40 transition-colors ${
-                        isSelected ? "bg-blue-950/20" : ""
+                      className={`hover:bg-slate-50/70 transition-colors ${
+                        isSelected ? "bg-blue-50/40" : ""
                       }`}
                     >
                       {filter !== "SUPPRESSED" && (
@@ -356,23 +382,23 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => toggleSelect(email)}
-                            className="rounded border-slate-700 bg-slate-900 text-blue-600 focus:ring-0"
+                            className="rounded border-slate-300 text-blue-600 focus:ring-0 cursor-pointer"
                           />
                         </td>
                       )}
-                      <td className="py-3 px-3 font-mono font-medium text-slate-200">
+                      <td className="py-3 px-3 font-mono font-bold text-slate-900">
                         {email}
                       </td>
                       <td className="py-3 px-3">
                         <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase ${
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
                             item.status === "VALID"
-                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                               : item.status === "INVALID"
-                              ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                              ? "bg-rose-50 text-rose-700 border-rose-200"
                               : item.status === "SUPPRESSED"
-                              ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
-                              : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                              ? "bg-purple-50 text-purple-700 border-purple-200"
+                              : "bg-amber-50 text-amber-700 border-amber-200"
                           }`}
                         >
                           {item.status}
@@ -381,42 +407,42 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
                       <td className="py-3 px-3 text-[11px]">
                         <div className="flex items-center gap-1 flex-wrap">
                           {item.isCatchAll && (
-                            <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-medium">
+                            <span className="px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 font-semibold text-[10px]">
                               Catch-All
                             </span>
                           )}
                           {item.isDisposable && (
-                            <span className="px-1.5 py-0.2 rounded bg-orange-500/20 text-orange-300 font-medium">
+                            <span className="px-1.5 py-0.5 rounded-md bg-orange-50 text-orange-700 border border-orange-200 font-semibold text-[10px]">
                               Disposable
                             </span>
                           )}
                           {item.isRoleBased && (
-                            <span className="px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-medium">
+                            <span className="px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200 font-semibold text-[10px]">
                               Role Account
                             </span>
                           )}
-                          <span className="text-slate-400 truncate max-w-[200px]" title={item.reason || item.providerSubstatus || "Verified"}>
+                          <span className="text-slate-500 truncate max-w-[200px]" title={item.reason || item.providerSubstatus || "Verified"}>
                             {item.reason || item.providerSubstatus || "Standard mailbox"}
                           </span>
                         </div>
                       </td>
-                      <td className="py-3 px-3 text-[11px] text-slate-400">
+                      <td className="py-3 px-3 text-[11px] text-slate-500">
                         {item.contact ? (
-                          <span>
+                          <span className="font-medium text-slate-700">
                             {item.contact.firstName || ""} {item.contact.lastName || ""}
                             {item.contact.company ? ` (${item.contact.company})` : ""}
                           </span>
                         ) : (
-                          <span className="text-slate-500 italic">Direct verification</span>
+                          <span className="text-slate-400 italic">Direct verification</span>
                         )}
                       </td>
                       <td className="py-3 px-3">
                         {isSuppressed ? (
-                          <span className="inline-flex items-center gap-1 text-[11px] text-purple-400 font-medium">
+                          <span className="inline-flex items-center gap-1 text-[11px] text-purple-700 font-bold">
                             <ShieldBan className="h-3.5 w-3.5" /> Suppressed
                           </span>
                         ) : (
-                          <span className="text-[11px] text-slate-400">Active</span>
+                          <span className="text-[11px] text-slate-500">Active</span>
                         )}
                       </td>
                       <td className="py-3 px-3 text-right">
@@ -426,12 +452,12 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
                               setSelectedEmails([email]);
                               handleOpenSuppressModal(item.status === "INVALID" ? "INVALID" : "RISKY");
                             }}
-                            className="text-[11px] text-rose-400 hover:text-rose-300 transition-colors"
+                            className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 transition-colors cursor-pointer"
                           >
                             Suppress
                           </button>
                         ) : (
-                          <span className="text-[11px] text-slate-500">Protected</span>
+                          <span className="text-[11px] text-slate-400 font-medium">Protected</span>
                         )}
                       </td>
                     </tr>
@@ -444,22 +470,22 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
 
         {/* Pagination Bar */}
         {pagination.totalPages > 1 && (
-          <div className="p-3 bg-slate-900 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+          <div className="p-3 bg-white border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>
-              Showing Page {page} of {pagination.totalPages} ({pagination.total} records)
+              Showing Page <strong className="text-slate-700">{page}</strong> of <strong className="text-slate-700">{pagination.totalPages}</strong> ({pagination.total} records)
             </span>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40"
+                className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 cursor-pointer"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
                 disabled={page >= pagination.totalPages}
-                className="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-40"
+                className="p-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 cursor-pointer"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -470,61 +496,61 @@ export function EmailListHealthTab({ stats, onRefreshOverview }: ListHealthTabPr
 
       {/* Explicit Confirmation Modal for Safety */}
       {confirmModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs animate-in fade-in">
-          <div className="w-full max-w-lg rounded-xl bg-slate-900 border border-slate-800 p-6 shadow-2xl space-y-4">
-            <div className="flex items-center gap-3 text-rose-400">
-              <div className="h-10 w-10 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
+          <div className="w-full max-w-lg rounded-2xl bg-white border border-slate-200 p-6 shadow-2xl space-y-4">
+            <div className="flex items-center gap-3 text-rose-600">
+              <div className="h-10 w-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center">
                 <ShieldAlert className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="font-bold text-sm text-white">Explicit Suppression Confirmation</h3>
-                <p className="text-xs text-slate-400">Required safety guard for bulk operations</p>
+                <h3 className="font-bold text-sm text-slate-900">Explicit Suppression Confirmation</h3>
+                <p className="text-xs text-slate-500">Required safety guard for bulk operations</p>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed">
               You are about to suppress <strong>{selectedEmails.length}</strong> email address(es). Once suppressed, NexaReach will automatically block outbound campaigns and sequences to these recipients to protect your domain reputation.
             </p>
 
-            <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 text-[11px] text-slate-300 max-h-24 overflow-y-auto font-mono space-y-0.5">
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-700 max-h-24 overflow-y-auto font-mono space-y-0.5">
               {selectedEmails.slice(0, 10).map((e, idx) => (
                 <div key={idx} className="truncate">• {e}</div>
               ))}
               {selectedEmails.length > 10 && (
-                <div className="text-slate-500">...and {selectedEmails.length - 10} more</div>
+                <div className="text-slate-400">...and {selectedEmails.length - 10} more</div>
               )}
             </div>
 
             {suppressNotice && (
-              <p className="text-xs text-rose-400 bg-rose-950/40 p-2.5 rounded-lg border border-rose-900">
+              <p className="text-xs text-rose-700 bg-rose-50 p-2.5 rounded-xl border border-rose-200 font-medium">
                 {suppressNotice.text}
               </p>
             )}
 
             <div className="space-y-1.5 pt-1">
-              <label className="text-xs font-semibold text-slate-200 block">
-                Type <span className="text-rose-400 font-mono">CONFIRM</span> to proceed:
+              <label className="text-xs font-semibold text-slate-700 block">
+                Type <span className="text-rose-600 font-mono font-bold">CONFIRM</span> to proceed:
               </label>
               <input
                 type="text"
                 placeholder="CONFIRM"
                 value={confirmText}
                 onChange={(e) => setConfirmText(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg text-xs bg-slate-950 border border-slate-800 text-white font-mono focus:outline-hidden focus:border-rose-500"
+                className="w-full px-3 py-2 rounded-xl text-xs bg-white border border-slate-200 text-slate-900 font-mono focus:outline-hidden focus:border-rose-500"
               />
             </div>
 
             <div className="flex items-center justify-end gap-3 pt-3">
               <button
                 onClick={() => setConfirmModalOpen(false)}
-                className="px-3.5 py-2 rounded-lg text-xs font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white"
+                className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white text-slate-700 hover:bg-slate-50 border border-slate-200 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirmSuppress}
                 disabled={isSuppressing || confirmText.trim().toUpperCase() !== "CONFIRM"}
-                className="px-4 py-2 rounded-lg text-xs font-semibold bg-rose-600 text-white hover:bg-rose-500 disabled:opacity-40 shadow-sm"
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-40 shadow-xs cursor-pointer"
               >
                 {isSuppressing ? "Suppressing..." : "Confirm Suppression"}
               </button>
