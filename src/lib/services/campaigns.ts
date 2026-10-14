@@ -67,8 +67,12 @@ export class CampaignService {
       ? config.excludedContactIds
       : [];
 
-    // If nothing selected, return zero breakdown
-    if (contactIds.length === 0 && listIds.length === 0 && segmentIds.length === 0) {
+    const isBroadcastAll =
+      config.allContacts === true ||
+      (!contactIds.length && !listIds.length && !segmentIds.length);
+
+    // If not broadcast to all and nothing selected, return zero breakdown
+    if (!isBroadcastAll && contactIds.length === 0 && listIds.length === 0 && segmentIds.length === 0) {
       return {
         totalRaw: 0,
         selected: 0,
@@ -94,6 +98,28 @@ export class CampaignService {
       subscriptionStatus: string;
       customFields: any;
     }> = [];
+
+    if (isBroadcastAll) {
+      const allWsContacts = await prisma.contact.findMany({
+        where: {
+          workspaceId,
+          isArchived: false,
+        },
+        select: {
+          id: true,
+          email: true,
+          normalizedEmail: true,
+          firstName: true,
+          lastName: true,
+          name: true,
+          company: true,
+          verificationStatus: true,
+          subscriptionStatus: true,
+          customFields: true,
+        },
+      });
+      rawCandidateContacts.push(...allWsContacts);
+    }
 
     // A. Explicitly selected contacts
     if (contactIds.length > 0) {
@@ -337,6 +363,18 @@ export class CampaignService {
     }
 
     const candidateContacts: Array<any> = [];
+
+    const isBroadcastAll =
+      (audienceConfig as any)?.allContacts === true ||
+      (!contactIds.length && !listIds.length && !segmentIds.length);
+
+    if (isBroadcastAll) {
+      const allWsContacts = await prisma.contact.findMany({
+        where: { workspaceId, isArchived: false },
+      });
+      candidateContacts.push(...allWsContacts);
+    }
+
     if (contactIds.length > 0) {
       const explicit = await prisma.contact.findMany({
         where: { workspaceId, id: { in: contactIds }, isArchived: false },
@@ -838,8 +876,23 @@ export class CampaignService {
     });
     if (!campaign) throw new Error("Campaign not found");
 
-    if (campaign.status === "SENDING" || campaign.status === "COMPLETED") {
-      throw new Error(`Campaign is already in status: ${campaign.status}`);
+    if (campaign.status === "COMPLETED") {
+      return campaign;
+    }
+
+    if (campaign.status === "SENDING") {
+      // Actively drain any remaining pending snapshots immediately
+      try {
+        let batchResult = await this.processBatch(campaignId, campaign.batchSize || 50);
+        let batchCount = 1;
+        while (batchResult.hasMore && batchResult.submitted > 0 && batchCount < 10) {
+          batchResult = await this.processBatch(campaignId, campaign.batchSize || 50);
+          batchCount++;
+        }
+      } catch (batchErr) {
+        console.warn("Immediate batch process notice for in-flight campaign:", batchErr);
+      }
+      return (await prisma.campaign.findUnique({ where: { id: campaignId } })) || campaign;
     }
 
     // Materialize audience snapshot if none exists
@@ -890,7 +943,19 @@ export class CampaignService {
       console.warn("Inngest event dispatch notice:", err);
     }
 
-    return updated;
+    // Process initial batch directly so emails submit to Resend reliably
+    try {
+      let batchResult = await this.processBatch(campaignId, updated.batchSize || 50);
+      let batchCount = 1;
+      while (batchResult.hasMore && batchResult.submitted > 0 && batchCount < 10) {
+        batchResult = await this.processBatch(campaignId, updated.batchSize || 50);
+        batchCount++;
+      }
+    } catch (batchErr) {
+      console.warn("Immediate batch process notice:", batchErr);
+    }
+
+    return (await prisma.campaign.findUnique({ where: { id: campaignId } })) || updated;
   }
 
   /**
@@ -960,7 +1025,19 @@ export class CampaignService {
       console.warn("Inngest resume notice:", err);
     }
 
-    return updated;
+    // Process batches immediately upon resumption
+    try {
+      let batchResult = await this.processBatch(campaignId, updated.batchSize || 50);
+      let batchCount = 1;
+      while (batchResult.hasMore && batchResult.submitted > 0 && batchCount < 10) {
+        batchResult = await this.processBatch(campaignId, updated.batchSize || 50);
+        batchCount++;
+      }
+    } catch (batchErr) {
+      console.warn("Immediate batch process notice on resume:", batchErr);
+    }
+
+    return (await prisma.campaign.findUnique({ where: { id: campaignId } })) || updated;
   }
 
   /**
@@ -1029,14 +1106,19 @@ export class CampaignService {
     });
 
     if (snapshots.length === 0) {
-      // Mark campaign COMPLETED!
-      await prisma.campaign.update({
-        where: { id: campaignId },
-        data: {
-          status: "COMPLETED",
-          completedAt: new Date(),
-        },
+      // Only transition to COMPLETED if snapshots actually existed for this campaign
+      const totalSnapshots = await prisma.campaignRecipientSnapshot.count({
+        where: { campaignId },
       });
+      if (totalSnapshots > 0) {
+        await prisma.campaign.update({
+          where: { id: campaignId },
+          data: {
+            status: "COMPLETED",
+            completedAt: new Date(),
+          },
+        });
+      }
       return { processed: 0, submitted: 0, failed: 0, hasMore: false };
     }
 
@@ -1307,10 +1389,28 @@ export class CampaignService {
    * Monitor data polling endpoint for real-time progress without fake percentages
    */
   public async getMonitorData(campaignId: string, workspaceId: string) {
-    const campaign = await prisma.campaign.findFirst({
+    let campaign = await prisma.campaign.findFirst({
       where: { id: campaignId, workspaceId },
     });
     if (!campaign) throw new Error("Campaign not found");
+
+    // Proactive auto-drain: If campaign is in SENDING state and still has pending snapshots,
+    // drain a batch so progress is never stuck even if background scheduler is unavailable.
+    if (campaign.status === "SENDING") {
+      const pendingSnapshotsCount = await prisma.campaignRecipientSnapshot.count({
+        where: { campaignId, status: "PENDING" },
+      });
+      if (pendingSnapshotsCount > 0) {
+        try {
+          await this.processBatch(campaignId, campaign.batchSize || 50);
+          campaign = (await prisma.campaign.findFirst({
+            where: { id: campaignId, workspaceId },
+          })) || campaign;
+        } catch (err) {
+          console.warn("Monitor auto-drain notice:", err);
+        }
+      }
+    }
 
     const [
       pendingCount,

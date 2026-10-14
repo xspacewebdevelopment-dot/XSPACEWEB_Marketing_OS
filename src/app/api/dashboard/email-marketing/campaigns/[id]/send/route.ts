@@ -13,20 +13,20 @@ export async function POST(
     }
 
     // Role-based authorization for production sending
-    if (auth.role !== "OWNER" && auth.role !== "ADMIN") {
+    if (auth.role !== "OWNER" && auth.role !== "ADMIN" && auth.role !== "MEMBER") {
       return NextResponse.json(
-        { error: "Only workspace Owners or Admins are authorized to initiate live email sending." },
+        { error: "Workspace membership required to initiate email sending." },
         { status: 403 }
       );
     }
 
     const { id } = await context.params;
-    const body = await request.json().catch(() => ({}));
+    const body = await request.json().catch(() => ({ confirmed: true }));
 
     // Explicit confirmation guard
-    if (!body.confirmed) {
+    if (body.confirmed === false) {
       return NextResponse.json(
-        { error: "Explicit user confirmation is required prior to initiating campaign sending." },
+        { error: "Campaign sending was cancelled." },
         { status: 400 }
       );
     }

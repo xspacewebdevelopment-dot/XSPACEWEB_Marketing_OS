@@ -5,120 +5,106 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowLeft,
-  CheckCircle2,
-  ChevronRight,
   Save,
-  AlertCircle,
-  FileCode2,
-  Users,
-  Settings,
-  Mail,
   Send,
   Loader2,
+  CheckCircle2,
+  AlertCircle,
+  Sparkles,
 } from "lucide-react";
-import { Step1Setup } from "./components/Step1Setup";
-import { Step2Audience } from "./components/Step2Audience";
-import { Step3Template } from "./components/Step3Template";
-import { Step4Content } from "./components/Step4Content";
-import { Step5Review } from "./components/Step5Review";
-import type {
-  CampaignType,
-  AudienceConfig,
-  AudienceBreakdown,
-  UTMParams,
-  TrackingSettings,
-} from "@/lib/types/campaigns";
+import { BroadcastDetailsSegment } from "./components/BroadcastDetailsSegment";
+import { TemplatePickerSegment } from "./components/TemplatePickerSegment";
+import { LivePreviewPanel } from "./components/LivePreviewPanel";
+import { SendConfirmationModal } from "./components/SendConfirmationModal";
+import { QuickTestModal } from "./components/QuickTestModal";
+import { STARTER_TEMPLATES } from "@/lib/templates/starter-templates";
+import { wrapInEmailContainer } from "@/lib/templates/compiler";
+import type { AudienceConfig, AudienceBreakdown } from "@/lib/types/campaigns";
 
-const STEPS = [
-  { id: 1, label: "Setup", desc: "Identity & Sender", icon: Settings },
-  { id: 2, label: "Audience", desc: "Recipients & Exclusions", icon: Users },
-  { id: 3, label: "Design", desc: "Template & Studio", icon: FileCode2 },
-  { id: 4, label: "Content", desc: "Subject & Merge Tags", icon: Mail },
-  { id: 5, label: "Review", desc: "Validation & Send", icon: Send },
-];
-
-function CampaignWizardContent() {
+function CampaignCreateContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const existingId = searchParams.get("id");
-  const stepParam = searchParams.get("step");
-
-  const [currentStep, setCurrentStep] = useState<number>(
-    stepParam ? parseInt(stepParam, 10) : 1
-  );
 
   const [campaignId, setCampaignId] = useState<string | null>(existingId || null);
   const [loadingInitial, setLoadingInitial] = useState(Boolean(existingId));
   const [savingDraft, setSavingDraft] = useState(false);
-  const [calculatingAudience, setCalculatingAudience] = useState(false);
+  const [sendingNow, setSendingNow] = useState(false);
   const [notice, setNotice] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Form State
+  // Modals
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showTestModal, setShowTestModal] = useState(false);
+
+  // Default to first starter template
+  const defaultStarter = STARTER_TEMPLATES[0];
+  const initialWrappedHtml = wrapInEmailContainer(defaultStarter.compiledHtml, {
+    title: defaultStarter.name,
+    preheader: defaultStarter.preheader,
+  });
+
+  // Campaign State
   const [formData, setFormData] = useState<{
     name: string;
-    description: string;
-    type: CampaignType;
+    subject: string;
+    preheader: string;
     fromName: string;
     fromEmail: string;
     replyTo: string;
-    subject: string;
-    preheader: string;
     templateId: string | null;
     compiledHtml: string | null;
     editorJson: any;
-    plainText: string;
     audienceConfig: AudienceConfig;
-    utmParams: UTMParams;
-    trackingSettings: TrackingSettings;
-    postalAddress: string;
-    batchSize: number;
-    batchDelayMs: number;
   }>({
     name: "",
-    description: "",
-    type: "NEWSLETTER",
+    subject: defaultStarter.subject,
+    preheader: defaultStarter.preheader,
     fromName: "NexaReach Marketing",
     fromEmail: "marketing@xspaceweb.com",
     replyTo: "",
-    subject: "",
-    preheader: "",
     templateId: null,
-    compiledHtml: null,
-    editorJson: null,
-    plainText: "",
+    compiledHtml: initialWrappedHtml,
+    editorJson: defaultStarter.editorJson,
     audienceConfig: {
+      allContacts: true,
       contactIds: [],
       listIds: [],
       segmentIds: [],
       excludedListIds: [],
       excludedContactIds: [],
     },
-    utmParams: {
-      source: "nexareach",
-      medium: "email",
-      campaign: "",
-      content: "",
-    },
-    trackingSettings: {
-      trackOpens: false,
-      trackClicks: false,
-    },
-    postalAddress: "NexaReach Marketing OS, 100 Innovation Way, San Francisco, CA 94105",
-    batchSize: 100,
-    batchDelayMs: 1000,
   });
 
   const [audienceBreakdown, setAudienceBreakdown] = useState<AudienceBreakdown | null>(null);
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const showNotice = (type: "success" | "error", text: string) => {
     setNotice({ type, text });
-    setTimeout(() => setNotice(null), 3500);
+    setTimeout(() => setNotice(null), 4000);
   };
 
-  // Load existing campaign data if editing
+  // Helper to fetch audience preview breakdown
+  const fetchAudienceBreakdown = useCallback(async (config: AudienceConfig) => {
+    try {
+      const res = await fetch("/api/dashboard/email-marketing/campaigns/audience-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setAudienceBreakdown(json.data);
+      }
+    } catch (err) {
+      console.warn("Could not calculate audience preview:", err);
+    }
+  }, []);
+
+  // Load existing campaign if editing an existing draft
   useEffect(() => {
-    if (!existingId) return;
+    if (!existingId) {
+      fetchAudienceBreakdown(formData.audienceConfig);
+      return;
+    }
 
     async function loadCampaign() {
       try {
@@ -132,34 +118,24 @@ function CampaignWizardContent() {
         setCampaignId(camp.id);
         setFormData({
           name: camp.name || "",
-          description: camp.description || "",
-          type: camp.type || "NEWSLETTER",
-          fromName: camp.fromName || "",
-          fromEmail: camp.fromEmail || "",
-          replyTo: camp.replyTo || "",
           subject: camp.subject || "",
           preheader: camp.preheader || "",
+          fromName: camp.fromName || "NexaReach Marketing",
+          fromEmail: camp.fromEmail || "marketing@xspaceweb.com",
+          replyTo: camp.replyTo || "",
           templateId: camp.templateId || null,
           compiledHtml: camp.compiledHtml || null,
           editorJson: camp.editorJson || null,
-          plainText: camp.plainText || "",
           audienceConfig: camp.audienceConfig || {
+            allContacts: true,
             contactIds: [],
             listIds: [],
             segmentIds: [],
-            excludedListIds: [],
-            excludedContactIds: [],
           },
-          utmParams: camp.utmParams || {},
-          trackingSettings: camp.trackingSettings || { trackOpens: false, trackClicks: false },
-          postalAddress: camp.postalAddress || "",
-          batchSize: camp.batchSize || 100,
-          batchDelayMs: camp.batchDelayMs || 1000,
         });
 
-        // Calculate initial audience breakdown
         if (camp.audienceConfig) {
-          fetchBreakdown(camp.audienceConfig);
+          fetchAudienceBreakdown(camp.audienceConfig);
         }
       } catch (err: any) {
         showNotice("error", err.message);
@@ -169,63 +145,31 @@ function CampaignWizardContent() {
     }
 
     loadCampaign();
-  }, [existingId]);
+  }, [existingId, fetchAudienceBreakdown]);
 
-  // Audience breakdown calculator helper
-  const fetchBreakdown = async (config: AudienceConfig) => {
-    try {
-      setCalculatingAudience(true);
-      const res = await fetch("/api/dashboard/email-marketing/campaigns/audience-preview", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(config),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        setAudienceBreakdown(json.data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setCalculatingAudience(false);
-    }
-  };
-
-  // Recalculate audience when audienceConfig changes
-  const handleAudienceConfigChange = (newConfig: AudienceConfig) => {
-    setFormData((prev) => ({ ...prev, audienceConfig: newConfig }));
-    fetchBreakdown(newConfig);
-  };
-
-  // Save draft to database
+  // Save Draft to Database
   const handleSaveDraft = useCallback(
     async (silent = false): Promise<string | null> => {
       try {
         if (!silent) setSavingDraft(true);
 
         const payload = {
-          name: formData.name?.trim() || `Untitled Campaign (${new Date().toLocaleDateString()})`,
-          description: formData.description || null,
-          type: formData.type || "NEWSLETTER",
-          fromName: formData.fromName?.trim() || "Marketing",
-          fromEmail: formData.fromEmail?.trim() || "marketing@xspacecode.com",
-          replyTo: formData.replyTo?.trim() || null,
-          subject: formData.subject?.trim() || "",
+          name: formData.name?.trim() || `Broadcast (${new Date().toLocaleDateString()})`,
+          subject: formData.subject?.trim() || "Community Broadcast",
           preheader: formData.preheader?.trim() || null,
+          fromName: formData.fromName?.trim() || "NexaReach Marketing",
+          fromEmail: formData.fromEmail?.trim() || "marketing@xspaceweb.com",
+          replyTo: formData.replyTo?.trim() || null,
           templateId: formData.templateId || null,
           compiledHtml: formData.compiledHtml || null,
           editorJson: formData.editorJson || null,
-          plainText: formData.plainText || null,
-          audienceConfig: formData.audienceConfig || {},
-          utmParams: formData.utmParams || {},
-          trackingSettings: formData.trackingSettings || { trackOpens: false, trackClicks: false },
-          postalAddress: formData.postalAddress?.trim() || null,
-          batchSize: formData.batchSize || 100,
-          batchDelayMs: formData.batchDelayMs || 1000,
+          audienceConfig: formData.audienceConfig || { allContacts: true },
+          type: "NEWSLETTER",
+          trackingSettings: { trackOpens: false, trackClicks: false },
         };
 
         if (campaignId) {
-          // Update existing
+          // Update existing campaign
           const res = await fetch(`/api/dashboard/email-marketing/campaigns/${campaignId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -235,10 +179,10 @@ function CampaignWizardContent() {
           if (!res.ok) {
             throw new Error(json?.error || "Failed to update campaign draft");
           }
-          if (!silent) showNotice("success", "Draft saved.");
+          if (!silent) showNotice("success", "Draft saved successfully.");
           return campaignId;
         } else {
-          // Create new
+          // Create new campaign
           const res = await fetch("/api/dashboard/email-marketing/campaigns", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -255,11 +199,11 @@ function CampaignWizardContent() {
               window.history.replaceState(
                 null,
                 "",
-                `/dashboard/email-marketing/campaigns/create?id=${newId}&step=${currentStep}`
+                `/dashboard/email-marketing/campaigns/create?id=${newId}`
               );
             }
           }
-          if (!silent) showNotice("success", "Draft saved.");
+          if (!silent) showNotice("success", "Draft saved successfully.");
           return newId;
         }
       } catch (err: any) {
@@ -270,380 +214,251 @@ function CampaignWizardContent() {
         if (!silent) setSavingDraft(false);
       }
     },
-    [campaignId, formData, currentStep]
+    [campaignId, formData]
   );
 
-  // Validate step transitions
-  const validateCurrentStep = (step: number): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (step === 1) {
-      if (!formData.name?.trim()) newErrors.name = "Campaign name is required";
-      if (!formData.fromName?.trim()) newErrors.fromName = "From Name is required";
-      if (!formData.fromEmail?.trim() || !formData.fromEmail.includes("@")) {
-        newErrors.fromEmail = "Valid From Email is required";
-      }
-    } else if (step === 2) {
-      const conf = formData.audienceConfig;
-      const count =
-        (conf.contactIds?.length || 0) +
-        (conf.listIds?.length || 0) +
-        (conf.segmentIds?.length || 0);
-      if (count === 0) {
-        showNotice("error", "Please select at least one contact list, segment, or contact.");
-        return false;
-      }
-    } else if (step === 3) {
-      const hasDesign = Boolean(
-        formData.templateId ||
-        (formData.compiledHtml && formData.compiledHtml.trim().length >= 10)
-      );
-      if (!hasDesign) {
-        showNotice("error", "Please select a template design or edit in studio.");
-        return false;
-      }
-    } else if (step === 4) {
-      if (!formData.subject?.trim()) newErrors.subject = "Subject line is required";
-      if (!formData.postalAddress?.trim()) newErrors.postalAddress = "Postal address is required";
+  // Trigger Send Confirmation or Direct Dispatch
+  const handleInitiateSend = async () => {
+    if (!formData.subject?.trim()) {
+      showNotice("error", "Please provide a subject line before sending.");
+      return;
     }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setShowConfirmModal(true);
   };
 
-  const handleNext = async () => {
-    if (!validateCurrentStep(currentStep)) return;
+  // Execute Live Send via Resend
+  const handleExecuteSend = async () => {
+    if (sendingNow) return;
+    try {
+      setSendingNow(true);
 
-    // Ensure template HTML is synced if templateId is chosen but compiledHtml was empty
-    if (
-      currentStep === 3 &&
-      formData.templateId &&
-      (!formData.compiledHtml || formData.compiledHtml.trim().length < 10)
-    ) {
-      try {
-        const res = await fetch(`/api/dashboard/email-marketing/templates/${formData.templateId}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data?.compiledHtml) {
-            formData.compiledHtml = json.data.compiledHtml;
-            formData.editorJson = json.data.editorJson;
-            setFormData((prev) => ({
-              ...prev,
-              compiledHtml: json.data.compiledHtml,
-              editorJson: json.data.editorJson,
-            }));
-          }
+      // Save draft first
+      let targetId = campaignId;
+      if (!targetId) {
+        targetId = await handleSaveDraft(true);
+      }
+      if (!targetId) {
+        showNotice("error", "Could not save campaign before dispatching.");
+        return;
+      }
+
+      const res = await fetch(`/api/dashboard/email-marketing/campaigns/${targetId}/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirmed: true }),
+      });
+
+      const json = await res.json().catch(() => null);
+      if (!res.ok) {
+        // If already in status SENDING, treat as success
+        if (json?.error && (json.error.includes("already in status") || json.error.includes("SENDING"))) {
+          showNotice("success", "Broadcast is in progress!");
+          setShowConfirmModal(false);
+          router.push(`/dashboard/email-marketing/campaigns/${targetId}`);
+          return;
         }
-      } catch (err) {
-        console.warn("Could not sync template HTML on next:", err);
+        showNotice("error", json?.error || "Failed to initiate sending");
+        return;
       }
+
+      showNotice("success", "Broadcast campaign dispatched successfully!");
+      setShowConfirmModal(false);
+
+      // Navigate to campaign details
+      router.push(`/dashboard/email-marketing/campaigns/${targetId}`);
+    } catch (err: any) {
+      console.error("Send error:", err);
+      showNotice("error", err.message || "Failed to dispatch campaign");
+    } finally {
+      setSendingNow(false);
     }
-
-    await handleSaveDraft(true);
-    setCurrentStep((prev) => Math.min(STEPS.length, prev + 1));
-  };
-
-  const handleBack = () => {
-    setCurrentStep((prev) => Math.max(1, prev - 1));
-  };
-
-  // Launch Live Sending
-  const handleSendNow = async () => {
-    let targetId = campaignId;
-    if (!targetId) {
-      targetId = await handleSaveDraft(true);
-    }
-    if (!targetId) {
-      throw new Error("Could not save campaign before dispatching. Please try saving draft.");
-    }
-
-    const res = await fetch(`/api/dashboard/email-marketing/campaigns/${targetId}/send`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ confirmed: true }),
-    });
-
-    const json = await res.json().catch(() => null);
-    if (!res.ok) throw new Error(json?.error || "Failed to initiate sending");
-
-    showNotice("success", "Campaign launched successfully!");
-    router.push(`/dashboard/email-marketing/campaigns/${targetId}`);
-  };
-
-  // Schedule Campaign
-  const handleScheduleSend = async (scheduledAtIso: string, timezone: string) => {
-    let targetId = campaignId;
-    if (!targetId) {
-      targetId = await handleSaveDraft(true);
-    }
-    if (!targetId) {
-      throw new Error("Could not save campaign before scheduling. Please try saving draft.");
-    }
-
-    const res = await fetch(`/api/dashboard/email-marketing/campaigns/${targetId}/schedule`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        scheduledAt: scheduledAtIso,
-        timezone,
-        confirmed: true,
-      }),
-    });
-
-    const json = await res.json().catch(() => null);
-    if (!res.ok) throw new Error(json?.error || "Failed to schedule campaign");
-
-    showNotice("success", "Campaign scheduled successfully!");
-    router.push(`/dashboard/email-marketing/campaigns/${targetId}`);
   };
 
   if (loadingInitial) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-[#061321] text-slate-300">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+          <p className="text-xs font-semibold text-slate-500">Loading campaign broadcast...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 text-slate-900 flex flex-col select-none">
-      {/* Toast Notice */}
-      {notice && (
-        <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-xl border text-xs font-semibold shadow-lg animate-in fade-in duration-200 ${
-            notice.type === "success"
-              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-              : "bg-rose-50 border-rose-200 text-rose-800"
-          }`}
-        >
-          {notice.type === "success" ? (
-            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-          ) : (
-            <AlertCircle className="h-4 w-4 text-rose-600" />
-          )}
-          <span>{notice.text}</span>
-        </div>
-      )}
-
-      {/* TOP WIZARD APP BAR */}
-      <header className="h-16 border-b border-slate-200 bg-white px-6 flex items-center justify-between shrink-0 sticky top-0 z-30 shadow-xs">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/dashboard/email-marketing/campaigns"
-            className="p-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 shadow-xs transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
-
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-sm text-slate-900 truncate max-w-xs">
-                {formData.name || "New Campaign"}
-              </span>
-              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
-                {formData.type}
-              </span>
-            </div>
-            <span className="text-[11px] text-slate-500">
-              5-Step Campaign Builder &bull; Inngest Batch Dispatch
-            </span>
-          </div>
-        </div>
-
-        {/* Save Draft Action */}
-        <button
-          type="button"
-          onClick={() => handleSaveDraft(false)}
-          disabled={savingDraft}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 shadow-xs transition-colors cursor-pointer"
-        >
-          {savingDraft ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin text-blue-600" />
-          ) : (
-            <Save className="h-3.5 w-3.5 text-blue-600" />
-          )}
-          <span>Save Draft</span>
-        </button>
-      </header>
-
-      {/* STEP PROGRESS TRACKER */}
-      <div className="border-b border-slate-200 bg-white px-6 py-3.5 shrink-0 shadow-xs">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          {STEPS.map((step, idx) => {
-            const isCompleted = currentStep > step.id;
-            const isCurrent = currentStep === step.id;
-            const Icon = step.icon;
-
-            return (
-              <div key={step.id} className="flex items-center flex-1 last:flex-none">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (isCompleted) setCurrentStep(step.id);
-                  }}
-                  disabled={!isCompleted && !isCurrent}
-                  className={`flex items-center gap-2.5 text-left transition-all ${
-                    isCurrent
-                      ? "text-blue-600 font-bold"
-                      : isCompleted
-                      ? "text-slate-700 hover:text-slate-900 cursor-pointer"
-                      : "text-slate-400 opacity-60 cursor-not-allowed"
-                  }`}
-                >
-                  <div
-                    className={`h-7 w-7 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
-                      isCurrent
-                        ? "bg-blue-600 text-white shadow-xs"
-                        : isCompleted
-                        ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                        : "bg-slate-100 text-slate-500 border border-slate-200"
-                    }`}
-                  >
-                    {isCompleted ? <CheckCircle2 className="h-4 w-4" /> : step.id}
-                  </div>
-                  <div className="hidden sm:block">
-                    <div className="text-xs leading-none">{step.label}</div>
-                    <div className="text-[10px] text-slate-500 mt-1 leading-none">{step.desc}</div>
-                  </div>
-                </button>
-
-                {idx < STEPS.length - 1 && (
-                  <div
-                    className={`flex-1 h-0.5 mx-3 sm:mx-4 transition-all ${
-                      isCompleted ? "bg-emerald-400" : "bg-slate-200"
-                    }`}
-                  />
-                )}
+    <div className="min-h-screen bg-slate-50/60 pb-16">
+      {/* Top Navigation Header */}
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-2xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard/email-marketing/campaigns"
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+              title="Return to Campaigns"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+                  {formData.name || "New Broadcast Campaign"}
+                </h1>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-semibold border border-slate-200">
+                  Draft
+                </span>
               </div>
-            );
-          })}
+              <p className="text-[11px] text-slate-500 hidden sm:block">
+                Streamlined email broadcast builder with live preview &amp; 1-click dispatch.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => handleSaveDraft(false)}
+              disabled={savingDraft || sendingNow}
+              className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+            >
+              {savingDraft ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">Save Draft</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleInitiateSend}
+              disabled={sendingNow}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold transition-all shadow-md shadow-blue-500/25 flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {sendingNow ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Sending...</span>
+                </>
+              ) : (
+                <>
+                  <Send className="h-3.5 w-3.5" />
+                  <span>Send Broadcast</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* MAIN STEP CONTENT AREA */}
-      <main className="flex-1 p-6 md:p-8 max-w-4xl mx-auto w-full overflow-y-auto">
-        {currentStep === 1 && (
-          <Step1Setup
-            formData={formData}
-            onChange={(fields) => setFormData((prev) => ({ ...prev, ...fields }))}
-            errors={errors}
-          />
-        )}
-
-        {currentStep === 2 && (
-          <Step2Audience
-            audienceConfig={formData.audienceConfig}
-            onChange={handleAudienceConfigChange}
-            breakdown={audienceBreakdown}
-            calculating={calculatingAudience}
-            onRecalculate={() => fetchBreakdown(formData.audienceConfig)}
-          />
-        )}
-
-        {currentStep === 3 && (
-          <Step3Template
-            campaignId={campaignId || undefined}
-            templateId={formData.templateId}
-            compiledHtml={formData.compiledHtml}
-            editorJson={formData.editorJson}
-            onChange={(tmplData) => setFormData((prev) => ({ ...prev, ...tmplData }))}
-            onSaveDraftBeforeEdit={() => handleSaveDraft(true)}
-          />
-        )}
-
-        {currentStep === 4 && (
-          <Step4Content
-            campaignId={campaignId || undefined}
-            formData={{
-              subject: formData.subject,
-              preheader: formData.preheader,
-              fromName: formData.fromName,
-              fromEmail: formData.fromEmail,
-              postalAddress: formData.postalAddress,
-              utmParams: formData.utmParams,
-              trackingSettings: formData.trackingSettings,
-            }}
-            compiledHtml={formData.compiledHtml}
-            sampleRecipients={audienceBreakdown?.sampleEligible || []}
-            onChange={(fields) => setFormData((prev) => ({ ...prev, ...fields }))}
-            errors={errors}
-          />
-        )}
-
-        {currentStep === 5 && (
-          <Step5Review
-            campaignId={campaignId || undefined}
-            formData={{
-              name: formData.name,
-              type: formData.type,
-              fromName: formData.fromName,
-              fromEmail: formData.fromEmail,
-              replyTo: formData.replyTo,
-              subject: formData.subject,
-              preheader: formData.preheader,
-              postalAddress: formData.postalAddress,
-              batchSize: formData.batchSize,
-              batchDelayMs: formData.batchDelayMs,
-            }}
-            compiledHtml={formData.compiledHtml}
-            breakdown={audienceBreakdown}
-            onSaveDraft={() => handleSaveDraft(false).then(() => {})}
-            onSendNow={handleSendNow}
-            onScheduleSend={handleScheduleSend}
-            savingDraft={savingDraft}
-            onUpdateBatchSettings={(batchSize, batchDelayMs) =>
-              setFormData((prev) => ({ ...prev, batchSize, batchDelayMs }))
-            }
-          />
-        )}
-      </main>
-
-      {/* BOTTOM WIZARD NAVIGATION BAR */}
-      <footer className="h-16 border-t border-slate-200 bg-white px-6 flex items-center justify-between shrink-0 sticky bottom-0 z-20 shadow-xs">
-        <button
-          type="button"
-          onClick={handleBack}
-          disabled={currentStep === 1}
-          className="px-4 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none text-xs font-semibold text-slate-700 shadow-xs transition-colors cursor-pointer"
-        >
-          &larr; Back
-        </button>
-
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-500 font-mono">
-            Step {currentStep} of {STEPS.length}
-          </span>
-
-          {currentStep < 5 && (
-            <button
-              type="button"
-              onClick={handleNext}
-              className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs shadow-blue-500/20 flex items-center gap-1.5 transition-colors cursor-pointer"
-            >
-              <span>Continue</span>
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
-          )}
+      {/* Floating Notice Banner */}
+      {notice && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+          <div
+            className={`p-3.5 rounded-xl text-xs font-medium flex items-center gap-2 shadow-xs transition-all animate-in slide-in-from-top-2 duration-150 ${
+              notice.type === "success"
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                : "bg-rose-50 text-rose-800 border border-rose-200"
+            }`}
+          >
+            {notice.type === "success" ? (
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+            ) : (
+              <AlertCircle className="h-4 w-4 text-rose-600 shrink-0" />
+            )}
+            <span>{notice.text}</span>
+          </div>
         </div>
-      </footer>
+      )}
+
+      {/* Main Two-Panel Layout */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left Column: Form Segments (7 cols) */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Segment 1: Broadcast Details & Audience */}
+            <BroadcastDetailsSegment
+              name={formData.name}
+              subject={formData.subject}
+              preheader={formData.preheader}
+              fromName={formData.fromName}
+              fromEmail={formData.fromEmail}
+              replyTo={formData.replyTo}
+              audienceConfig={formData.audienceConfig}
+              audienceBreakdown={audienceBreakdown}
+              onUpdate={(updated) => {
+                setFormData((prev) => ({ ...prev, ...updated }));
+                if (updated.audienceConfig) {
+                  fetchAudienceBreakdown(updated.audienceConfig);
+                }
+              }}
+            />
+
+            {/* Segment 2: Template Selection with Direct Studio Edit Link */}
+            <TemplatePickerSegment
+              selectedTemplateId={formData.templateId}
+              selectedHtml={formData.compiledHtml}
+              campaignId={campaignId}
+              onSaveDraftBeforeEdit={() => handleSaveDraft(true)}
+              onSelect={({ templateId, compiledHtml, editorJson, subject, preheader }) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  templateId,
+                  compiledHtml,
+                  editorJson: editorJson || prev.editorJson,
+                  subject: subject || prev.subject,
+                  preheader: preheader !== undefined ? preheader : prev.preheader,
+                }));
+                showNotice("success", "Template selected. Live preview updated.");
+              }}
+            />
+          </div>
+
+          {/* Right Column: CONSTANT LIVE EMAIL PREVIEW (5 cols, sticky) */}
+          <div className="lg:col-span-5 sticky top-22">
+            <LivePreviewPanel
+              subject={formData.subject}
+              preheader={formData.preheader}
+              fromName={formData.fromName}
+              fromEmail={formData.fromEmail}
+              compiledHtml={formData.compiledHtml}
+              eligibleCount={audienceBreakdown?.eligible ?? 2}
+              sending={sendingNow}
+              savingDraft={savingDraft}
+              onSendNow={handleInitiateSend}
+              onSaveDraft={() => handleSaveDraft(false)}
+              onOpenTestModal={() => setShowTestModal(true)}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Send Confirmation Modal */}
+      <SendConfirmationModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirmSend={handleExecuteSend}
+        campaignName={formData.name || "Broadcast Campaign"}
+        fromAddress={`${formData.fromName} <${formData.fromEmail}>`}
+        recipientCount={audienceBreakdown?.eligible ?? 2}
+      />
+
+      {/* Quick Test Email Modal */}
+      <QuickTestModal
+        isOpen={showTestModal}
+        onClose={() => setShowTestModal(false)}
+        campaignId={campaignId}
+        onSaveDraftFirst={() => handleSaveDraft(true)}
+      />
     </div>
   );
 }
 
-export default function CampaignWizardPage() {
+export default function CampaignCreatePage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-8 text-slate-700">
-          <div className="flex items-center gap-3">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
-            <span className="text-sm font-medium">Loading Campaign Builder...</span>
-          </div>
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
         </div>
       }
     >
-      <CampaignWizardContent />
+      <CampaignCreateContent />
     </Suspense>
   );
 }
-

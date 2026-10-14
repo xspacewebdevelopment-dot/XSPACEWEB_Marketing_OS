@@ -195,7 +195,8 @@ export default function CampaignMonitorPage({
         <div className="flex items-center gap-3.5">
           <Link
             href="/dashboard/email-marketing/campaigns"
-            className="p-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-900 shadow-xs transition-colors"
+            className="h-9 w-9 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-500 hover:text-slate-900 shadow-2xs hover:shadow-xs flex items-center justify-center transition-all duration-150 active:scale-95"
+            title="Return to Campaigns"
           >
             <ArrowLeft className="h-4 w-4" />
           </Link>
@@ -203,14 +204,21 @@ export default function CampaignMonitorPage({
           <div>
             <div className="flex items-center gap-2.5">
               <h1 className="text-xl font-bold text-slate-900 tracking-tight">{campaign?.name}</h1>
-              <span
-                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusBadge.bg} ${statusBadge.color} ${statusBadge.border}`}
-              >
-                {campaign?.status === "SENDING" && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-ping" />
-                )}
-                {statusBadge.label}
-              </span>
+              {campaign?.status === "SENDING" ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/80 shadow-2xs">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600" />
+                  </span>
+                  <span>Sending</span>
+                </span>
+              ) : (
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusBadge.bg} ${statusBadge.color} ${statusBadge.border}`}
+                >
+                  {statusBadge.label}
+                </span>
+              )}
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
               Subject: &ldquo;{campaign?.subject}&rdquo; &bull; Sender: {campaign?.fromName} &lt;{campaign?.fromEmail}&gt;
@@ -219,13 +227,25 @@ export default function CampaignMonitorPage({
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => {
+              setRefreshing(true);
+              fetchMonitorData();
+            }}
+            disabled={refreshing}
+            className="h-9 w-9 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 hover:border-slate-300 text-slate-500 hover:text-slate-800 shadow-2xs hover:shadow-xs flex items-center justify-center transition-all duration-150 active:scale-95 cursor-pointer disabled:opacity-50"
+            title="Refresh live status"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin text-blue-600" : ""}`} />
+          </button>
+
           {campaign?.status === "SENDING" && (
             <button
               onClick={handlePause}
-              className="px-3.5 py-1.5 rounded-lg border border-orange-300 bg-orange-50 hover:bg-orange-100 text-orange-800 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+              className="h-9 px-3.5 rounded-xl border border-amber-200/90 bg-amber-50/50 hover:bg-amber-100/70 text-amber-900 text-xs font-bold flex items-center gap-2 transition-all duration-150 shadow-2xs hover:shadow-xs hover:border-amber-300 active:scale-95 cursor-pointer"
             >
-              <Pause className="h-3.5 w-3.5 text-orange-600" />
+              <Pause className="h-3.5 w-3.5 text-amber-600" />
               <span>Pause Sending</span>
             </button>
           )}
@@ -233,9 +253,9 @@ export default function CampaignMonitorPage({
           {campaign?.status === "PAUSED" && (
             <button
               onClick={handleResume}
-              className="px-3.5 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+              className="h-9 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold flex items-center gap-2 transition-all duration-150 shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/30 active:scale-95 cursor-pointer"
             >
-              <Play className="h-3.5 w-3.5 text-emerald-600" />
+              <Play className="h-3.5 w-3.5" />
               <span>Resume Sending</span>
             </button>
           )}
@@ -245,30 +265,46 @@ export default function CampaignMonitorPage({
             campaign?.status === "PAUSED") && (
             <button
               onClick={handleCancel}
-              className="px-3 py-1.5 rounded-lg border border-rose-300 bg-rose-50 hover:bg-rose-100 text-rose-800 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+              className="h-9 px-3.5 rounded-xl border border-slate-200/90 bg-white hover:bg-rose-50/60 text-slate-600 hover:text-rose-700 hover:border-rose-200 text-xs font-bold flex items-center gap-2 transition-all duration-150 shadow-2xs hover:shadow-xs active:scale-95 cursor-pointer group"
             >
-              <XCircle className="h-3.5 w-3.5 text-rose-600" />
+              <XCircle className="h-3.5 w-3.5 text-slate-400 group-hover:text-rose-500 transition-colors" />
               <span>Cancel</span>
             </button>
           )}
 
           <button
             onClick={handleDuplicate}
-            className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+            className="h-9 px-3.5 rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 text-xs font-bold flex items-center gap-2 transition-all duration-150 shadow-2xs hover:shadow-xs hover:border-slate-300 active:scale-95 cursor-pointer"
           >
-            <Copy className="h-3.5 w-3.5" />
+            <Copy className="h-3.5 w-3.5 text-slate-400" />
             <span>Duplicate</span>
           </button>
-
-          <Link
-            href={`/dashboard/email-marketing/campaigns/${id}/report`}
-            className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs shadow-blue-500/20 transition-colors"
-          >
-            <BarChart2 className="h-3.5 w-3.5" />
-            <span>View Report</span>
-          </Link>
         </div>
       </div>
+
+      {/* COMPLETED BANNER */}
+      {campaign?.status === "COMPLETED" && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50/90 via-teal-50/60 to-blue-50/40 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-emerald-950">Campaign Broadcast Completed</div>
+              <p className="text-[11px] text-emerald-800 mt-0.5">
+                All recipients have been submitted. Track real-time opens, clicks, and deliverability metrics in the analytics report.
+              </p>
+            </div>
+          </div>
+          <Link
+            href={`/dashboard/email-marketing/campaigns/${id}/report`}
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold flex items-center gap-2 transition-all shadow-sm shadow-emerald-500/20 active:scale-95 shrink-0 self-start sm:self-center"
+          >
+            <BarChart2 className="h-3.5 w-3.5" />
+            <span>View Full Analytics Report</span>
+          </Link>
+        </div>
+      )}
 
       {/* SCHEDULED BANNER (If Scheduled) */}
       {campaign?.status === "SCHEDULED" && campaign?.scheduledAt && (
@@ -291,17 +327,26 @@ export default function CampaignMonitorPage({
       )}
 
       {/* REAL PROGRESS BAR */}
-      <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-4">
-        <div className="flex items-center justify-between text-xs">
+      <div className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
             <Activity className="h-4 w-4 text-blue-600" />
             <span className="font-bold uppercase tracking-wider text-slate-700">
               Live Sending Progress
             </span>
           </div>
-          <span className="font-mono font-bold text-slate-900 text-sm">
-            {counts?.progressPercent ?? 0}% Completed
-          </span>
+          <div className="flex items-center gap-3.5">
+            <span className="font-mono font-bold text-slate-900 text-sm">
+              {counts?.progressPercent ?? 0}% Completed
+            </span>
+            <Link
+              href={`/dashboard/email-marketing/campaigns/${id}/report`}
+              className="h-8 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 font-bold text-xs flex items-center gap-1.5 transition-all shadow-2xs hover:shadow-xs active:scale-95"
+            >
+              <BarChart2 className="h-3.5 w-3.5 text-blue-600" />
+              <span>View Report &rarr;</span>
+            </Link>
+          </div>
         </div>
 
         <div className="h-3 rounded-full bg-slate-100 overflow-hidden border border-slate-200">
@@ -318,25 +363,25 @@ export default function CampaignMonitorPage({
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2 text-xs">
-          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <span className="text-[10px] text-slate-500 font-medium block">Total Audience</span>
-            <span className="text-base font-bold text-slate-900">{counts?.total ?? 0}</span>
+          <div className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/80 shadow-2xs">
+            <span className="text-[11px] text-slate-500 font-semibold block">Total Audience</span>
+            <span className="text-xl font-black text-slate-900 tracking-tight mt-0.5 block">{counts?.total ?? 0}</span>
           </div>
-          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-            <span className="text-[10px] text-slate-500 font-medium block">Pending Queue</span>
-            <span className="text-base font-bold text-slate-700">{counts?.pending ?? 0}</span>
+          <div className="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/80 shadow-2xs">
+            <span className="text-[11px] text-slate-500 font-semibold block">Pending Queue</span>
+            <span className="text-xl font-black text-slate-700 tracking-tight mt-0.5 block">{counts?.pending ?? 0}</span>
           </div>
-          <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-200">
-            <span className="text-[10px] text-blue-700 font-medium block">Submitted (Resend)</span>
-            <span className="text-base font-bold text-blue-800">{counts?.submitted ?? 0}</span>
+          <div className="p-3.5 rounded-xl bg-blue-50/50 border border-blue-200/70 shadow-2xs">
+            <span className="text-[11px] text-blue-700 font-semibold block">Submitted (Resend)</span>
+            <span className="text-xl font-black text-blue-800 tracking-tight mt-0.5 block">{counts?.submitted ?? 0}</span>
           </div>
-          <div className="p-3 rounded-xl bg-rose-50/60 border border-rose-200">
-            <span className="text-[10px] text-rose-700 font-medium block">Failed Submissions</span>
-            <span className="text-base font-bold text-rose-800">{counts?.failed ?? 0}</span>
+          <div className="p-3.5 rounded-xl bg-rose-50/50 border border-rose-200/70 shadow-2xs">
+            <span className="text-[11px] text-rose-700 font-semibold block">Failed Submissions</span>
+            <span className="text-xl font-black text-rose-800 tracking-tight mt-0.5 block">{counts?.failed ?? 0}</span>
           </div>
-          <div className="p-3 rounded-xl bg-amber-50/60 border border-amber-200 col-span-2 sm:col-span-1">
-            <span className="text-[10px] text-amber-700 font-medium block">Excluded / Suppressed</span>
-            <span className="text-base font-bold text-amber-800">{counts?.excluded ?? 0}</span>
+          <div className="p-3.5 rounded-xl bg-amber-50/50 border border-amber-200/70 col-span-2 sm:col-span-1 shadow-2xs">
+            <span className="text-[11px] text-amber-700 font-semibold block">Excluded / Suppressed</span>
+            <span className="text-xl font-black text-amber-800 tracking-tight mt-0.5 block">{counts?.excluded ?? 0}</span>
           </div>
         </div>
       </div>

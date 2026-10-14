@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const audienceConfig = {
+      allContacts: body.allContacts,
       contactIds: Array.isArray(body.contactIds) ? body.contactIds : [],
       listIds: Array.isArray(body.listIds) ? body.listIds : [],
       segmentIds: Array.isArray(body.segmentIds) ? body.segmentIds : [],

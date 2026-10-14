@@ -55,6 +55,9 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
   const isEmailVerification = pathname.startsWith("/dashboard/email-verification");
   const isTemplates = pathname.startsWith("/dashboard/email-marketing/templates");
   const isCampaigns = pathname.startsWith("/dashboard/email-marketing/campaigns");
+  const isOverview = pathname === "/dashboard/email-marketing/overview" || pathname === "/dashboard/email-marketing";
+  const isDeliverability = pathname.startsWith("/dashboard/email-marketing/deliverability");
+  const isInbox = pathname.startsWith("/dashboard/email-marketing/inbox");
 
   const handleLogout = async () => {
     try {
@@ -156,7 +159,21 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
 
             {emailMarketingOpen && (
               <div className="pl-6 pr-1 pt-1 space-y-0.5 border-l border-slate-800 ml-4">
-                <DisabledItem icon={BarChart3} label="Overview" />
+                {/* Email Marketing Overview - ACTIVE FEATURE */}
+                <Link
+                  href="/dashboard/email-marketing/overview"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isOverview
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <BarChart3 className="h-3.5 w-3.5" />
+                  <span>Overview</span>
+                </Link>
+
                 {/* Email Campaigns - ACTIVE FEATURE */}
                 <Link
                   href="/dashboard/email-marketing/campaigns"
@@ -171,7 +188,6 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
                   <Send className="h-3.5 w-3.5" />
                   <span>Campaigns</span>
                 </Link>
-                <DisabledItem icon={GitBranch} label="Sequences" />
 
                 {/* Email Templates - ACTIVE FEATURE */}
                 <Link
@@ -203,8 +219,40 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
                   <span>Email Verification</span>
                 </Link>
 
-                <DisabledItem icon={Radio} label="Deliverability" />
-                <DisabledItem icon={Inbox} label="Inbox" />
+                {/* Deliverability - ACTIVE FEATURE */}
+                <Link
+                  href="/dashboard/email-marketing/deliverability"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isDeliverability
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <Radio className="h-3.5 w-3.5" />
+                  <span>Deliverability</span>
+                </Link>
+
+                {/* Inbox - Unified Inbox UI Draft */}
+                <Link
+                  href="/dashboard/email-marketing/inbox"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isInbox
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Inbox className="h-3.5 w-3.5" />
+                    <span>Inbox</span>
+                  </div>
+                  <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                    Draft
+                  </span>
+                </Link>
               </div>
             )}
           </div>

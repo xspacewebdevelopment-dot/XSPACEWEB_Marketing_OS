@@ -13,7 +13,7 @@ const globalForPrisma = globalThis as unknown as {
   pool: Pool | undefined;
 };
 
-function getPrismaClient(): PrismaClient {
+function createPrismaClient(): PrismaClient {
   let dbUrl = process.env.DATABASE_URL || "";
   if (
     (dbUrl.startsWith('"') && dbUrl.endsWith('"')) ||
@@ -45,24 +45,13 @@ function getPrismaClient(): PrismaClient {
   return new PrismaClient({ adapter });
 }
 
-function getValidPrismaClient(): PrismaClient {
-  if (!globalForPrisma.prisma || !(globalForPrisma.prisma as any).campaign) {
-    globalForPrisma.prisma = getPrismaClient();
+export const prisma: PrismaClient = (() => {
+  if (globalForPrisma.prisma && "campaign" in (globalForPrisma.prisma as any)) {
+    return globalForPrisma.prisma;
   }
-  return globalForPrisma.prisma;
-}
-
-export const prisma: PrismaClient = new Proxy({} as PrismaClient, {
-  get(_target, prop) {
-    const client = getValidPrismaClient();
-    const val = (client as any)[prop];
-    if (typeof val === "function") {
-      return val.bind(client);
-    }
-    return val;
-  },
-});
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = getValidPrismaClient();
-}
+  const client = createPrismaClient();
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = client;
+  }
+  return client;
+})();

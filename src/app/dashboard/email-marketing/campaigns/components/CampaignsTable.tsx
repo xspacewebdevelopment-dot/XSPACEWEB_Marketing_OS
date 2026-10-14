@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   MoreVertical,
@@ -80,12 +80,31 @@ export function CampaignsTable({
   onCancel,
 }: CampaignsTableProps) {
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [menuPos, setMenuPos] = useState<{ top?: number; bottom?: number; right: number } | null>(null);
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
+
+  const activeCamp = campaigns.find((c) => c.id === activeMenuId);
+
+  // Close floating menu on scroll or resize so it stays anchored properly
+  useEffect(() => {
+    if (!activeMenuId) return;
+    const handleClose = () => {
+      setActiveMenuId(null);
+      setMenuPos(null);
+    };
+    window.addEventListener("scroll", handleClose, true);
+    window.addEventListener("resize", handleClose);
+    return () => {
+      window.removeEventListener("scroll", handleClose, true);
+      window.removeEventListener("resize", handleClose);
+    };
+  }, [activeMenuId]);
 
   const handleAction = async (action: () => Promise<void>, campaignId: string) => {
     try {
       setActionInProgress(campaignId);
       setActiveMenuId(null);
+      setMenuPos(null);
       await action();
     } finally {
       setActionInProgress(null);
@@ -289,116 +308,38 @@ export function CampaignsTable({
 
                       {/* Dropdown Menu Toggle */}
                       <button
-                        onClick={() => setActiveMenuId(activeMenuId === camp.id ? null : camp.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (activeMenuId === camp.id) {
+                            setActiveMenuId(null);
+                            setMenuPos(null);
+                            return;
+                          }
+                          const rect = e.currentTarget.getBoundingClientRect();
+                          const spaceBelow = window.innerHeight - rect.bottom;
+                          const right = Math.max(16, window.innerWidth - rect.right);
+
+                          if (spaceBelow < 250 && rect.top > 250) {
+                            setMenuPos({
+                              bottom: window.innerHeight - rect.top + 6,
+                              right,
+                            });
+                          } else {
+                            setMenuPos({
+                              top: rect.bottom + 6,
+                              right,
+                            });
+                          }
+                          setActiveMenuId(camp.id);
+                        }}
                         disabled={isBusy}
-                        className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                        className={`p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer ${
+                          activeMenuId === camp.id ? "bg-slate-100 text-slate-700" : ""
+                        }`}
+                        title="More actions"
                       >
-                        <MoreVertical className="h-3.5 w-3.5" />
+                        <MoreVertical className="h-4 w-4" />
                       </button>
-
-                      {/* Context Menu Popup */}
-                      {activeMenuId === camp.id && (
-                        <div
-                          className="absolute right-3 top-10 w-44 bg-white border border-slate-200 rounded-xl shadow-xl z-30 py-1 text-left text-xs divide-y divide-slate-100"
-                          onMouseLeave={() => setActiveMenuId(null)}
-                        >
-                          <div className="py-1">
-                            {camp.status === "DRAFT" && (
-                              <Link
-                                href={`/dashboard/email-marketing/campaigns/create?id=${camp.id}`}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-700 hover:bg-slate-50 transition-colors"
-                              >
-                                <Edit2 className="h-3.5 w-3.5 text-blue-600" />
-                                <span>Continue Editing</span>
-                              </Link>
-                            )}
-
-                            <Link
-                              href={`/dashboard/email-marketing/campaigns/${camp.id}`}
-                              className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-700 hover:bg-slate-50 transition-colors"
-                            >
-                              <Activity className="h-3.5 w-3.5 text-indigo-600" />
-                              <span>Live Monitor</span>
-                            </Link>
-
-                            <Link
-                              href={`/dashboard/email-marketing/campaigns/${camp.id}/report`}
-                              className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-700 hover:bg-slate-50 transition-colors"
-                            >
-                              <BarChart2 className="h-3.5 w-3.5 text-emerald-600" />
-                              <span>View Report</span>
-                            </Link>
-                          </div>
-
-                          {/* State Actions */}
-                          <div className="py-1">
-                            {camp.status === "SENDING" && (
-                              <button
-                                onClick={() => handleAction(() => onPause(camp.id), camp.id)}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-amber-700 hover:bg-amber-50 transition-colors text-left cursor-pointer"
-                              >
-                                <Pause className="h-3.5 w-3.5 text-amber-600" />
-                                <span>Pause Sending</span>
-                              </button>
-                            )}
-
-                            {camp.status === "PAUSED" && (
-                              <button
-                                onClick={() => handleAction(() => onResume(camp.id), camp.id)}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-emerald-700 hover:bg-emerald-50 transition-colors text-left cursor-pointer"
-                              >
-                                <Play className="h-3.5 w-3.5 text-emerald-600" />
-                                <span>Resume Sending</span>
-                              </button>
-                            )}
-
-                            {(camp.status === "SCHEDULED" ||
-                              camp.status === "SENDING" ||
-                              camp.status === "PAUSED") && (
-                              <button
-                                onClick={() => handleAction(() => onCancel(camp.id), camp.id)}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-rose-700 hover:bg-rose-50 transition-colors text-left cursor-pointer"
-                              >
-                                <XCircle className="h-3.5 w-3.5 text-rose-600" />
-                                <span>Cancel Campaign</span>
-                              </button>
-                            )}
-
-                            <button
-                              onClick={() => handleAction(() => onDuplicate(camp.id), camp.id)}
-                              className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-700 hover:bg-slate-50 transition-colors text-left cursor-pointer"
-                            >
-                              <Copy className="h-3.5 w-3.5 text-slate-500" />
-                              <span>Duplicate Campaign</span>
-                            </button>
-
-                            {!camp.isArchived && camp.status === "COMPLETED" && (
-                              <button
-                                onClick={() => handleAction(() => onArchive(camp.id), camp.id)}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-slate-700 hover:bg-slate-50 transition-colors text-left cursor-pointer"
-                              >
-                                <Archive className="h-3.5 w-3.5 text-slate-500" />
-                                <span>Archive</span>
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Delete option for Drafts or Cancelled */}
-                          {(camp.status === "DRAFT" ||
-                            camp.status === "CANCELLED" ||
-                            camp.isArchived) && (
-                            <div className="py-1">
-                              <button
-                                onClick={() => handleAction(() => onDelete(camp.id), camp.id)}
-                                className="w-full px-3 py-1.5 flex items-center gap-2 text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
-                              >
-                                <Trash2 className="h-3.5 w-3.5 text-rose-500" />
-                                <span>Delete Campaign</span>
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      )}
                     </div>
                   </td>
                 </tr>
@@ -407,6 +348,137 @@ export function CampaignsTable({
           </tbody>
         </table>
       </div>
+
+      {/* Fixed Floating Context Menu - Immune to table overflow clipping */}
+      {activeMenuId && activeCamp && menuPos && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-transparent"
+            onClick={() => {
+              setActiveMenuId(null);
+              setMenuPos(null);
+            }}
+          />
+          <div
+            style={{
+              position: "fixed",
+              top: menuPos.top !== undefined ? `${menuPos.top}px` : undefined,
+              bottom: menuPos.bottom !== undefined ? `${menuPos.bottom}px` : undefined,
+              right: `${menuPos.right}px`,
+            }}
+            className="w-48 bg-white border border-slate-200/90 rounded-2xl shadow-2xl z-50 py-1.5 text-left text-xs divide-y divide-slate-100 animate-in fade-in zoom-in-95 duration-100 select-none"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="py-1">
+              {activeCamp.status === "DRAFT" && (
+                <Link
+                  href={`/dashboard/email-marketing/campaigns/create?id=${activeCamp.id}`}
+                  onClick={() => {
+                    setActiveMenuId(null);
+                    setMenuPos(null);
+                  }}
+                  className="w-full px-3.5 py-2 flex items-center gap-2.5 text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+                >
+                  <Edit2 className="h-3.5 w-3.5 text-blue-600" />
+                  <span>Continue Editing</span>
+                </Link>
+              )}
+
+              <Link
+                href={`/dashboard/email-marketing/campaigns/${activeCamp.id}`}
+                onClick={() => {
+                  setActiveMenuId(null);
+                  setMenuPos(null);
+                }}
+                className="w-full px-3.5 py-2 flex items-center gap-2.5 text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+              >
+                <Activity className="h-3.5 w-3.5 text-indigo-600" />
+                <span>Live Monitor</span>
+              </Link>
+
+              <Link
+                href={`/dashboard/email-marketing/campaigns/${activeCamp.id}/report`}
+                onClick={() => {
+                  setActiveMenuId(null);
+                  setMenuPos(null);
+                }}
+                className="w-full px-3.5 py-2 flex items-center gap-2.5 text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+              >
+                <BarChart2 className="h-3.5 w-3.5 text-emerald-600" />
+                <span>View Report</span>
+              </Link>
+            </div>
+
+            {/* State Actions */}
+            <div className="py-1">
+              {activeCamp.status === "SENDING" && (
+                <button
+                  onClick={() => handleAction(() => onPause(activeCamp.id), activeCamp.id)}
+                  className="w-full px-3.5 py-2 flex items-center gap-2.5 text-amber-700 hover:bg-amber-50 transition-colors text-left font-medium cursor-pointer"
+                >
+                  <Pause className="h-3.5 w-3.5 text-amber-600" />
+                  <span>Pause Sending</span>
+                </button>
+              )}
+
+              {activeCamp.status === "PAUSED" && (
+                <button
+                  onClick={() => handleAction(() => onResume(activeCamp.id), activeCamp.id)}
+                  className="w-full px-3.5 py-2 flex items-center gap-2.5 text-emerald-700 hover:bg-emerald-50 transition-colors text-left font-medium cursor-pointer"
+                >
+                  <Play className="h-3.5 w-3.5 text-emerald-600" />
+                  <span>Resume Sending</span>
+                </button>
+              )}
+
+              {(activeCamp.status === "SCHEDULED" ||
+                activeCamp.status === "SENDING" ||
+                activeCamp.status === "PAUSED") && (
+                <button
+                  onClick={() => handleAction(() => onCancel(activeCamp.id), activeCamp.id)}
+                  className="w-full px-3.5 py-2 flex items-center gap-2.5 text-rose-700 hover:bg-rose-50 transition-colors text-left font-medium cursor-pointer"
+                >
+                  <XCircle className="h-3.5 w-3.5 text-rose-600" />
+                  <span>Cancel Campaign</span>
+                </button>
+              )}
+
+              <button
+                onClick={() => handleAction(() => onDuplicate(activeCamp.id), activeCamp.id)}
+                className="w-full px-3.5 py-2 flex items-center gap-2.5 text-slate-700 hover:bg-slate-50 transition-colors text-left font-medium cursor-pointer"
+              >
+                <Copy className="h-3.5 w-3.5 text-slate-500" />
+                <span>Duplicate Campaign</span>
+              </button>
+
+              {!activeCamp.isArchived && activeCamp.status === "COMPLETED" && (
+                <button
+                  onClick={() => handleAction(() => onArchive(activeCamp.id), activeCamp.id)}
+                  className="w-full px-3.5 py-2 flex items-center gap-2.5 text-slate-700 hover:bg-slate-50 transition-colors text-left font-medium cursor-pointer"
+                >
+                  <Archive className="h-3.5 w-3.5 text-slate-500" />
+                  <span>Archive</span>
+                </button>
+              )}
+            </div>
+
+            {/* Delete option for Drafts or Cancelled */}
+            {(activeCamp.status === "DRAFT" ||
+              activeCamp.status === "CANCELLED" ||
+              activeCamp.isArchived) && (
+              <div className="py-1">
+                <button
+                  onClick={() => handleAction(() => onDelete(activeCamp.id), activeCamp.id)}
+                  className="w-full px-3.5 py-2 flex items-center gap-2.5 text-rose-600 hover:bg-rose-50 transition-colors text-left font-medium cursor-pointer"
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-rose-500" />
+                  <span>Delete Campaign</span>
+                </button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
 
       {/* Pagination Footer */}
       {pagination.totalPages > 1 && (

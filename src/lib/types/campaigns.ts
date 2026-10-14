@@ -29,6 +29,7 @@ export type RecipientStatus =
   | "UNSUBSCRIBED";
 
 export interface AudienceConfig {
+  allContacts?: boolean;
   contactIds?: string[];
   listIds?: string[];
   segmentIds?: string[];
@@ -191,6 +192,7 @@ export const createCampaignSchema = z.object({
   plainText: z.string().optional().nullable(),
   audienceConfig: z
     .object({
+      allContacts: z.boolean().optional(),
       contactIds: z.array(z.string()).optional(),
       listIds: z.array(z.string()).optional(),
       segmentIds: z.array(z.string()).optional(),
