@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion } from "motion/react";
 import "./hero-video.css";
 
@@ -66,9 +67,9 @@ export function Hero() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 1.0, duration: 0.8, ease: customEase }}
             >
-              <a href="#pricing" className="nk-btn-primary">
+              <Link href="/login" className="nk-btn-primary">
                 Get Started
-              </a>
+              </Link>
               <a href="#features" className="nk-btn-secondary">
                 Explore Features
               </a>

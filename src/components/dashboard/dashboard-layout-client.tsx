@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 
@@ -23,6 +24,20 @@ export function DashboardLayoutClient({
   workspace,
 }: DashboardLayoutClientProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  // If inside the template editor, render as a distraction-free, full-window studio
+  const isEditor =
+    pathname?.includes("/email-marketing/templates/") &&
+    pathname?.endsWith("/editor");
+
+  if (isEditor) {
+    return (
+      <div className="min-h-screen h-screen w-screen overflow-hidden bg-slate-900 text-slate-100 antialiased">
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row antialiased text-slate-900">

@@ -16,6 +16,7 @@ import {
   Clock,
   Sparkles,
 } from "lucide-react";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -71,7 +72,7 @@ export function Contact() {
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         {/* Section Header */}
-        <div className="max-w-3xl mb-16 md:mb-20">
+        <ScrollReveal className="max-w-3xl mb-16 md:mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200/60 text-blue-700 text-xs font-semibold uppercase tracking-wider mb-4">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Contact NexaReach</span>
@@ -82,12 +83,12 @@ export function Contact() {
           <p className="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">
             Have a question about NexaReach, interested in exploring the platform, or want to discuss your business requirements? We&apos;d love to hear from you.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* 2-Column Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column: Contact Channels & Meta Info */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
+          <ScrollReveal direction="left" className="lg:col-span-5 flex flex-col gap-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
               {contactOptions.map((opt, i) => {
                 const Icon = opt.icon;
@@ -126,10 +127,10 @@ export function Contact() {
               </div>
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
             </div>
-          </div>
+          </ScrollReveal>
 
           {/* Right Column: Interactive Form */}
-          <div className="lg:col-span-7">
+          <ScrollReveal direction="right" className="lg:col-span-7">
             <div className="p-7 sm:p-10 rounded-3xl bg-white border border-slate-200 shadow-[0_10px_40px_rgba(0,0,0,0.04)] relative">
               <div className="mb-8">
                 <h3 className="text-2xl font-bold text-slate-900 tracking-tight">
@@ -283,7 +284,7 @@ export function Contact() {
                 </form>
               )}
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

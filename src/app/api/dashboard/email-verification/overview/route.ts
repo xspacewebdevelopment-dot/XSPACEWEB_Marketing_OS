@@ -17,7 +17,7 @@ export async function GET() {
     const { workspace } = auth;
     const workspaceId = workspace.id;
 
-    // Real database queries reflecting actual Neon PostgreSQL records
+    // Real database queries and balance check executed in parallel
     const [
       totalVerified,
       validCount,
@@ -26,6 +26,8 @@ export async function GET() {
       unknownCount,
       recentJobsCount,
       singleCount,
+      recentResults,
+      balanceInfo,
     ] = await Promise.all([
       prisma.verificationResult.count({ where: { workspaceId } }),
       prisma.verificationResult.count({ where: { workspaceId, status: "VALID" } }),
@@ -34,26 +36,32 @@ export async function GET() {
       prisma.verificationResult.count({ where: { workspaceId, status: "UNKNOWN" } }),
       prisma.verificationJob.count({ where: { workspaceId } }),
       prisma.verificationResult.count({ where: { workspaceId, source: "SINGLE" } }),
+      prisma.verificationResult.findMany({
+        where: { workspaceId },
+        orderBy: { verifiedAt: "desc" },
+        take: 100,
+        select: {
+          verifiedAt: true,
+          status: true,
+          verificationMode: true,
+          source: true,
+        },
+      }),
+      reoonClient.getAccountBalance().catch(() => ({
+        dailyCreditsRemaining: null,
+        instantCreditsRemaining: null,
+        totalCreditsRemaining: null,
+        status: "active",
+        message: "Cached balance mode",
+        lastRefreshedAt: new Date().toISOString(),
+        hasApiKey: true,
+      })),
     ]);
 
     const validityRate =
       totalVerified > 0 ? Number(((validCount / totalVerified) * 100).toFixed(1)) : 0;
 
-    // Fetch activity data
-    const recentResults = await prisma.verificationResult.findMany({
-      where: { workspaceId },
-      orderBy: { verifiedAt: "desc" },
-      take: 100,
-      select: {
-        verifiedAt: true,
-        status: true,
-        verificationMode: true,
-        source: true,
-      },
-    });
-
     const providerConfig = reoonClient.getConfigStatus();
-    const balanceInfo = await reoonClient.getAccountBalance();
 
     return NextResponse.json({
       success: true,

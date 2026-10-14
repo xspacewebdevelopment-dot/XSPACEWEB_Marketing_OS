@@ -29,8 +29,8 @@ export function Navbar() {
         className={cn(
           "pointer-events-auto w-full max-w-6xl flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3 rounded-full transition-all duration-300",
           scrolled
-            ? "bg-white/95 border border-slate-200/90 backdrop-blur-2xl shadow-[0_10px_35px_-5px_rgba(0,0,0,0.08)]"
-            : "bg-white/85 border border-slate-200/70 backdrop-blur-xl shadow-[0_4px_24px_rgba(0,0,0,0.04)]"
+            ? "bg-white/95 border border-blue-200/70 backdrop-blur-2xl shadow-[0_14px_36px_-4px_rgba(37,99,235,0.28),0_4px_12px_rgba(37,99,235,0.12)]"
+            : "bg-white/90 border border-blue-100/80 backdrop-blur-xl shadow-[0_10px_30px_-4px_rgba(37,99,235,0.22),0_3px_10px_rgba(37,99,235,0.10)]"
         )}
       >
         {/* Brand Logo */}
@@ -69,13 +69,13 @@ export function Navbar() {
 
         {/* Action Button & Mobile Menu Toggle */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <a
-            href="#pricing"
-            className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full text-xs font-semibold bg-slate-950 text-white hover:bg-slate-800 transition-all duration-200 shadow-sm hover:scale-[1.02] active:scale-[0.98] group"
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 shadow-sm shadow-blue-600/20 hover:scale-[1.02] active:scale-[0.98] group"
           >
             <span>Get Started</span>
             <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </a>
+          </Link>
 
           {/* Mobile Hamburger Button */}
           <button
@@ -90,7 +90,7 @@ export function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="pointer-events-auto fixed inset-x-4 top-20 p-5 rounded-2xl bg-white/95 border border-slate-200/90 backdrop-blur-2xl shadow-2xl flex flex-col gap-3 md:hidden animate-in fade-in slide-in-from-top-4 duration-200 z-50">
+        <div className="pointer-events-auto fixed inset-x-4 top-20 p-5 rounded-2xl bg-white/95 border border-blue-100/90 backdrop-blur-2xl shadow-[0_16px_40px_-5px_rgba(37,99,235,0.25)] flex flex-col gap-3 md:hidden animate-in fade-in slide-in-from-top-4 duration-200 z-50">
           <div className="flex flex-col gap-1.5">
             {navItems.map((item) => (
               <a
@@ -105,14 +105,14 @@ export function Navbar() {
             ))}
           </div>
           <div className="pt-3 border-t border-slate-200">
-            <a
-              href="#pricing"
+            <Link
+              href="/login"
               onClick={() => setMobileMenuOpen(false)}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold bg-slate-950 hover:bg-slate-800 text-white shadow-md transition-colors"
             >
               <span>Get Started</span>
               <ArrowUpRight className="w-4 h-4" />
-            </a>
+            </Link>
           </div>
         </div>
       )}

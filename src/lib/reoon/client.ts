@@ -1,10 +1,13 @@
 import { normalizeEmail } from "@/lib/utils";
 import {
+  NormalizedBulkTaskProgress,
   NormalizedVerificationDetails,
   NormalizedVerificationStatus,
   ProviderCreditBalance,
   ReoonBalanceApiResponse,
+  ReoonBulkTaskResultResponse,
   ReoonConfigStatus,
+  ReoonCreateBulkResponse,
   ReoonRawVerifyResponse,
   VerificationDepth,
 } from "./types";
@@ -17,8 +20,8 @@ if (!process.env.REOON_API_KEY) {
 }
 
 const REOON_BASE_URL = "https://emailverifier.reoon.com/api/v1";
-const DEFAULT_TIMEOUT_MS = 25000;
-const BALANCE_CACHE_TTL_MS = 30000;
+const DEFAULT_TIMEOUT_MS = 15000;
+const BALANCE_CACHE_TTL_MS = 300000; // 5 minutes cache to keep dashboard loads fast
 
 export class ReoonProviderError extends Error {
   constructor(
@@ -48,6 +51,7 @@ export class ReoonClient {
       provider: "REOON",
       hasApiKey,
       readyForPhase2: true,
+      readyForPhase3: true,
     };
   }
 
@@ -365,7 +369,7 @@ export class ReoonClient {
     try {
       const res = await fetch(url, {
         method: "GET",
-        signal: AbortSignal.timeout(10000),
+        signal: AbortSignal.timeout(3500),
       });
 
       if (!res.ok) {
@@ -407,6 +411,306 @@ export class ReoonClient {
       };
       return fallback;
     }
+  }
+
+  /**
+   * Submits a list of emails to Reoon bulk verification API:
+   * POST https://emailverifier.reoon.com/api/v1/create-bulk-verification-task/
+   * Reoon automatically removes duplicates and malformed addresses, then returns a task_id.
+   * Maximum 50,000 emails per task.
+   */
+  public async createBulkTask(
+    emails: string[],
+    name?: string
+  ): Promise<ReoonCreateBulkResponse> {
+    if (!this.apiKey) {
+      throw new ReoonProviderError(
+        "REOON_API_KEY environment variable is not configured on the server",
+        500,
+        "CONFIG_MISSING"
+      );
+    }
+
+    if (!emails || emails.length === 0) {
+      throw new ReoonProviderError("At least one email address is required for bulk verification", 400, "EMPTY_LIST");
+    }
+
+    if (emails.length > 50000) {
+      throw new ReoonProviderError(
+        "Reoon bulk verification supports a maximum of 50,000 emails per task",
+        400,
+        "LIMIT_EXCEEDED"
+      );
+    }
+
+    const payload = {
+      key: this.apiKey,
+      emails,
+      name: (name || "bulk_verification").slice(0, 25),
+    };
+
+    const url = `${REOON_BASE_URL}/create-bulk-verification-task/`;
+
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS * 2), // 30s timeout for bulk submit
+      });
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "TimeoutError") {
+        throw new ReoonProviderError(
+          "Reoon bulk task creation request timed out after 30 seconds",
+          504,
+          "TIMEOUT"
+        );
+      }
+      throw new ReoonProviderError(
+        `Unable to connect to Reoon Bulk API: ${err instanceof Error ? err.message : "Network error"}`,
+        502,
+        "NETWORK_ERROR"
+      );
+    }
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        throw new ReoonProviderError("Invalid or unauthorized Reoon API key", 401, "UNAUTHORIZED");
+      }
+      if (response.status === 429) {
+        throw new ReoonProviderError(
+          "Reoon API rate limit reached. Please wait before creating another bulk task.",
+          429,
+          "RATE_LIMITED"
+        );
+      }
+      throw new ReoonProviderError(
+        `Reoon API returned HTTP status ${response.status}`,
+        response.status,
+        "PROVIDER_ERROR"
+      );
+    }
+
+    let data: ReoonCreateBulkResponse;
+    try {
+      data = (await response.json()) as ReoonCreateBulkResponse;
+    } catch {
+      throw new ReoonProviderError(
+        "Reoon API returned an invalid non-JSON response during bulk task creation",
+        502,
+        "INVALID_JSON"
+      );
+    }
+
+    if (data.status === "error") {
+      const msg = data.reason || data.message || "Failed to create Reoon bulk verification task";
+      const isCreditIssue =
+        msg.toLowerCase().includes("credit") || msg.toLowerCase().includes("balance");
+
+      throw new ReoonProviderError(
+        msg,
+        isCreditIssue ? 402 : 400,
+        isCreditIssue ? "INSUFFICIENT_CREDITS" : "PROVIDER_REJECTED"
+      );
+    }
+
+    // Invalidate cached balance since credits will be reserved/consumed
+    cachedBalance = null;
+
+    return data;
+  }
+
+  /**
+   * Polls the Reoon bulk verification endpoint for status and itemized results:
+   * GET https://emailverifier.reoon.com/api/v1/get-result-bulk-verification-task/?key=KEY&task_id=TASK_ID
+   */
+  public async getBulkTaskProgress(
+    taskId: string | number
+  ): Promise<NormalizedBulkTaskProgress> {
+    if (!this.apiKey) {
+      throw new ReoonProviderError(
+        "REOON_API_KEY environment variable is not configured on the server",
+        500,
+        "CONFIG_MISSING"
+      );
+    }
+
+    const taskIdStr = String(taskId).trim();
+    if (!taskIdStr) {
+      throw new ReoonProviderError("Valid task_id is required", 400, "INVALID_TASK_ID");
+    }
+
+    const url = `${REOON_BASE_URL}/get-result-bulk-verification-task/?key=${encodeURIComponent(
+      this.apiKey
+    )}&task_id=${encodeURIComponent(taskIdStr)}`;
+
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        method: "GET",
+        signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+      });
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "TimeoutError") {
+        throw new ReoonProviderError(
+          "Reoon bulk task status query timed out",
+          504,
+          "TIMEOUT"
+        );
+      }
+      throw new ReoonProviderError(
+        `Unable to check Reoon bulk task status: ${err instanceof Error ? err.message : "Network error"}`,
+        502,
+        "NETWORK_ERROR"
+      );
+    }
+
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        throw new ReoonProviderError("Invalid or unauthorized Reoon API key", 401, "UNAUTHORIZED");
+      }
+      if (response.status === 429) {
+        throw new ReoonProviderError(
+          "Reoon API rate limit reached during status check. Will retry shortly.",
+          429,
+          "RATE_LIMITED"
+        );
+      }
+      throw new ReoonProviderError(
+        `Reoon API returned HTTP status ${response.status}`,
+        response.status,
+        "PROVIDER_ERROR"
+      );
+    }
+
+    let data: ReoonBulkTaskResultResponse;
+    try {
+      data = (await response.json()) as ReoonBulkTaskResultResponse;
+    } catch {
+      throw new ReoonProviderError(
+        "Reoon API returned an invalid non-JSON response during status poll",
+        502,
+        "INVALID_JSON"
+      );
+    }
+
+    const rawStatus = (data.status || "").toLowerCase().trim();
+
+    if (rawStatus === "error" || rawStatus === "file_not_found" || rawStatus === "file_loading_error") {
+      return {
+        taskId: taskIdStr,
+        status: "FAILED",
+        rawProviderStatus: data.status,
+        countTotal: data.count_total || 0,
+        countProcessed: data.count_checked || 0,
+        progressPercentage: typeof data.progress_percentage === "number" ? data.progress_percentage : 0,
+        isFinished: true,
+        error: data.reason || data.message || `Provider returned status: ${data.status}`,
+      };
+    }
+
+    if (rawStatus === "waiting") {
+      return {
+        taskId: taskIdStr,
+        status: "PENDING",
+        rawProviderStatus: data.status,
+        countTotal: data.count_total || 0,
+        countProcessed: data.count_checked || 0,
+        progressPercentage: typeof data.progress_percentage === "number" ? data.progress_percentage : 0,
+        isFinished: false,
+      };
+    }
+
+    if (rawStatus === "running") {
+      return {
+        taskId: taskIdStr,
+        status: "PROCESSING",
+        rawProviderStatus: data.status,
+        countTotal: data.count_total || 0,
+        countProcessed: data.count_checked || 0,
+        progressPercentage: typeof data.progress_percentage === "number" ? data.progress_percentage : 0,
+        isFinished: false,
+      };
+    }
+
+    if (rawStatus === "completed") {
+      // Invalidate balance cache since credits have been deducted
+      cachedBalance = null;
+
+      const rawResults = data.results || {};
+      const entries: ReoonRawVerifyResponse[] = Array.isArray(rawResults)
+        ? rawResults
+        : Object.values(rawResults);
+
+      const normalizedResults: NormalizedVerificationDetails[] = entries.map((rawItem) => {
+        const itemEmail = rawItem.email || "";
+        const itemNormalized = normalizeEmail(itemEmail);
+        const norm = this.normalizeStatus(rawItem, "POWER");
+        const domain = rawItem.domain || itemNormalized.split("@")[1] || null;
+
+        return {
+          email: itemEmail,
+          normalizedEmail: itemNormalized,
+          status: norm.status,
+          verificationMode: "POWER",
+          provider: "REOON",
+          providerStatus: rawItem.status || "unknown",
+          providerSubstatus: rawItem.sub_status || rawItem.substatus || null,
+          reason: norm.reason || rawItem.reason || null,
+          overallScore:
+            typeof rawItem.overall_score === "number"
+              ? rawItem.overall_score
+              : typeof rawItem.score === "number"
+              ? rawItem.score
+              : null,
+          isValidSyntax: rawItem.is_valid_syntax ?? true,
+          isDisposable: Boolean(rawItem.is_disposable),
+          isRoleBased: Boolean(rawItem.is_role_account),
+          isCatchAll: Boolean(rawItem.is_catch_all),
+          mxAcceptsMail: rawItem.mx_accepts_mail ?? null,
+          canConnectSmtp: rawItem.can_connect_smtp ?? null,
+          isDeliverable: rawItem.is_deliverable ?? null,
+          isSpamtrap: Boolean(rawItem.is_spamtrap),
+          isDisabled: Boolean(rawItem.is_disabled),
+          hasInboxFull: Boolean(rawItem.has_inbox_full),
+          isFreeEmail: Boolean(rawItem.is_free_email),
+          domain,
+          mxRecords: Array.isArray(rawItem.mx_records)
+            ? rawItem.mx_records
+            : rawItem.mx_record
+            ? [String(rawItem.mx_record)]
+            : [],
+          rawResponse: rawItem as Record<string, unknown>,
+          verifiedAt: new Date().toISOString(),
+          hasConflictingSignals: norm.hasConflictingSignals,
+        };
+      });
+
+      return {
+        taskId: taskIdStr,
+        status: "COMPLETED",
+        rawProviderStatus: data.status,
+        countTotal: data.count_total || normalizedResults.length,
+        countProcessed: data.count_checked || normalizedResults.length,
+        progressPercentage: 100,
+        isFinished: true,
+        results: normalizedResults,
+      };
+    }
+
+    // Fallback for undocumented provider statuses
+    return {
+      taskId: taskIdStr,
+      status: "PROCESSING",
+      rawProviderStatus: data.status || "unknown",
+      countTotal: data.count_total || 0,
+      countProcessed: data.count_checked || 0,
+      progressPercentage: typeof data.progress_percentage === "number" ? data.progress_percentage : 0,
+      isFinished: false,
+    };
   }
 
   public clearBalanceCache(): void {

@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/layout/Navbar";
+import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { Hero } from "@/components/home/Hero";
 import { SocialProof } from "@/components/home/SocialProof";
 import { ProductOverview } from "@/components/home/ProductOverview";
@@ -20,6 +21,9 @@ import { Footer } from "@/components/layout/Footer";
 export default function Home() {
   return (
     <div className="relative min-h-screen bg-white text-slate-900 selection:bg-slate-200 selection:text-black">
+      {/* Dynamic Scroll Progress Bar */}
+      <ScrollProgress />
+
       {/* 1. Global Fixed Floating App Bar / Navigation */}
       <Navbar />
 

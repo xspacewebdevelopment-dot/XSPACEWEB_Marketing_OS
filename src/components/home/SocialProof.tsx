@@ -21,11 +21,11 @@ export function SocialProof() {
               className="flex items-center gap-3 shrink-0 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-slate-300 hover:bg-white hover:shadow-md transition-all group cursor-default"
             >
               {/* Stylized Logo Monogram */}
-              <div className="w-8 h-8 rounded-lg bg-slate-200/80 flex items-center justify-center font-bold text-xs text-slate-800 group-hover:text-[#315BFF] group-hover:bg-[#315BFF]/10 transition-all border border-slate-300/60">
+              <div className="w-8 h-8 rounded-lg bg-slate-200/80 flex items-center justify-center font-bold text-xs text-slate-800 group-hover:text-blue-600 group-hover:bg-blue-50 transition-all border border-slate-300/60">
                 {partner.name.substring(0, 2).toUpperCase()}
               </div>
               <div className="text-left">
-                <span className="font-semibold text-sm text-slate-900 group-hover:text-[#315BFF] transition-colors block leading-tight">
+                <span className="font-semibold text-sm text-slate-900 group-hover:text-blue-600 transition-colors block leading-tight">
                   {partner.name}
                 </span>
                 <span className="text-[10px] text-slate-500 block">

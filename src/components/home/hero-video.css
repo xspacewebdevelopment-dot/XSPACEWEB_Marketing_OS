@@ -326,24 +326,28 @@
 }
 
 .nk-btn-primary {
-  background: #000000;
+  background: #2563EB;
   color: #ffffff;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   padding: 10px 22px;
   border-radius: 9999px;
-  border: 1px solid #000000;
+  border: 1px solid #2563EB;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+  transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .nk-btn-primary:hover {
-  opacity: 0.85;
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  opacity: 0.95;
   transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.36);
 }
 
 .nk-btn-secondary {
@@ -377,13 +381,20 @@
 
 .nk-tag-badge {
   background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  color: #000000;
+  border: 1.5px solid #2563EB;
+  color: #0F172A;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   padding: 8px 16px;
   border-radius: 9999px;
   letter-spacing: -0.01em;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.08);
   user-select: none;
+  transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nk-tag-badge:hover {
+  border-color: #1d4ed8;
+  color: #2563EB;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.16);
 }

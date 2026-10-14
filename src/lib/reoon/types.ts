@@ -102,4 +102,49 @@ export interface ReoonConfigStatus {
   provider: "REOON";
   hasApiKey: boolean;
   readyForPhase2: boolean;
+  readyForPhase3: boolean;
 }
+
+export type ReoonBulkApiStatus =
+  | "waiting"
+  | "running"
+  | "completed"
+  | "file_not_found"
+  | "file_loading_error"
+  | "error";
+
+export interface ReoonCreateBulkResponse {
+  status: "success" | "error" | string;
+  task_id?: number | string;
+  count_submitted?: number;
+  count_duplicates_removed?: number;
+  count_rejected_emails?: number;
+  count_processing?: number;
+  reason?: string;
+  message?: string;
+}
+
+export interface ReoonBulkTaskResultResponse {
+  task_id?: number | string;
+  name?: string;
+  status: string;
+  count_total?: number;
+  count_checked?: number;
+  progress_percentage?: number;
+  results?: Record<string, ReoonRawVerifyResponse> | ReoonRawVerifyResponse[];
+  reason?: string;
+  message?: string;
+}
+
+export interface NormalizedBulkTaskProgress {
+  taskId: string;
+  status: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED" | "CANCELLED";
+  rawProviderStatus: string;
+  countTotal: number;
+  countProcessed: number;
+  progressPercentage: number;
+  isFinished: boolean;
+  results?: NormalizedVerificationDetails[];
+  error?: string;
+}
+

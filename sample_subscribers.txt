@@ -1,0 +1,5 @@
+contact1@example.com
+contact2@example.com
+contact1@example.com
+invalid-address-without-at
+contact3@example.com

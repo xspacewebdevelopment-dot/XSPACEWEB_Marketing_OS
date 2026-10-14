@@ -20,11 +20,16 @@ import {
   ArrowRight,
   Database,
 } from "lucide-react";
-
+import { OverviewSingleTable, OverviewJobsTable } from "./components/OverviewTables";
+import { VerificationActivityCard } from "./components/VerificationActivityCard";
 
 export default async function EmailVerificationOverviewPage() {
   const auth = await getAuthContext();
   const workspaceId = auth?.workspace.id;
+
+  const fourteenDaysAgo = new Date();
+  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 13);
+  fourteenDaysAgo.setHours(0, 0, 0, 0);
 
   // Real database queries - returns 0 if no records exist in Neon PostgreSQL
   const [
@@ -35,6 +40,13 @@ export default async function EmailVerificationOverviewPage() {
     unknownCount,
     recentJobs,
     recentSingle,
+    singleCount,
+    bulkCount,
+    disposableCount,
+    roleBasedCount,
+    freeEmailCount,
+    scoreAgg,
+    recentResultsForChart,
   ] = await Promise.all([
     workspaceId ? prisma.verificationResult.count({ where: { workspaceId } }) : 0,
     workspaceId
@@ -71,7 +83,132 @@ export default async function EmailVerificationOverviewPage() {
           take: 5,
         })
       : [],
+    workspaceId
+      ? prisma.verificationResult.count({
+          where: { workspaceId, source: "SINGLE" },
+        })
+      : 0,
+    workspaceId
+      ? prisma.verificationResult.count({
+          where: { workspaceId, source: "BULK" },
+        })
+      : 0,
+    workspaceId
+      ? prisma.verificationResult.count({
+          where: { workspaceId, isDisposable: true },
+        })
+      : 0,
+    workspaceId
+      ? prisma.verificationResult.count({
+          where: { workspaceId, isRoleBased: true },
+        })
+      : 0,
+    workspaceId
+      ? prisma.verificationResult.count({
+          where: { workspaceId, isFreeEmail: true },
+        })
+      : 0,
+    workspaceId
+      ? prisma.verificationResult.aggregate({
+          where: { workspaceId, overallScore: { not: null } },
+          _avg: { overallScore: true },
+        })
+      : null,
+    workspaceId
+      ? prisma.verificationResult.findMany({
+          where: {
+            workspaceId,
+            verifiedAt: { gte: fourteenDaysAgo },
+          },
+          select: {
+            status: true,
+            source: true,
+            verifiedAt: true,
+            overallScore: true,
+          },
+          orderBy: { verifiedAt: "asc" },
+        })
+      : [],
   ]);
+
+  let allRecentResults = recentResultsForChart;
+  if (allRecentResults.length === 0 && totalVerified > 0 && workspaceId) {
+    allRecentResults = await prisma.verificationResult.findMany({
+      where: { workspaceId },
+      select: {
+        status: true,
+        source: true,
+        verifiedAt: true,
+        overallScore: true,
+      },
+      orderBy: { verifiedAt: "desc" },
+      take: 200,
+    });
+  }
+
+  const now = new Date();
+  const buildDays = (daysCount: number) => {
+    const map = new Map<
+      string,
+      {
+        dateKey: string;
+        label: string;
+        dayOfWeek: string;
+        valid: number;
+        invalid: number;
+        risky: number;
+        unknown: number;
+        total: number;
+      }
+    >();
+
+    for (let i = daysCount - 1; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dateKey = d.toISOString().split("T")[0];
+      const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const dayOfWeek = d.toLocaleDateString("en-US", { weekday: "short" });
+      map.set(dateKey, {
+        dateKey,
+        label,
+        dayOfWeek,
+        valid: 0,
+        invalid: 0,
+        risky: 0,
+        unknown: 0,
+        total: 0,
+      });
+    }
+
+    allRecentResults.forEach((r) => {
+      const rDate = new Date(r.verifiedAt);
+      const key = rDate.toISOString().split("T")[0];
+      const entry = map.get(key);
+      if (entry) {
+        entry.total += 1;
+        if (r.status === "VALID") entry.valid += 1;
+        else if (r.status === "INVALID") entry.invalid += 1;
+        else if (r.status === "RISKY") entry.risky += 1;
+        else entry.unknown += 1;
+      }
+    });
+
+    return Array.from(map.values());
+  };
+
+  const sevenDaysData = buildDays(7);
+  const fourteenDaysData = buildDays(14);
+
+  const averageScore = scoreAgg?._avg?.overallScore
+    ? Math.round(scoreAgg._avg.overallScore)
+    : null;
+
+  const lastVerifiedAt =
+    recentSingle.length > 0
+      ? formatDate(recentSingle[0].verifiedAt)
+      : recentJobs.length > 0 && recentJobs[0].completedAt
+      ? formatDate(recentJobs[0].completedAt)
+      : null;
 
   const validityRate =
     totalVerified > 0 ? ((validCount / totalVerified) * 100).toFixed(1) : "0.0";
@@ -206,50 +343,24 @@ export default async function EmailVerificationOverviewPage() {
 
       {/* Main Grid: Activity & Provider Status */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* C. Verification Activity Chart Container */}
-        <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-6 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-blue-600" />
-              <h2 className="text-sm font-semibold text-slate-900">
-                Verification Activity
-              </h2>
-            </div>
-            <span className="text-[11px] font-medium text-slate-500">
-              Real-time Database Metric
-            </span>
-          </div>
-
-          {/* Database-backed empty state - no fake graphs */}
-          <div className="my-8 py-10 px-4 rounded-lg border border-dashed border-slate-200 bg-slate-50/70 flex flex-col items-center justify-center text-center space-y-3">
-            <div className="h-11 w-11 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
-              <Database className="h-5 w-5" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="text-xs font-semibold text-slate-800">
-                No verification activity recorded yet
-              </h3>
-              <p className="text-[11px] text-slate-500 max-w-sm">
-                Activity timelines will chart your list health once you run your
-                first single or bulk verification job in Phase 2.
-              </p>
-            </div>
-            <div className="pt-2">
-              <Link
-                href="/dashboard/email-verification/single"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700"
-              >
-                <span>Preview single verify scaffolding</span>
-                <ArrowRight className="h-3 w-3" />
-              </Link>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>Database Status: Connected to Neon PostgreSQL</span>
-            <span className="font-medium text-slate-700">0 records in workspace</span>
-          </div>
-        </div>
+        {/* C. Verification Activity Component */}
+        <VerificationActivityCard
+          totalVerified={totalVerified}
+          validCount={validCount}
+          invalidCount={invalidCount}
+          riskyCount={riskyCount}
+          unknownCount={unknownCount}
+          validityRate={validityRate}
+          singleCount={singleCount}
+          bulkCount={bulkCount}
+          averageScore={averageScore}
+          disposableCount={disposableCount}
+          roleBasedCount={roleBasedCount}
+          freeEmailCount={freeEmailCount}
+          sevenDaysData={sevenDaysData}
+          fourteenDaysData={fourteenDaysData}
+          lastVerifiedAt={lastVerifiedAt}
+        />
 
         {/* F. Provider Status Card */}
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-xs flex flex-col justify-between space-y-4">
@@ -339,68 +450,7 @@ export default async function EmailVerificationOverviewPage() {
           </Link>
         </div>
 
-        {recentSingle.length === 0 ? (
-          <div className="p-8 text-center space-y-2">
-            <div className="h-9 w-9 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
-              <CheckCircle2 className="h-4 w-4" />
-            </div>
-            <h3 className="text-xs font-semibold text-slate-800">
-              No single email verifications yet
-            </h3>
-            <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
-              Verify an individual email to see instant deliverability breakdown and score.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
-                <tr>
-                  <th className="px-5 py-3">Email Address</th>
-                  <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3">Mode</th>
-                  <th className="px-5 py-3">Score</th>
-                  <th className="px-5 py-3">Verified Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {recentSingle.map((res: any) => {
-                  const statusColors: Record<string, string> = {
-                    VALID: "bg-emerald-50 text-emerald-700 border-emerald-200",
-                    INVALID: "bg-rose-50 text-rose-700 border-rose-200",
-                    RISKY: "bg-amber-50 text-amber-700 border-amber-200",
-                    UNKNOWN: "bg-slate-100 text-slate-700 border-slate-200",
-                  };
-                  return (
-                    <tr key={res.id} className="hover:bg-slate-50/70">
-                      <td className="px-5 py-3 font-medium text-slate-900">
-                        {res.email}
-                      </td>
-                      <td className="px-5 py-3">
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                            statusColors[res.status] || "bg-slate-100 text-slate-700 border-slate-200"
-                          }`}
-                        >
-                          {res.status}
-                        </span>
-                      </td>
-                      <td className="px-5 py-3 text-slate-600 font-medium">
-                        {res.verificationMode || "POWER"}
-                      </td>
-                      <td className="px-5 py-3 text-slate-600">
-                        {res.overallScore !== null ? `${res.overallScore}/100` : "—"}
-                      </td>
-                      <td className="px-5 py-3 text-slate-500">
-                        {formatDate(res.verifiedAt)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <OverviewSingleTable initialItems={recentSingle as any} />
       </div>
 
       {/* D2. Recent Verification Jobs Table */}
@@ -423,56 +473,7 @@ export default async function EmailVerificationOverviewPage() {
           </Link>
         </div>
 
-        {recentJobs.length === 0 ? (
-          <div className="p-10 text-center space-y-2">
-            <div className="h-10 w-10 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
-              <FileSpreadsheet className="h-5 w-5" />
-            </div>
-            <h3 className="text-xs font-semibold text-slate-800">
-              No verification jobs yet
-            </h3>
-            <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
-              Your uploaded contact lists and verification runs will appear here with progress tracking.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
-                <tr>
-                  <th className="px-5 py-3">Job Name</th>
-                  <th className="px-5 py-3">Total Records</th>
-                  <th className="px-5 py-3">Completed</th>
-                  <th className="px-5 py-3">Status</th>
-                  <th className="px-5 py-3">Created Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {recentJobs.map((job: any) => (
-                  <tr key={job.id} className="hover:bg-slate-50/70">
-                    <td className="px-5 py-3 font-medium text-slate-900">
-                      {job.filename}
-                    </td>
-                    <td className="px-5 py-3 text-slate-600">
-                      {job.totalRecords}
-                    </td>
-                    <td className="px-5 py-3 text-slate-600">
-                      {job.processedRecords}
-                    </td>
-                    <td className="px-5 py-3">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-100 text-blue-800">
-                        {job.status}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 text-slate-500">
-                      {formatDate(job.createdAt)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <OverviewJobsTable initialJobs={recentJobs as any} />
       </div>
 
       {/* E. Quick Actions Bar */}

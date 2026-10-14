@@ -1,0 +1,8 @@
+First Name,Last Name,Company,Email Address,Phone
+Sarah,Chen,ScalePulse,sarah@scalepulse.io,+1-555-0101
+Sarah,Chen,ScalePulse,sarah@scalepulse.io,+1-555-0101
+Marcus,Vance,NexaTech,marcus@nexatech.com,+1-555-0102
+Alex,Invalid,Acme Corp,bad-email-syntax-example,+1-555-0103
+David,Martinez,GrowthLab,david@growthlab.co,+1-555-0104
+Elena,Rostova,GlobalReach,elena@globalreach.org,+1-555-0105
+Duplicate,User,Test Corp,david@growthlab.co,+1-555-0106

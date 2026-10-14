@@ -1,172 +1,431 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, Sparkles, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import {
+  Check,
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  ChevronDown,
+  ChevronUp,
+  Zap,
+  Sliders,
+  HelpCircle,
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { pricingPlans } from "@/data/site-content";
+import { SpotlightCard } from "@/components/ui/SpotlightCard";
+import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ui/ScrollReveal";
+
+const volumeTiers = [
+  { label: "Up to 5k", planId: "starter", contacts: "2,500 contacts", verifications: "5k verifications" },
+  { label: "Up to 25k", planId: "growth", contacts: "15,000 contacts", verifications: "25k verifications" },
+  { label: "Up to 75k", planId: "pro", contacts: "50,000 contacts", verifications: "75k verifications" },
+  { label: "100k+", planId: "enterprise", contacts: "Custom contacts", verifications: "Custom volume" },
+];
+
+const featureComparisonMatrix = [
+  {
+    category: "Data & Verification",
+    features: [
+      { name: "Monthly Email Verifications", starter: "5,000", growth: "25,000", pro: "75,000", enterprise: "Custom Unlimited" },
+      { name: "Deliverability & MX Syntax Check", starter: true, growth: true, pro: true, enterprise: true },
+      { name: "Disposable & Spam Trap Filter", starter: true, growth: true, pro: true, enterprise: true },
+      { name: "Real-time SMTP Handshake", starter: false, growth: true, pro: true, enterprise: true },
+    ],
+  },
+  {
+    category: "Campaigns & Automation",
+    features: [
+      { name: "Active Contacts Database", starter: "2,500", growth: "15,000", pro: "50,000", enterprise: "Custom Scale" },
+      { name: "Visual Workflow Automation", starter: "Basic", growth: "Full Visual", pro: "Advanced Conditional", enterprise: "Enterprise Custom" },
+      { name: "A/B Testing & Dynamic Logic", starter: false, growth: true, pro: true, enterprise: true },
+      { name: "Official WhatsApp Integration", starter: false, growth: false, pro: true, enterprise: true },
+      { name: "Social Publishing Engine", starter: false, growth: true, pro: true, enterprise: true },
+    ],
+  },
+  {
+    category: "AI & Intelligence",
+    features: [
+      { name: "Autonomous AI Marketing Agents", starter: "None", growth: "Draft Assist", pro: "All 6 Specialized Agents", enterprise: "Custom Agent Workflows" },
+      { name: "AI Lead Enrichment & Scoring", starter: false, growth: true, pro: true, enterprise: true },
+      { name: "Automated Follow-up Copilot", starter: false, growth: false, pro: true, enterprise: true },
+    ],
+  },
+  {
+    category: "Support & Security",
+    features: [
+      { name: "Dedicated IP Address", starter: false, growth: false, pro: "Add-on", enterprise: "Included" },
+      { name: "Support Response SLA", starter: "48h Community", growth: "24h Standard", pro: "4h Priority", enterprise: "Dedicated SLA & Slack" },
+      { name: "Role-Based Permissions & Audit Logs", starter: false, growth: false, pro: true, enterprise: true },
+    ],
+  },
+];
 
 export function Pricing() {
   const [isYearly, setIsYearly] = useState(false);
+  const [activeVolumeIndex, setActiveVolumeIndex] = useState(1);
+  const [showComparison, setShowComparison] = useState(false);
+
+  const recommendedPlanId = volumeTiers[activeVolumeIndex].planId;
 
   return (
-    <section id="pricing" className="relative py-28 md:py-36 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Big Vibrant Blue Container from Page 14 of content.txt */}
-        <div className="relative rounded-[32px] sm:rounded-[40px] bg-gradient-to-b from-[#315BFF] via-[#2A4FD6] to-[#1A3499] p-8 sm:p-12 lg:p-16 text-center shadow-2xl overflow-hidden">
-          {/* Subtle curved background overlay */}
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/[0.08] rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-black/20 rounded-full blur-2xl pointer-events-none" />
+    <section id="pricing" className="relative py-28 md:py-36 bg-[#0B0F19] text-white overflow-hidden">
+      {/* Background Decorative Grid & Spotlights */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1E293B12_1px,transparent_1px),linear-gradient(to_bottom,#1E293B12_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none opacity-60" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[450px] bg-gradient-to-b from-blue-600/15 via-indigo-600/5 to-transparent rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[600px] h-[350px] bg-cyan-600/10 rounded-full blur-[140px] pointer-events-none" />
 
-          {/* Eyebrow Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 text-white text-xs font-semibold backdrop-blur-md mb-4 border border-white/20">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Section Header */}
+        <ScrollReveal className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold backdrop-blur-md mb-5">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>TRANSPARENT PRICING</span>
+            <span>TRANSPARENT &amp; PREDICTABLE PRICING</span>
           </div>
 
-          {/* Heading from Page 14 */}
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-5 leading-[1.1]">
             Flexible Plans for Every Stage of Growth.
           </h2>
 
-          <p className="max-w-2xl mx-auto text-white/80 text-sm sm:text-base mb-10 leading-relaxed">
+          <p className="text-slate-400 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
             Choose the tools and capacity that fit your business, with a platform designed to
             support your marketing needs as they evolve.
           </p>
+        </ScrollReveal>
 
-          {/* Monthly / Yearly Toggle Switch */}
-          <div className="inline-flex items-center p-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/25 mb-14">
-            <button
-              onClick={() => setIsYearly(false)}
-              className={`px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all ${
-                !isYearly
-                  ? "bg-white text-slate-900 shadow-md"
-                  : "text-white hover:text-white/80"
-              }`}
-            >
-              Pay Monthly
-            </button>
-            <button
-              onClick={() => setIsYearly(true)}
-              className={`px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 ${
-                isYearly
-                  ? "bg-white text-slate-900 shadow-md"
-                  : "text-white hover:text-white/80"
-              }`}
-            >
-              <span>Pay Yearly</span>
-              <span className="px-2 py-0.5 rounded-full bg-[#FF4566] text-white text-[10px] font-extrabold uppercase">
-                -20%
-              </span>
-            </button>
-          </div>
-
-          {/* 4 Pricing Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left items-stretch">
-            {pricingPlans.map((plan) => {
-              const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
-
-              return (
-                <div
-                  key={plan.id}
-                  className={`rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 relative ${
-                    plan.highlight
-                      ? "bg-[#0B0F24] text-white border-2 border-[#7545FF] shadow-2xl scale-[1.02] z-10"
-                      : "bg-[#F7F8FC] text-slate-900 border border-slate-200/90 shadow-xl"
+        {/* Interactive Controls Bar: Billing Toggle + Volume Estimator */}
+        <ScrollReveal delay={0.15} className="mb-14">
+          <div className="max-w-4xl mx-auto p-4 sm:p-5 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl backdrop-blur-xl flex flex-col md:flex-row items-center justify-between gap-6">
+            {/* Interactive Billing Switcher */}
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-400">Billing:</span>
+              <div className="relative flex items-center p-1 rounded-full bg-slate-950 border border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => setIsYearly(false)}
+                  className={`relative z-10 px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-colors ${
+                    !isYearly ? "text-white" : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  {/* Popular Badge */}
-                  {plan.badge && (
-                    <div className="absolute -top-3.5 right-6 px-3 py-1 rounded-full bg-gradient-to-r from-[#315BFF] to-[#7545FF] text-white text-[10px] font-extrabold shadow-md uppercase tracking-wider">
-                      {plan.badge}
-                    </div>
+                  {!isYearly && (
+                    <motion.div
+                      layoutId="billingTabHighlight"
+                      className="absolute inset-0 rounded-full bg-blue-600 shadow-lg shadow-blue-600/30"
+                      transition={{ type: "spring", stiffness: 450, damping: 30 }}
+                    />
                   )}
+                  <span className="relative z-10">Pay Monthly</span>
+                </button>
 
+                <button
+                  type="button"
+                  onClick={() => setIsYearly(true)}
+                  className={`relative z-10 px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-colors flex items-center gap-1.5 ${
+                    isYearly ? "text-white" : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  {isYearly && (
+                    <motion.div
+                      layoutId="billingTabHighlight"
+                      className="absolute inset-0 rounded-full bg-blue-600 shadow-lg shadow-blue-600/30"
+                      transition={{ type: "spring", stiffness: 450, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10">Pay Yearly</span>
+                  <span className="relative z-10 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-extrabold uppercase tracking-wide">
+                    Save 20%
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Interactive Volume Estimator Slider */}
+            <div className="w-full md:w-auto flex flex-col sm:flex-row items-center gap-3">
+              <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                <Sliders className="w-3.5 h-3.5 text-blue-400" />
+                <span className="font-semibold">Quick Sizing:</span>
+              </div>
+              <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+                {volumeTiers.map((tier, idx) => (
+                  <button
+                    key={tier.label}
+                    onClick={() => setActiveVolumeIndex(idx)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                      activeVolumeIndex === idx
+                        ? "bg-slate-800 text-blue-400 shadow-sm border border-slate-700"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    {tier.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* 4 Differentiated Pricing Cards Grid */}
+        <StaggerContainer
+          staggerDelay={0.08}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch mb-12"
+        >
+          {pricingPlans.map((plan) => {
+            const isTargetTier = plan.id === recommendedPlanId;
+            const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
+            const savings = (plan.monthlyPrice - plan.yearlyPrice) * 12;
+
+            return (
+              <StaggerItem key={plan.id} className="h-full">
+                <SpotlightCard
+                  spotlightColor={
+                    plan.highlight
+                      ? "rgba(59, 130, 246, 0.25)"
+                      : "rgba(148, 163, 184, 0.12)"
+                  }
+                  className={`h-full rounded-3xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 relative ${
+                    plan.highlight
+                      ? "bg-slate-900/95 border-2 border-blue-500 shadow-2xl shadow-blue-500/15 lg:-translate-y-2 z-20"
+                      : isTargetTier
+                      ? "bg-slate-900/85 border-2 border-slate-600 shadow-xl"
+                      : "bg-slate-950/80 border border-slate-800/90 hover:border-slate-700 shadow-lg"
+                  }`}
+                >
+                  {/* Top Badges */}
+                  <div className="flex items-center justify-between mb-4">
+                    {plan.badge ? (
+                      <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1">
+                        <Zap className="w-3 h-3 text-blue-400" />
+                        {plan.badge}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                        {plan.id}
+                      </span>
+                    )}
+
+                    {isTargetTier && (
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-semibold animate-pulse">
+                        Selected Size
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Plan Content */}
                   <div>
-                    {/* Plan Name & Tagline */}
-                    <div className="mb-4">
-                      <h3 className="text-xl font-bold leading-tight">{plan.name}</h3>
-                      <p className={`text-[11px] font-semibold mt-0.5 ${plan.highlight ? "text-purple-300" : "text-[#315BFF]"}`}>
-                        {plan.tagline}
-                      </p>
-                    </div>
-
-                    <p
-                      className={`text-xs mb-6 leading-relaxed ${
-                        plan.highlight ? "text-[#B9C1D9]" : "text-slate-600"
-                      }`}
-                    >
+                    <h3 className="text-xl font-bold text-white mb-1">{plan.name}</h3>
+                    <p className="text-xs font-semibold text-blue-400 mb-3 min-h-[32px]">
+                      {plan.tagline}
+                    </p>
+                    <p className="text-xs text-slate-400 leading-relaxed mb-6 min-h-[44px]">
                       {plan.description}
                     </p>
 
-                    {/* Price Header */}
-                    <div className="flex items-baseline gap-1 mb-6 pb-6 border-b border-black/10 dark:border-white/10">
-                      <span className="text-3xl sm:text-4xl font-black tracking-tight">
-                        ${price.toFixed(0)}
-                      </span>
-                      <span
-                        className={`text-xs font-semibold ${
-                          plan.highlight ? "text-[#B9C1D9]" : "text-slate-500"
-                        }`}
-                      >
-                        {isYearly ? "/mo (billed yearly)" : "/month"}
-                      </span>
+                    {/* Price Block */}
+                    <div className="pb-6 mb-6 border-b border-slate-800">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-4xl sm:text-5xl font-black tracking-tight text-white">
+                          ${price.toFixed(0)}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-400">
+                          {isYearly ? "/mo (billed yearly)" : "/month"}
+                        </span>
+                      </div>
+                      {isYearly && savings > 0 && (
+                        <div className="mt-1.5 text-[11px] font-semibold text-emerald-400">
+                          Save ${savings.toFixed(0)} billed annually
+                        </div>
+                      )}
                     </div>
 
                     {/* CTA Button */}
-                    <button
-                      className={`w-full py-3 rounded-xl font-bold text-xs sm:text-sm transition-all mb-6 shadow-md flex items-center justify-center gap-1.5 ${
+                    <Link
+                      href="/login"
+                      className={`w-full py-3.5 rounded-xl font-bold text-xs sm:text-sm transition-all mb-6 flex items-center justify-center gap-2 group shadow-md ${
                         plan.highlight
-                          ? "bg-gradient-to-r from-[#315BFF] to-[#7545FF] hover:opacity-95 text-white shadow-[#315BFF]/30"
-                          : "bg-[#0E1432] hover:bg-[#1A255B] text-white"
+                          ? "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30"
+                          : "bg-slate-800 hover:bg-slate-700 text-white border border-slate-700"
                       }`}
                     >
                       <span>{plan.cta}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+                      <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                    </Link>
 
-                    {/* Feature List */}
+                    {/* Feature Highlights */}
                     <div className="space-y-2.5">
-                      <span
-                        className={`text-[10px] font-bold uppercase tracking-wider block mb-2 ${
-                          plan.highlight ? "text-[#B9C1D9]" : "text-slate-500"
-                        }`}
-                      >
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-2">
                         Included Features
                       </span>
                       {plan.features.map((feature, i) => (
-                        <div key={i} className="flex items-start gap-2 text-xs">
+                        <div key={i} className="flex items-start gap-2.5 text-xs">
                           <div
                             className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
                               plan.highlight
-                                ? "bg-[#315BFF]/30 text-[#60A5FA]"
-                                : "bg-emerald-100 text-emerald-700"
+                                ? "bg-blue-500/20 text-blue-400"
+                                : "bg-slate-800 text-slate-300"
                             }`}
                           >
                             <Check className="w-2.5 h-2.5 stroke-[3]" />
                           </div>
-                          <span
-                            className={
-                              plan.highlight ? "text-white/90" : "text-slate-700 font-medium"
-                            }
-                          >
+                          <span className="text-slate-300 font-medium leading-tight">
                             {feature}
                           </span>
                         </div>
                       ))}
                     </div>
                   </div>
+                </SpotlightCard>
+              </StaggerItem>
+            );
+          })}
+        </StaggerContainer>
+
+        {/* Interactive Full Feature Comparison Expandable Drawer */}
+        <ScrollReveal delay={0.2} className="mb-12">
+          <div className="rounded-3xl bg-slate-900/80 border border-slate-800 overflow-hidden shadow-xl backdrop-blur-md">
+            <button
+              onClick={() => setShowComparison(!showComparison)}
+              className="w-full px-6 sm:px-8 py-5 flex items-center justify-between text-left hover:bg-slate-800/50 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20">
+                  <Sliders className="w-4 h-4" />
                 </div>
-              );
-            })}
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-white">
+                    Detailed Feature Comparison Matrix
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Compare technical allowances, SLAs, and security features across all 4 tiers
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5 text-xs font-bold text-blue-400 bg-blue-500/10 px-3.5 py-1.5 rounded-full border border-blue-500/20">
+                <span>{showComparison ? "Hide Table" : "View Full Breakdown"}</span>
+                {showComparison ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </div>
+            </button>
+
+            <AnimatePresence>
+              {showComparison && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  className="overflow-hidden border-t border-slate-800"
+                >
+                  <div className="p-4 sm:p-8 overflow-x-auto">
+                    <table className="w-full text-left text-xs sm:text-sm">
+                      <thead>
+                        <tr className="border-b border-slate-800 text-slate-400">
+                          <th className="pb-4 font-bold text-slate-300 w-1/3">Feature Capability</th>
+                          <th className="pb-4 font-bold text-center">Starter</th>
+                          <th className="pb-4 font-bold text-center text-blue-400">Growth</th>
+                          <th className="pb-4 font-bold text-center">Pro</th>
+                          <th className="pb-4 font-bold text-center">Enterprise</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/70">
+                        {featureComparisonMatrix.map((section) => (
+                          <React.Fragment key={section.category}>
+                            <tr className="bg-slate-950/60">
+                              <td
+                                colSpan={5}
+                                className="py-2.5 px-2 font-bold text-[11px] uppercase tracking-wider text-slate-400"
+                              >
+                                {section.category}
+                              </td>
+                            </tr>
+                            {section.features.map((item) => (
+                              <tr key={item.name} className="hover:bg-slate-800/30 transition-colors">
+                                <td className="py-3 px-2 text-slate-300 font-medium">{item.name}</td>
+                                <td className="py-3 text-center text-slate-400">
+                                  {typeof item.starter === "boolean" ? (
+                                    item.starter ? (
+                                      <Check className="w-4 h-4 text-emerald-400 mx-auto" />
+                                    ) : (
+                                      <span className="text-slate-600">—</span>
+                                    )
+                                  ) : (
+                                    item.starter
+                                  )}
+                                </td>
+                                <td className="py-3 text-center text-blue-300 font-semibold bg-blue-500/[0.04]">
+                                  {typeof item.growth === "boolean" ? (
+                                    item.growth ? (
+                                      <Check className="w-4 h-4 text-emerald-400 mx-auto" />
+                                    ) : (
+                                      <span className="text-slate-600">—</span>
+                                    )
+                                  ) : (
+                                    item.growth
+                                  )}
+                                </td>
+                                <td className="py-3 text-center text-slate-300">
+                                  {typeof item.pro === "boolean" ? (
+                                    item.pro ? (
+                                      <Check className="w-4 h-4 text-emerald-400 mx-auto" />
+                                    ) : (
+                                      <span className="text-slate-600">—</span>
+                                    )
+                                  ) : (
+                                    item.pro
+                                  )}
+                                </td>
+                                <td className="py-3 text-center text-slate-300 font-medium">
+                                  {typeof item.enterprise === "boolean" ? (
+                                    item.enterprise ? (
+                                      <Check className="w-4 h-4 text-emerald-400 mx-auto" />
+                                    ) : (
+                                      <span className="text-slate-600">—</span>
+                                    )
+                                  ) : (
+                                    item.enterprise
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </React.Fragment>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </ScrollReveal>
+
+        {/* Guarantees Strip */}
+        <ScrollReveal delay={0.25} className="mt-8 pt-8 border-t border-slate-800/80">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-8">
+            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 font-medium">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>14-Day Free Evaluation</span>
+            </div>
+            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 font-medium">
+              <Check className="w-4 h-4 text-blue-400" />
+              <span>Cancel or Switch Anytime</span>
+            </div>
+            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 font-medium">
+              <Zap className="w-4 h-4 text-amber-400" />
+              <span>Instant Workspace Setup</span>
+            </div>
+            <div className="flex items-center justify-center gap-2 text-xs text-slate-400 font-medium">
+              <ShieldCheck className="w-4 h-4 text-purple-400" />
+              <span>SOC-2 &amp; GDPR Compliant</span>
+            </div>
           </div>
 
           {/* Footnote from Page 14 of content.txt */}
-          <div className="mt-12 text-center">
-            <p className="text-xs text-white/70 max-w-3xl mx-auto leading-relaxed">
-              Plan availability, feature allowances, integrations, AI usage, and third-party messaging
-              charges depend on the selected plan and applicable provider terms.
-            </p>
-          </div>
-        </div>
+          <p className="text-xs text-slate-500 max-w-3xl mx-auto text-center leading-relaxed">
+            Plan availability, feature allowances, integrations, AI usage, and third-party messaging
+            charges depend on the selected plan and applicable provider terms.
+          </p>
+        </ScrollReveal>
       </div>
     </section>
   );

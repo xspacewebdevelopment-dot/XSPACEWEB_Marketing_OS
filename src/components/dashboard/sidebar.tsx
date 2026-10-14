@@ -53,6 +53,7 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
   const [emailMarketingOpen, setEmailMarketingOpen] = useState(true);
 
   const isEmailVerification = pathname.startsWith("/dashboard/email-verification");
+  const isTemplates = pathname.startsWith("/dashboard/email-marketing/templates");
 
   const handleLogout = async () => {
     try {
@@ -136,7 +137,7 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
               onClick={() => setEmailMarketingOpen(!emailMarketingOpen)}
               className={cn(
                 "w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors",
-                isEmailVerification
+                isEmailVerification || isTemplates
                   ? "text-blue-300 bg-blue-950/40 border border-blue-900/40"
                   : "text-slate-300 hover:text-white hover:bg-slate-800/50"
               )}
@@ -154,41 +155,50 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
 
             {emailMarketingOpen && (
               <div className="pl-6 pr-1 pt-1 space-y-0.5 border-l border-slate-800 ml-4">
-                <DisabledItem icon={BarChart3} label="Overview" badge="Phase 2" />
-                <DisabledItem icon={Send} label="Campaigns" badge="Phase 2" />
-                <DisabledItem icon={GitBranch} label="Sequences" badge="Phase 2" />
-                <DisabledItem icon={FileCode2} label="Templates" badge="Phase 2" />
+                <DisabledItem icon={BarChart3} label="Overview" />
+                <DisabledItem icon={Send} label="Campaigns" />
+                <DisabledItem icon={GitBranch} label="Sequences" />
+
+                {/* Email Templates - ACTIVE FEATURE */}
+                <Link
+                  href="/dashboard/email-marketing/templates"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isTemplates
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <FileCode2 className="h-3.5 w-3.5" />
+                  <span>Templates</span>
+                </Link>
 
                 {/* Email Verification - ACTIVE FEATURE */}
                 <Link
                   href="/dashboard/email-verification"
                   onClick={onClose}
                   className={cn(
-                    "flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
                     isEmailVerification
                       ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
                       : "text-slate-300 hover:text-white hover:bg-slate-800/60"
                   )}
                 >
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="h-3.5 w-3.5" />
-                    <span>Email Verification</span>
-                  </div>
-                  <span className="text-[9px] px-1.5 py-0.2 rounded font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    Live
-                  </span>
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <span>Email Verification</span>
                 </Link>
 
-                <DisabledItem icon={Radio} label="Deliverability" badge="Phase 3" />
-                <DisabledItem icon={Inbox} label="Inbox" badge="Phase 3" />
+                <DisabledItem icon={Radio} label="Deliverability" />
+                <DisabledItem icon={Inbox} label="Inbox" />
               </div>
             )}
           </div>
 
-          <DisabledItem icon={MessageSquare} label="WhatsApp Marketing" badge="Phase 3" />
-          <DisabledItem icon={Share2} label="Social Media" badge="Phase 4" />
-          <DisabledItem icon={Smartphone} label="SMS & RCS" badge="Phase 4" />
-          <DisabledItem icon={PhoneCall} label="Voice Campaigns" badge="Phase 5" />
+          <DisabledItem icon={MessageSquare} label="WhatsApp Marketing" />
+          <DisabledItem icon={Share2} label="Social Media" />
+          <DisabledItem icon={Smartphone} label="SMS & RCS" />
+          <DisabledItem icon={PhoneCall} label="Voice Campaigns" />
         </div>
 
         {/* SECTION: LEADS */}
@@ -196,10 +206,34 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
           <div className="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
             LEADS
           </div>
-          <DisabledItem icon={Search} label="Lead Finder" badge="Phase 2" />
-          <DisabledItem icon={Users} label="Contacts" badge="Phase 2" />
-          <DisabledItem icon={Layers} label="Lists & Segments" badge="Phase 2" />
-          <DisabledItem icon={Sparkles} label="Enrichment" badge="Phase 3" />
+          <DisabledItem icon={Search} label="Lead Finder" />
+          <Link
+            href="/dashboard/contacts"
+            onClick={onClose}
+            className={cn(
+              "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150",
+              pathname.startsWith("/dashboard/contacts")
+                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20"
+                : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+            )}
+          >
+            <Users className="h-4 w-4 shrink-0" />
+            <span>Contacts</span>
+          </Link>
+          <Link
+            href="/dashboard/lists-segments"
+            onClick={onClose}
+            className={cn(
+              "flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150",
+              pathname.startsWith("/dashboard/lists-segments")
+                ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/20"
+                : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+            )}
+          >
+            <Layers className="h-4 w-4 shrink-0" />
+            <span>Lists & Segments</span>
+          </Link>
+          <DisabledItem icon={Sparkles} label="Enrichment" />
         </div>
 
         {/* SECTION: AUTOMATION */}
@@ -207,10 +241,10 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
           <div className="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
             AUTOMATION
           </div>
-          <DisabledItem icon={Workflow} label="Workflow Builder" badge="Phase 3" />
-          <DisabledItem icon={Bot} label="AI Agents" badge="Phase 4" />
-          <DisabledItem icon={Zap} label="Triggers & Events" badge="Phase 3" />
-          <DisabledItem icon={FileText} label="Templates" badge="Phase 3" />
+          <DisabledItem icon={Workflow} label="Workflow Builder" />
+          <DisabledItem icon={Bot} label="AI Agents" />
+          <DisabledItem icon={Zap} label="Triggers & Events" />
+          <DisabledItem icon={FileText} label="Templates" />
         </div>
 
         {/* SECTION: INBOX */}
@@ -218,9 +252,9 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
           <div className="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
             INBOX
           </div>
-          <DisabledItem icon={Inbox} label="Unified Inbox" badge="Phase 3" />
-          <DisabledItem icon={MessageSquare} label="Conversations" badge="Phase 3" />
-          <DisabledItem icon={Users} label="Team Collaboration" badge="Phase 3" />
+          <DisabledItem icon={Inbox} label="Unified Inbox" />
+          <DisabledItem icon={MessageSquare} label="Conversations" />
+          <DisabledItem icon={Users} label="Team Collaboration" />
         </div>
 
         {/* SECTION: ANALYTICS */}
@@ -228,8 +262,8 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
           <div className="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
             ANALYTICS
           </div>
-          <DisabledItem icon={BarChart3} label="Analytics" badge="Phase 5" />
-          <DisabledItem icon={FileText} label="Reports" badge="Phase 5" />
+          <DisabledItem icon={BarChart3} label="Analytics" />
+          <DisabledItem icon={FileText} label="Reports" />
         </div>
 
         {/* SECTION: INTEGRATIONS */}
@@ -237,7 +271,7 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
           <div className="px-3 text-[10px] font-bold tracking-wider text-slate-400 uppercase">
             INTEGRATIONS & SYSTEM
           </div>
-          <DisabledItem icon={Zap} label="Integrations" badge="Phase 4" />
+          <DisabledItem icon={Zap} label="Integrations" />
           <Link
             href="/dashboard/email-verification/settings"
             onClick={onClose}
@@ -308,26 +342,16 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
 function DisabledItem({
   icon: Icon,
   label,
-  badge,
 }: {
   icon: React.ElementType;
   label: string;
-  badge?: string;
 }) {
   return (
     <div
-      className="flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium text-slate-400/80 cursor-not-allowed hover:bg-slate-900/30 group transition-colors"
-      title={`${label} is scheduled for an upcoming phase`}
+      className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium text-slate-400/80 hover:text-slate-200 hover:bg-slate-900/40 group transition-colors cursor-default"
     >
-      <div className="flex items-center gap-2">
-        <Icon className="h-3.5 w-3.5 text-slate-400 group-hover:text-slate-400" />
-        <span>{label}</span>
-      </div>
-      {badge && (
-        <span className="text-[9px] px-1.5 py-0.2 rounded font-normal bg-slate-800 text-slate-400 border border-slate-700/50">
-          {badge}
-        </span>
-      )}
+      <Icon className="h-3.5 w-3.5 text-slate-400 group-hover:text-slate-300 transition-colors" />
+      <span>{label}</span>
     </div>
   );
 }

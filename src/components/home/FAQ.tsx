@@ -2,8 +2,10 @@
 
 import React, { useState } from "react";
 import { ChevronDown, MessageCircle, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { GradientBadge } from "@/components/ui/GradientBadge";
 import { faqItems } from "@/data/site-content";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -17,7 +19,7 @@ export function FAQ() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column: Title & Contact CTA */}
-          <div className="lg:col-span-5 text-left">
+          <ScrollReveal direction="left" className="lg:col-span-5 text-left">
             <GradientBadge variant="light" icon={<Sparkles className="w-3.5 h-3.5" />} className="mb-4">
               FREQUENTLY ASKED QUESTIONS
             </GradientBadge>
@@ -33,7 +35,7 @@ export function FAQ() {
 
             <div className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm text-left">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-[#315BFF]/10 text-[#315BFF] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                   <MessageCircle className="w-5 h-5" />
                 </div>
                 <div>
@@ -42,16 +44,16 @@ export function FAQ() {
                 </div>
               </div>
               <a
-                href="#pricing"
+                href="#contact"
                 className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition-colors flex items-center justify-center gap-2"
               >
                 <span>Talk with Our Team</span>
               </a>
             </div>
-          </div>
+          </ScrollReveal>
 
           {/* Right Column: Interactive Accordion */}
-          <div className="lg:col-span-7 space-y-4">
+          <ScrollReveal direction="right" className="lg:col-span-7 space-y-4">
             {faqItems.map((item, index) => {
               const isOpen = openIndex === index;
               return (
@@ -59,7 +61,7 @@ export function FAQ() {
                   key={index}
                   className={`rounded-2xl transition-all duration-300 border ${
                     isOpen
-                      ? "bg-white border-[#315BFF]/60 shadow-md shadow-blue-500/5"
+                      ? "bg-white border-blue-500/50 shadow-md shadow-blue-500/5"
                       : "bg-white/80 border-slate-200 hover:border-slate-300"
                   }`}
                 >
@@ -73,22 +75,32 @@ export function FAQ() {
                     </span>
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${
-                        isOpen ? "rotate-180 bg-[#315BFF]/10 text-[#315BFF]" : "bg-slate-100 text-slate-500"
+                        isOpen ? "rotate-180 bg-blue-50 text-blue-600" : "bg-slate-100 text-slate-500"
                       }`}
                     >
                       <ChevronDown className="w-4 h-4" />
                     </div>
                   </button>
 
-                  {isOpen && (
-                    <div className="px-6 pb-6 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4 animate-in fade-in duration-200">
-                      {item.answer}
-                    </div>
-                  )}
+                  <AnimatePresence>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-6 pb-6 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-4">
+                          {item.answer}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })}
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

@@ -8,14 +8,14 @@ export function Footer() {
   return (
     <footer className="relative bg-slate-50 border-t border-slate-200 pt-20 pb-12 overflow-hidden text-left">
       {/* Subtle top glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-[#315BFF]/30 to-transparent" />
-      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-[#315BFF]/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+      <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[250px] bg-blue-500/[0.03] blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Top Newsletter Strip from Page 17 */}
         <div className="p-8 sm:p-10 rounded-3xl bg-white border border-slate-200/90 shadow-sm mb-16 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
           <div className="max-w-md">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#315BFF] block mb-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 block mb-1">
               Newsletter
             </span>
             <h3 className="text-xl sm:text-2xl font-black text-slate-900 mb-2">
@@ -31,7 +31,7 @@ export function Footer() {
               <input
                 type="email"
                 placeholder="Enter your email address"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-[#315BFF] transition-colors"
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-blue-600 transition-colors"
               />
               <button
                 type="submit"
@@ -52,12 +52,18 @@ export function Footer() {
           {/* Brand Info */}
           <div className="col-span-2">
             <Link href="/" className="inline-flex items-center gap-2.5 mb-4 group">
-              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-tr from-[#315BFF] via-[#7545FF] to-[#FF4566] p-0.5 shadow-md">
-                <div className="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#60A5FA] via-[#C084FC] to-[#FF4566] font-black text-sm">
-                    NR
-                  </span>
-                </div>
+              <div className="relative flex items-center justify-center w-8 h-8 rounded-xl bg-slate-950 text-white shadow-sm group-hover:scale-105 transition-transform">
+                <svg
+                  className="w-4 h-4 text-white"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <g transform="rotate(-35 12 12)">
+                    <rect x="5" y="5" width="5.5" height="14" rx="2.75" />
+                    <rect x="13.5" y="5" width="5.5" height="14" rx="2.75" />
+                  </g>
+                </svg>
               </div>
               <span className="font-bold text-xl tracking-tight text-slate-900">
                 NexaReach

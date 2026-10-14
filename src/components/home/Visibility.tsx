@@ -4,6 +4,7 @@ import React from "react";
 import { Check, Sparkles, ShieldCheck, CheckCircle2, AlertTriangle, XCircle, ArrowRight } from "lucide-react";
 import { GradientBadge } from "@/components/ui/GradientBadge";
 import { deliverabilityChecks } from "@/data/site-content";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function Visibility() {
   const benefits = [
@@ -13,11 +14,11 @@ export function Visibility() {
   ];
 
   return (
-    <section id="deliverability" className="relative py-24 md:py-32 bg-[#FFFFFF] border-t border-slate-200/80 overflow-hidden">
+    <section id="deliverability" className="relative py-28 md:py-36 bg-[#FFFFFF] border-t border-slate-200/80 overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Column: SECTION 5 & 8 Copy from content.txt */}
-          <div className="lg:col-span-5 text-left">
+          {/* Left Column */}
+          <ScrollReveal direction="left" className="lg:col-span-5 text-left">
             <GradientBadge variant="light" icon={<Sparkles className="w-3.5 h-3.5" />} className="mb-4">
               BUILT FOR RESPONSIBLE SENDING
             </GradientBadge>
@@ -59,29 +60,29 @@ export function Visibility() {
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </a>
             </div>
-          </div>
+          </ScrollReveal>
 
-          {/* Right Column: Layered Media Composition (Email Verification Preview & Deliverability Health) */}
-          <div className="lg:col-span-7 relative">
+          {/* Right Column: Layered Media Composition */}
+          <ScrollReveal direction="right" className="lg:col-span-7 relative">
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-stretch">
-              {/* Left Stack: Verification Table from SECTION 5 */}
+              {/* Left Stack: Verification Table */}
               <div className="sm:col-span-7 rounded-3xl bg-slate-50/80 border border-slate-200 p-6 shadow-md text-left flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-200">
                     <div>
-                      <span className="text-[10px] font-bold text-[#315BFF] uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">
                         CSV Batch Verification
                       </span>
                       <h4 className="font-bold text-sm text-slate-900">
                         Real-time Mailbox Risk Scoring
                       </h4>
                     </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-[#315BFF] border border-blue-200">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
                       99.4% Accurate
                     </span>
                   </div>
 
-                  {/* Verification Rows matching SECTION 5 Preview Labels */}
+                  {/* Verification Rows */}
                   <div className="space-y-2 text-xs">
                     {[
                       { email: "alex.turner@invarion.com", status: "Valid", risk: "Low Risk", type: "success" },
@@ -92,7 +93,7 @@ export function Visibility() {
                     ].map((row, idx) => (
                       <div
                         key={idx}
-                        className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between gap-2 shadow-2xs"
+                        className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between gap-2 shadow-xs"
                       >
                         <div className="truncate">
                           <span className="font-semibold text-slate-900 block truncate text-[11px]">
@@ -126,11 +127,11 @@ export function Visibility() {
                 </div>
               </div>
 
-              {/* Right Stack: Deliverability & Health Indicators from SECTION 8 */}
+              {/* Right Stack: Deliverability & Health Indicators */}
               <div className="sm:col-span-5 flex flex-col gap-4">
                 <div className="rounded-3xl bg-white border border-slate-200 p-5 shadow-md text-left">
                   <div className="flex items-center gap-2 mb-3">
-                    <ShieldCheck className="w-4 h-4 text-[#315BFF]" />
+                    <ShieldCheck className="w-4 h-4 text-blue-600" />
                     <h5 className="font-bold text-xs text-slate-900">Infrastructure Health</h5>
                   </div>
                   <div className="space-y-2">
@@ -143,21 +144,22 @@ export function Visibility() {
                   </div>
                 </div>
 
-                <div className="rounded-3xl bg-gradient-to-br from-[#315BFF] to-[#7545FF] text-white p-5 shadow-lg text-left">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-blue-100 block mb-1">
+                {/* Refined Obsidian Reputation Card */}
+                <div className="rounded-3xl bg-slate-950 border border-slate-800 text-white p-5 shadow-lg text-left">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1">
                     Reputation Score
                   </span>
                   <div className="flex items-baseline gap-2 mb-2">
-                    <span className="text-3xl font-black">98.8</span>
-                    <span className="text-xs text-blue-100 font-semibold">/ 100 Safe Tier</span>
+                    <span className="text-3xl font-black text-white">98.8</span>
+                    <span className="text-xs text-emerald-400 font-semibold">/ 100 Safe Tier</span>
                   </div>
-                  <p className="text-[11px] text-blue-100/90 leading-relaxed">
+                  <p className="text-[11px] text-slate-300 leading-relaxed">
                     Zero domain blacklist listings. Bounce rates maintained below 0.6% across all connected sending domains.
                   </p>
                 </div>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </section>

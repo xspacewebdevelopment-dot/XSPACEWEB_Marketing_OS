@@ -21,13 +21,13 @@ export function GradientBadge({
         variant === "light" &&
           "bg-slate-100/90 border border-slate-200 text-slate-800 hover:bg-slate-200/80 shadow-xs",
         variant === "blue" &&
-          "bg-[#315BFF]/10 border border-[#315BFF]/25 text-[#2563EB] hover:bg-[#315BFF]/15",
+          "bg-blue-500/10 border border-blue-500/25 text-blue-600 hover:bg-blue-500/15",
         variant === "dark" &&
           "bg-slate-900 border border-slate-800 text-white shadow-xs",
         className
       )}
     >
-      {icon && <span className="text-[#315BFF]">{icon}</span>}
+      {icon && <span className="text-blue-600">{icon}</span>}
       <span>{children}</span>
     </div>
   );
