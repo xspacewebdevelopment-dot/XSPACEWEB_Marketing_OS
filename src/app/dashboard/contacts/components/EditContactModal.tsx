@@ -26,6 +26,7 @@ export function EditContactModal({
   const [jobTitle, setJobTitle] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [subscriptionStatus, setSubscriptionStatus] = useState("PENDING");
+  const [smsConsent, setSmsConsent] = useState("PENDING");
   const [selectedListIds, setSelectedListIds] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,6 +41,7 @@ export function EditContactModal({
       setJobTitle(contact.jobTitle || "");
       setTagInput((contact.tags || []).join(", "));
       setSubscriptionStatus(contact.subscriptionStatus || "PENDING");
+      setSmsConsent(contact.smsConsent || "PENDING");
       setSelectedListIds((contact.lists || []).map((l: any) => l.id));
       setNotes(contact.notes || "");
     }
@@ -65,6 +67,8 @@ export function EditContactModal({
           firstName: firstName || undefined,
           lastName: lastName || undefined,
           phone: phone || undefined,
+          smsConsent,
+          smsConsentSource: "MANUAL",
           company: company || undefined,
           jobTitle: jobTitle || undefined,
           tags,
@@ -175,7 +179,7 @@ export function EditContactModal({
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700">Marketing Consent</label>
+              <label className="text-xs font-semibold text-slate-700">Email Consent</label>
               <select
                 value={subscriptionStatus}
                 onChange={(e) => setSubscriptionStatus(e.target.value)}
@@ -187,6 +191,25 @@ export function EditContactModal({
                 <option value="BOUNCED">Bounced</option>
               </select>
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-slate-700 flex items-center justify-between">
+              <span>SMS &amp; RCS Broadcast Consent</span>
+              <span className="text-[10px] text-blue-600 font-medium">Telecom Compliance</span>
+            </label>
+            <select
+              value={smsConsent}
+              onChange={(e) => setSmsConsent(e.target.value)}
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-900 focus:outline-hidden focus:border-blue-500 focus:bg-white cursor-pointer font-medium"
+            >
+              <option value="OPTED_IN">Opted In (Verified Express Opt-In — Ready for SMS &amp; RCS)</option>
+              <option value="PENDING">Pending (Needs opt-in verification)</option>
+              <option value="OPTED_OUT">Opted Out (Do not message via SMS/RCS)</option>
+            </select>
+            <span className="text-[10px] text-slate-400 block">
+              Directly controls eligibility for Fast2SMS broadcasts and test dispatches.
+            </span>
           </div>
 
           <div className="space-y-1.5">

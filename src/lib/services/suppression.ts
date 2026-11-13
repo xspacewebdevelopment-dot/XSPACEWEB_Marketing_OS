@@ -552,6 +552,63 @@ export class SuppressionService {
   }
 
   /**
+   * Channel-aware suppression check for SMS.
+   * Evaluates suppression semantics specifically for SMS:
+   * - An active suppression on recipient's normalized phone number blocks SMS.
+   * - An active email suppression with reason DO_NOT_CONTACT, MANUAL_BLOCK, or channel SMS/ALL blocks SMS.
+   * - Email deliverability suppressions (HARD_BOUNCE, SPAM_COMPLAINT, UNSUBSCRIBED under EMAIL channel)
+   *   do NOT automatically treat every email suppression as a global SMS suppression.
+   */
+  public async isSmsSuppressed(
+    workspaceId: string,
+    recipient: { email?: string | null; phoneNormalized?: string | null }
+  ): Promise<{ isSuppressed: boolean; reason?: string; source?: string }> {
+    if (!workspaceId) return { isSuppressed: false };
+
+    const orClauses: any[] = [];
+
+    if (recipient.phoneNormalized) {
+      orClauses.push({
+        normalizedPhone: recipient.phoneNormalized,
+        status: "ACTIVE",
+      });
+    }
+
+    if (recipient.email) {
+      const normEmail = normalizeEmail(recipient.email);
+      orClauses.push({
+        normalizedEmail: normEmail,
+        status: "ACTIVE",
+        OR: [
+          { channel: { in: ["SMS", "ALL"] } },
+          { reason: { in: ["DO_NOT_CONTACT", "MANUAL_BLOCK"] } },
+        ],
+      });
+    }
+
+    if (orClauses.length === 0) {
+      return { isSuppressed: false };
+    }
+
+    const match = await prisma.suppressionEntry.findFirst({
+      where: {
+        workspaceId,
+        OR: orClauses,
+      },
+    });
+
+    if (match) {
+      return {
+        isSuppressed: true,
+        reason: match.reason,
+        source: match.source,
+      };
+    }
+
+    return { isSuppressed: false };
+  }
+
+  /**
    * FEATURE 6 — CAMPAIGN SAFETY ENGINE
    * Checks a batch of recipient emails against active workspace suppressions
    * immediately before sending. Returns partitioned eligible vs excluded addresses.

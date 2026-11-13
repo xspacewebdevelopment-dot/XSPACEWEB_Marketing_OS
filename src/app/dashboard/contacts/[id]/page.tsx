@@ -30,6 +30,9 @@ import {
   Sparkles,
   Info,
   ExternalLink,
+  MessageSquare,
+  Send,
+  Smartphone,
 } from "lucide-react";
 
 import { EditContactModal } from "../components/EditContactModal";
@@ -58,6 +61,7 @@ export default function ContactProfilePage({ params }: PageProps) {
   const [showReverifyConfirm, setShowReverifyConfirm] = useState(false);
   const [showRemoveSuppressionModal, setShowRemoveSuppressionModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDirectSmsModal, setShowDirectSmsModal] = useState(false);
 
   // Form states
   const [reverifyLoading, setReverifyLoading] = useState(false);
@@ -65,6 +69,83 @@ export default function ContactProfilePage({ params }: PageProps) {
   const [suppressionJustification, setSuppressionJustification] = useState("");
   const [confirmedConsent, setConfirmedConsent] = useState(false);
   const [removalError, setRemovalError] = useState<string | null>(null);
+
+  // Direct SMS state
+  const [directSmsMessage, setDirectSmsMessage] = useState("");
+  const [directSmsRoute, setDirectSmsRoute] = useState<"q" | "dlt">("q");
+  const [directSmsConsentAgreed, setDirectSmsConsentAgreed] = useState(false);
+  const [isSendingDirectSms, setIsSendingDirectSms] = useState(false);
+  const [directSmsResult, setDirectSmsResult] = useState<{ success: boolean; message: string } | null>(null);
+
+  const handleOpenDirectSms = () => {
+    setDirectSmsMessage(
+      `Hello ${contact?.firstName || contact?.name || "there"}, this is an update from NexaReach Marketing OS.`
+    );
+    setDirectSmsConsentAgreed(contact?.smsConsent === "OPTED_IN");
+    setDirectSmsResult(null);
+    setShowDirectSmsModal(true);
+  };
+
+  const handleUpdateSmsConsent = async (newConsent: "OPTED_IN" | "OPTED_OUT" | "PENDING") => {
+    setActionLoading(true);
+    try {
+      const res = await fetch(`/api/dashboard/contacts/${contactId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          smsConsent: newConsent,
+          smsConsentSource: "MANUAL",
+          consentNotes: `User updated consent status to ${newConsent} from Contact Profile`,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update SMS consent");
+      await fetchContact();
+    } catch (err: any) {
+      alert(err.message || "Failed to update SMS consent");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleSendDirectSms = async () => {
+    if (!contact?.phone) return;
+    if (!directSmsConsentAgreed) return;
+    setIsSendingDirectSms(true);
+    setDirectSmsResult(null);
+    try {
+      const res = await fetch("/api/dashboard/sms-rcs/test-send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: contact.phone,
+          messageText: directSmsMessage.trim(),
+          route: directSmsRoute,
+          confirmLiveSend: true,
+          attestedConsent: true,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setDirectSmsResult({
+          success: true,
+          message: `SMS dispatched successfully via Fast2SMS! Request ID: ${data.requestId || "OK"}`,
+        });
+      } else {
+        setDirectSmsResult({
+          success: false,
+          message: data.error || "Failed to dispatch SMS",
+        });
+      }
+    } catch (err: any) {
+      setDirectSmsResult({
+        success: false,
+        message: err.message || "Network error during SMS dispatch",
+      });
+    } finally {
+      setIsSendingDirectSms(false);
+    }
+  };
 
   const fetchContact = async () => {
     try {
@@ -244,6 +325,16 @@ export default function ContactProfilePage({ params }: PageProps) {
 
         {/* Action Buttons */}
         <div className="flex items-center flex-wrap gap-2.5">
+          {contact.phone && (
+            <button
+              onClick={handleOpenDirectSms}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors cursor-pointer"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>Send SMS / RCS</span>
+            </button>
+          )}
+
           <button
             onClick={() => setShowReverifyConfirm(true)}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors cursor-pointer"
@@ -338,15 +429,19 @@ export default function ContactProfilePage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Marketing Consent Card */}
-          <div className="p-5 rounded-2xl bg-white border border-slate-200 space-y-3 shadow-xs">
+          {/* Marketing & Telecom Consent Card */}
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 space-y-4 shadow-xs">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
               <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-              Marketing Consent
+              Channel Consent &amp; Compliance
             </h3>
 
+            {/* Email Consent */}
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <span className="text-xs text-slate-700 font-medium">Subscription Status</span>
+              <div>
+                <span className="text-xs text-slate-800 font-semibold block">Email Channel</span>
+                <span className="text-[10px] text-slate-400">Newsletter &amp; Broadcasts</span>
+              </div>
               {contact.subscriptionStatus === "SUBSCRIBED" ? (
                 <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                   Subscribed
@@ -366,13 +461,130 @@ export default function ContactProfilePage({ params }: PageProps) {
               )}
             </div>
 
+            {/* SMS & RCS Consent */}
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs text-slate-800 font-semibold flex items-center gap-1.5">
+                    <Smartphone className="w-3.5 h-3.5 text-indigo-600" />
+                    SMS &amp; RCS Channel
+                  </span>
+                  <span className="text-[10px] text-slate-400">Fast2SMS Telecom Opt-In</span>
+                </div>
+                {contact.smsConsent === "OPTED_IN" ? (
+                  <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Opted In
+                  </span>
+                ) : contact.smsConsent === "OPTED_OUT" ? (
+                  <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                    <XCircle className="w-3 h-3" />
+                    Opted Out
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200 flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    Pending Consent
+                  </span>
+                )}
+              </div>
+
+              {/* Quick Consent Management Buttons */}
+              <div className="flex items-center gap-2 pt-1 border-t border-slate-200/60">
+                {contact.smsConsent !== "OPTED_IN" ? (
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateSmsConsent("OPTED_IN")}
+                    disabled={actionLoading}
+                    className="w-full py-1.5 px-2.5 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition text-center cursor-pointer disabled:opacity-50"
+                  >
+                    Grant SMS &amp; RCS Opt-In
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleUpdateSmsConsent("OPTED_OUT")}
+                    disabled={actionLoading}
+                    className="w-full py-1.5 px-2.5 text-[11px] font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition text-center cursor-pointer disabled:opacity-50"
+                  >
+                    Revoke SMS Consent (STOP)
+                  </button>
+                )}
+              </div>
+            </div>
+
             <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-200 text-[11px] text-blue-900 leading-relaxed flex items-start gap-2">
               <Info className="w-3.5 h-3.5 shrink-0 text-blue-600 mt-0.5" />
               <span>
-                Consent Integrity Rule: Email verification confirms technical deliverability only, not
-                marketing opt-in consent. Consent is never assumed automatically.
+                TCPA / Telecom Rule: SMS and RCS require explicit opt-in consent before carrier dispatch.
+                Broadcasts automatically filter out unverified recipients.
               </span>
             </div>
+          </div>
+
+          {/* SMS & RCS Quick Actions Card */}
+          <div className="p-5 rounded-2xl bg-white border border-slate-200 space-y-3.5 shadow-xs">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                <MessageSquare className="w-3.5 h-3.5 text-indigo-600" />
+                SMS &amp; RCS Messaging
+              </h3>
+              {contact.phone && (
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  Fast2SMS Ready
+                </span>
+              )}
+            </div>
+
+            {contact.phone ? (
+              <div className="space-y-3">
+                <div className="p-3 rounded-xl bg-indigo-50/40 border border-indigo-100 space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-slate-500 text-[11px]">Destination Phone</span>
+                    <span className="font-mono font-bold text-slate-900">{contact.phone}</span>
+                  </div>
+                  {contact.phoneNormalized && (
+                    <div className="flex items-center justify-between text-[11px] text-slate-500">
+                      <span>Normalized E.164</span>
+                      <span className="font-mono text-slate-700">{contact.phoneNormalized}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={handleOpenDirectSms}
+                    className="w-full py-2 px-3 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Send SMS</span>
+                  </button>
+
+                  <Link
+                    href={`/dashboard/sms-rcs/compose?testPhone=${encodeURIComponent(contact.phone)}`}
+                    className="w-full py-2 px-3 text-xs font-semibold text-indigo-700 bg-white hover:bg-indigo-50 border border-indigo-200 rounded-xl shadow-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Smartphone className="w-3.5 h-3.5" />
+                    <span>RCS Studio</span>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center space-y-2">
+                <p className="text-xs text-slate-500">
+                  No phone number saved for this contact.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(true)}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer"
+                >
+                  <Edit2 className="w-3 h-3" />
+                  <span>Add Phone Number</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* List Memberships Card */}
@@ -838,6 +1050,151 @@ export default function ContactProfilePage({ params }: PageProps) {
         contactName={contact.name}
         onSuccess={fetchContact}
       />
+
+      {/* Direct SMS Modal */}
+      {showDirectSmsModal && contact?.phone && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-white border border-slate-200 rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
+                  <MessageSquare className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">
+                    Send Live SMS to {fullName}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Fast2SMS Carrier Dispatch • Destination: {contact.phone}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDirectSmsModal(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-3 rounded-xl bg-blue-50/70 border border-blue-200 text-xs text-blue-900 flex items-start gap-2.5">
+              <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+              <div className="text-[11px] leading-relaxed">
+                <span>Recipient Mobile: <strong>{contact.phone}</strong></span>
+                <span className="block mt-0.5 text-blue-700">
+                  Current Opt-In Consent: <strong>{contact.smsConsent || "PENDING"}</strong>
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">
+                  Fast2SMS Route
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setDirectSmsRoute("q")}
+                    className={`p-2.5 rounded-lg border text-left cursor-pointer transition-colors ${
+                      directSmsRoute === "q"
+                        ? "border-indigo-600 bg-indigo-50/50 text-indigo-900 font-semibold"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className="text-xs font-semibold">Quick SMS (route=q)</div>
+                    <div className="text-[10px] text-slate-500 font-normal">Immediate testing</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDirectSmsRoute("dlt")}
+                    className={`p-2.5 rounded-lg border text-left cursor-pointer transition-colors ${
+                      directSmsRoute === "dlt"
+                        ? "border-indigo-600 bg-indigo-50/50 text-indigo-900 font-semibold"
+                        : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className="text-xs font-semibold">DLT Route (route=dlt)</div>
+                    <div className="text-[10px] text-slate-500 font-normal">Approved TRAI template</div>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-medium text-slate-700 mb-1">
+                  Message Text <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  rows={3}
+                  value={directSmsMessage}
+                  onChange={(e) => setDirectSmsMessage(e.target.value)}
+                  placeholder="Type your message text here..."
+                  className="w-full p-2.5 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                />
+              </div>
+
+              <label className="flex items-start gap-2 cursor-pointer text-[11px] text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={directSmsConsentAgreed}
+                  onChange={(e) => setDirectSmsConsentAgreed(e.target.checked)}
+                  className="mt-0.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 accent-indigo-600"
+                />
+                <span>
+                  I confirm that {fullName} has provided express consent to receive SMS communications from this workspace.
+                </span>
+              </label>
+
+              {directSmsResult && (
+                <div
+                  className={`p-3 rounded-lg text-xs flex items-center gap-2 ${
+                    directSmsResult.success
+                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                      : "bg-red-50 text-red-800 border border-red-200"
+                  }`}
+                >
+                  {directSmsResult.success ? (
+                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 text-red-600 shrink-0" />
+                  )}
+                  <span>{directSmsResult.message}</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                <Link
+                  href={`/dashboard/sms-rcs/compose?testPhone=${encodeURIComponent(contact.phone)}`}
+                  className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1"
+                >
+                  <span>Open in SMS/RCS Studio</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowDirectSmsModal(false)}
+                    className="px-3.5 py-1.5 text-xs text-slate-600 hover:text-slate-800 font-medium"
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSendDirectSms}
+                    disabled={isSendingDirectSms || !directSmsMessage.trim() || !directSmsConsentAgreed}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition cursor-pointer disabled:opacity-50"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>{isSendingDirectSms ? "Sending..." : "Dispatch SMS"}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

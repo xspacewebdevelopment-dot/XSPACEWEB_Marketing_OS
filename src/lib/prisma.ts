@@ -1,11 +1,15 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
-import dotenv from "dotenv";
-
-if (!process.env.DATABASE_URL) {
-  dotenv.config({ path: ".env.local" });
-  dotenv.config();
+if (!process.env.DATABASE_URL && typeof window === "undefined") {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const dotenv = require("dotenv");
+    dotenv.config({ path: ".env.local" });
+    dotenv.config();
+  } catch {
+    // Environment variables already loaded by runtime
+  }
 }
 
 const globalForPrisma = globalThis as unknown as {
@@ -52,7 +56,15 @@ const isStale = Boolean(
     (!cachedPrisma.campaign ||
       !cachedPrisma.sendingDomain ||
       !cachedPrisma.emailSendRecord ||
-      !cachedPrisma.emailWebhookEvent)
+      !cachedPrisma.emailWebhookEvent ||
+      !cachedPrisma.smsBroadcast ||
+      !cachedPrisma.smsTemplate ||
+      !cachedPrisma.smsSettings ||
+      !cachedPrisma.voiceCampaign ||
+      !cachedPrisma.voiceTemplate ||
+      !cachedPrisma.voiceSettings ||
+      !cachedPrisma.voiceCallJob ||
+      !cachedPrisma.voiceCallEvent)
 );
 
 export const prisma: PrismaClient = (!cachedPrisma || isStale) ? createPrismaClient() : cachedPrisma;

@@ -11,6 +11,20 @@ export type ContactSubscriptionStatus =
   | "UNSUBSCRIBED"
   | "BOUNCED";
 
+export type ContactSmsConsentStatus =
+  | "PENDING"
+  | "OPTED_IN"
+  | "OPTED_OUT";
+
+export type SmsConsentSource =
+  | "MANUAL"
+  | "IMPORT"
+  | "API"
+  | "WEB_FORM"
+  | "KEYWORD_STOP"
+  | "KEYWORD_START"
+  | "DIRECT_TEST";
+
 export interface ContactItem {
   id: string;
   workspaceId: string;
@@ -20,6 +34,12 @@ export interface ContactItem {
   lastName: string | null;
   name: string | null;
   phone: string | null;
+  phoneNormalized: string | null;
+  phoneCountry: string | null;
+  smsConsent: ContactSmsConsentStatus;
+  smsConsentSource: string | null;
+  smsConsentTimestamp: string | null;
+  smsOptOutTimestamp: string | null;
   company: string | null;
   jobTitle: string | null;
   tags: string[];

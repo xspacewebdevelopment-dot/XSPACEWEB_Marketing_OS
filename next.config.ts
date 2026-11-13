@@ -1,3 +1,4 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -10,6 +11,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
 };
 
+// Trigger Next.js dev runtime refresh for newly generated Prisma client models
 export default nextConfig;

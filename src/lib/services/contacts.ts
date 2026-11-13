@@ -7,8 +7,11 @@ import type {
   ContactStats,
   ContactVerificationStatus,
   ContactSubscriptionStatus,
+  ContactSmsConsentStatus,
+  SmsConsentSource,
 } from "@/lib/types/contacts";
 import { verificationService } from "./verification";
+import { parseAndNormalizePhoneNumber } from "@/lib/sms/phone";
 
 export class ContactsService {
   /**
@@ -148,6 +151,12 @@ export class ContactsService {
         lastName: c.lastName,
         name: c.name || [c.firstName, c.lastName].filter(Boolean).join(" ") || null,
         phone: c.phone,
+        phoneNormalized: (c as any).phoneNormalized || null,
+        phoneCountry: (c as any).phoneCountry || null,
+        smsConsent: ((c as any).smsConsent || "PENDING") as ContactSmsConsentStatus,
+        smsConsentSource: (c as any).smsConsentSource || null,
+        smsConsentTimestamp: (c as any).smsConsentTimestamp ? (c as any).smsConsentTimestamp.toISOString() : null,
+        smsOptOutTimestamp: (c as any).smsOptOutTimestamp ? (c as any).smsOptOutTimestamp.toISOString() : null,
         company: c.company,
         jobTitle: c.jobTitle,
         tags: c.tags,
@@ -231,6 +240,15 @@ export class ContactsService {
       orderBy: { createdAt: "desc" },
     });
 
+    // Consent audit history
+    const consentAudits = await prisma.contactConsentAuditLog.findMany({
+      where: {
+        workspaceId,
+        contactId: contact.id,
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
     return {
       id: contact.id,
       workspaceId: contact.workspaceId,
@@ -240,6 +258,12 @@ export class ContactsService {
       lastName: contact.lastName,
       name: contact.name || [contact.firstName, contact.lastName].filter(Boolean).join(" ") || null,
       phone: contact.phone,
+      phoneNormalized: (contact as any).phoneNormalized || null,
+      phoneCountry: (contact as any).phoneCountry || null,
+      smsConsent: ((contact as any).smsConsent || "PENDING") as ContactSmsConsentStatus,
+      smsConsentSource: (contact as any).smsConsentSource || null,
+      smsConsentTimestamp: (contact as any).smsConsentTimestamp ? (contact as any).smsConsentTimestamp.toISOString() : null,
+      smsOptOutTimestamp: (contact as any).smsOptOutTimestamp ? (contact as any).smsOptOutTimestamp.toISOString() : null,
       company: contact.company,
       jobTitle: contact.jobTitle,
       tags: contact.tags,
@@ -256,6 +280,7 @@ export class ContactsService {
       suppressionSource: suppression?.source || null,
       suppressionId: suppression?.id || null,
       suppressionAudits,
+      consentAudits,
       lists: contact.lists.map((m) => ({
         id: m.list.id,
         name: m.list.name,
@@ -302,6 +327,10 @@ export class ContactsService {
       lastName?: string;
       name?: string;
       phone?: string;
+      smsConsent?: ContactSmsConsentStatus;
+      smsConsentSource?: string;
+      performedByUserId?: string;
+      performedByUserEmail?: string;
       company?: string;
       jobTitle?: string;
       tags?: string[];
@@ -339,6 +368,14 @@ export class ContactsService {
       [data.firstName, data.lastName].filter(Boolean).join(" ").trim() ||
       null;
 
+    const rawPhone = data.phone?.trim() || null;
+    const phoneNorm = rawPhone ? parseAndNormalizePhoneNumber(rawPhone) : null;
+    const smsConsent: ContactSmsConsentStatus = data.smsConsent || "PENDING";
+    const smsConsentSource = data.smsConsent ? (data.smsConsentSource || "MANUAL") : null;
+    const now = new Date();
+    const smsConsentTimestamp = data.smsConsent ? now : null;
+    const smsOptOutTimestamp = data.smsConsent === "OPTED_OUT" ? now : null;
+
     const contact = await prisma.contact.create({
       data: {
         workspaceId,
@@ -347,7 +384,13 @@ export class ContactsService {
         firstName: data.firstName?.trim() || null,
         lastName: data.lastName?.trim() || null,
         name: derivedName,
-        phone: data.phone?.trim() || null,
+        phone: rawPhone,
+        phoneNormalized: phoneNorm?.isValid ? phoneNorm.e164 : null,
+        phoneCountry: phoneNorm?.isValid ? phoneNorm.country : null,
+        smsConsent,
+        smsConsentSource,
+        smsConsentTimestamp,
+        smsOptOutTimestamp,
         company: data.company?.trim() || null,
         jobTitle: data.jobTitle?.trim() || null,
         tags: Array.isArray(data.tags) ? data.tags : [],
@@ -372,6 +415,23 @@ export class ContactsService {
       },
     });
 
+    // Record audit log if consent was explicitly provided upon creation
+    if (data.smsConsent) {
+      await prisma.contactConsentAuditLog.create({
+        data: {
+          workspaceId,
+          contactId: contact.id,
+          channel: "SMS",
+          previousStatus: null,
+          newStatus: smsConsent,
+          source: smsConsentSource || "MANUAL",
+          performedByUserId: data.performedByUserId || null,
+          performedByUserEmail: data.performedByUserEmail || null,
+          notes: "Initial SMS consent recorded at contact creation",
+        },
+      });
+    }
+
     // Check if suppression already exists for this email
     const suppression = await prisma.suppressionEntry.findFirst({
       where: { workspaceId, normalizedEmail: norm, status: "ACTIVE" },
@@ -395,6 +455,11 @@ export class ContactsService {
       lastName?: string;
       name?: string;
       phone?: string;
+      smsConsent?: ContactSmsConsentStatus;
+      smsConsentSource?: string;
+      performedByUserId?: string;
+      performedByUserEmail?: string;
+      consentNotes?: string;
       company?: string;
       jobTitle?: string;
       tags?: string[];
@@ -441,21 +506,58 @@ export class ContactsService {
       }
     }
 
+    const updateData: any = {};
+    if (data.firstName !== undefined) updateData.firstName = data.firstName?.trim() || null;
+    if (data.lastName !== undefined) updateData.lastName = data.lastName?.trim() || null;
+    if (derivedName !== undefined) updateData.name = derivedName;
+    if (data.company !== undefined) updateData.company = data.company?.trim() || null;
+    if (data.jobTitle !== undefined) updateData.jobTitle = data.jobTitle?.trim() || null;
+    if (data.tags !== undefined) updateData.tags = data.tags;
+    if (data.customFields !== undefined) updateData.customFields = data.customFields;
+    if (data.notes !== undefined) updateData.notes = data.notes?.trim() || null;
+    if (data.subscriptionStatus !== undefined) updateData.subscriptionStatus = data.subscriptionStatus;
+    if (data.isArchived !== undefined) updateData.isArchived = data.isArchived;
+
+    // Normalize phone number if phone field changed
+    if (data.phone !== undefined) {
+      const rawPhone = data.phone?.trim() || null;
+      const phoneNorm = rawPhone ? parseAndNormalizePhoneNumber(rawPhone) : null;
+      updateData.phone = rawPhone;
+      updateData.phoneNormalized = phoneNorm?.isValid ? phoneNorm.e164 : null;
+      updateData.phoneCountry = phoneNorm?.isValid ? phoneNorm.country : null;
+    }
+
+    // Consent update & audit trail
+    if (data.smsConsent !== undefined && data.smsConsent !== (existing as any).smsConsent) {
+      const prevStatus = (existing as any).smsConsent || "PENDING";
+      const newStatus = data.smsConsent;
+      const now = new Date();
+
+      updateData.smsConsent = newStatus;
+      updateData.smsConsentSource = data.smsConsentSource || "MANUAL";
+      updateData.smsConsentTimestamp = now;
+      if (newStatus === "OPTED_OUT") {
+        updateData.smsOptOutTimestamp = now;
+      }
+
+      await prisma.contactConsentAuditLog.create({
+        data: {
+          workspaceId,
+          contactId: id,
+          channel: "SMS",
+          previousStatus: prevStatus,
+          newStatus,
+          source: data.smsConsentSource || "MANUAL",
+          performedByUserId: data.performedByUserId || null,
+          performedByUserEmail: data.performedByUserEmail || null,
+          notes: data.consentNotes || `SMS consent changed from ${prevStatus} to ${newStatus}`,
+        },
+      });
+    }
+
     const updated = await prisma.contact.update({
       where: { id },
-      data: {
-        firstName: data.firstName !== undefined ? data.firstName?.trim() || null : undefined,
-        lastName: data.lastName !== undefined ? data.lastName?.trim() || null : undefined,
-        name: derivedName,
-        phone: data.phone !== undefined ? data.phone?.trim() || null : undefined,
-        company: data.company !== undefined ? data.company?.trim() || null : undefined,
-        jobTitle: data.jobTitle !== undefined ? data.jobTitle?.trim() || null : undefined,
-        tags: data.tags !== undefined ? data.tags : undefined,
-        customFields: data.customFields !== undefined ? data.customFields : undefined,
-        notes: data.notes !== undefined ? data.notes?.trim() || null : undefined,
-        subscriptionStatus: data.subscriptionStatus !== undefined ? data.subscriptionStatus : undefined,
-        isArchived: data.isArchived !== undefined ? data.isArchived : undefined,
-      },
+      data: updateData,
       include: {
         lists: {
           include: { list: true },
@@ -464,6 +566,77 @@ export class ContactsService {
     });
 
     return updated;
+  }
+
+  /**
+   * Dedicated SMS Consent update method with mandatory audit logging
+   */
+  public async updateContactSmsConsent(
+    workspaceId: string,
+    contactId: string,
+    payload: {
+      consent: ContactSmsConsentStatus;
+      source?: SmsConsentSource | string;
+      performedByUserId?: string;
+      performedByUserEmail?: string;
+      notes?: string;
+    }
+  ) {
+    if (!workspaceId) throw new Error("Workspace ID is required");
+    if (!contactId) throw new Error("Contact ID is required");
+    if (!["PENDING", "OPTED_IN", "OPTED_OUT"].includes(payload.consent)) {
+      throw new Error("Invalid SMS consent status. Must be PENDING, OPTED_IN, or OPTED_OUT.");
+    }
+
+    const existing = await prisma.contact.findFirst({
+      where: { id: contactId, workspaceId },
+    });
+
+    if (!existing) {
+      throw new Error("Contact not found in this workspace");
+    }
+
+    const previousStatus = (existing as any).smsConsent || "PENDING";
+    const newStatus = payload.consent;
+    const now = new Date();
+
+    const updated = await prisma.contact.update({
+      where: { id: contactId },
+      data: {
+        smsConsent: newStatus,
+        smsConsentSource: payload.source || "MANUAL",
+        smsConsentTimestamp: now,
+        smsOptOutTimestamp: newStatus === "OPTED_OUT" ? now : (existing as any).smsOptOutTimestamp,
+      },
+    });
+
+    // Write immutable audit log
+    await prisma.contactConsentAuditLog.create({
+      data: {
+        workspaceId,
+        contactId,
+        channel: "SMS",
+        previousStatus,
+        newStatus,
+        source: payload.source || "MANUAL",
+        performedByUserId: payload.performedByUserId || null,
+        performedByUserEmail: payload.performedByUserEmail || null,
+        notes: payload.notes || `Consent changed from ${previousStatus} to ${newStatus}`,
+      },
+    });
+
+    return updated;
+  }
+
+  /**
+   * Retrieves full consent audit log history for a contact
+   */
+  public async getContactConsentAudits(workspaceId: string, contactId: string) {
+    if (!workspaceId || !contactId) return [];
+    return prisma.contactConsentAuditLog.findMany({
+      where: { workspaceId, contactId },
+      orderBy: { createdAt: "desc" },
+    });
   }
 
   /**

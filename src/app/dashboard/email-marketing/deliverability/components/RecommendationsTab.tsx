@@ -12,7 +12,7 @@ import {
   ChevronRight,
   ShieldAlert,
 } from "lucide-react";
-import { DeliverabilityRecommendation } from "@/lib/services/deliverability";
+import type { DeliverabilityRecommendation } from "@/lib/services/deliverability";
 
 interface RecommendationsTabProps {
   recommendations: DeliverabilityRecommendation[];

@@ -33,6 +33,7 @@ import {
   Phone,
   User,
   Sparkles,
+  MessageSquare,
 } from "lucide-react";
 
 import { ContactsFilterBar } from "./components/ContactsFilterBar";
@@ -502,9 +503,22 @@ export default function ContactsPage() {
                               <span>{contact.email}</span>
                             </div>
                             {contact.phone && (
-                              <div className="flex items-center gap-1.5 text-[11px] text-slate-400 leading-snug">
+                              <div className="flex items-center gap-1.5 text-[11px] text-slate-500 leading-snug flex-wrap">
                                 <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                                 <span>{contact.phone}</span>
+                                {contact.smsConsent === "OPTED_IN" ? (
+                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    SMS Opted In
+                                  </span>
+                                ) : contact.smsConsent === "OPTED_OUT" ? (
+                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                    SMS Opt Out
+                                  </span>
+                                ) : (
+                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-medium bg-slate-100 text-slate-500 border border-slate-200">
+                                    SMS Pending
+                                  </span>
+                                )}
                               </div>
                             )}
                           </div>
@@ -632,6 +646,16 @@ export default function ContactsPage() {
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
                           </Link>
+
+                          {contact.phone && (
+                            <Link
+                              href={`/dashboard/sms-rcs/compose?testPhone=${encodeURIComponent(contact.phone)}&contactId=${encodeURIComponent(contact.id)}`}
+                              className="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 transition"
+                              title={`Send SMS / RCS to ${contact.firstName || contact.phone}`}
+                            >
+                              <MessageSquare className="w-3.5 h-3.5" />
+                            </Link>
+                          )}
 
                           <button
                             onClick={() => setEditingContact(contact)}

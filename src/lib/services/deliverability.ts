@@ -1,6 +1,7 @@
 import dns from "dns";
 import { Resend } from "resend";
 import { prisma } from "@/lib/prisma";
+import type { SendingDomain } from "@prisma/client";
 import { normalizeEmail } from "@/lib/utils";
 
 // Configure high-availability public DNS resolvers for reliable lookups
@@ -327,7 +328,7 @@ class DeliverabilityService {
   /**
    * Lists all sending domains registered for a workspace.
    */
-  public async getDomains(workspaceId: string) {
+  public async getDomains(workspaceId: string): Promise<SendingDomain[]> {
     if (!prisma.sendingDomain?.findMany) {
       return [];
     }

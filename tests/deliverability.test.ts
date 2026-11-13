@@ -168,7 +168,7 @@ async function runDeliverabilityAudit() {
 
     const otherDomains = await deliverabilityService.getDomains(otherWorkspace.id);
     assert(
-      otherDomains.every((d) => d.workspaceId === otherWorkspace.id),
+      otherDomains.every((d: any) => d.workspaceId === otherWorkspace.id),
       "Cross-workspace tenant isolation verified (Tenant B cannot see Tenant A domains)"
     );
 

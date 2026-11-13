@@ -8,6 +8,9 @@ const updateContactSchema = z.object({
   lastName: z.string().optional(),
   name: z.string().optional(),
   phone: z.string().optional(),
+  smsConsent: z.enum(["PENDING", "OPTED_IN", "OPTED_OUT"]).optional(),
+  smsConsentSource: z.string().optional(),
+  consentNotes: z.string().optional(),
   company: z.string().optional(),
   jobTitle: z.string().optional(),
   tags: z.array(z.string()).optional(),
@@ -56,7 +59,11 @@ export async function PATCH(
       );
     }
 
-    const updated = await contactsService.updateContact(auth.workspace.id, id, parsed.data);
+    const updated = await contactsService.updateContact(auth.workspace.id, id, {
+      ...parsed.data,
+      performedByUserId: auth.user.id,
+      performedByUserEmail: auth.user.email,
+    });
     return NextResponse.json({ success: true, contact: updated });
   } catch (error: any) {
     if (error.message?.includes("Authentication required")) {

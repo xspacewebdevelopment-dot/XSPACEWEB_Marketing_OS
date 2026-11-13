@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Mail,
@@ -58,6 +58,39 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
   const isOverview = pathname === "/dashboard/email-marketing/overview" || pathname === "/dashboard/email-marketing";
   const isDeliverability = pathname.startsWith("/dashboard/email-marketing/deliverability");
   const isInbox = pathname.startsWith("/dashboard/email-marketing/inbox");
+
+  const isSmsRcs = pathname.startsWith("/dashboard/sms-rcs");
+  const isSmsOverview = pathname === "/dashboard/sms-rcs" || pathname === "/dashboard/sms-rcs/overview";
+  const isSmsCampaigns = pathname.startsWith("/dashboard/sms-rcs/campaigns");
+  const isSmsCompose = pathname.startsWith("/dashboard/sms-rcs/compose");
+  const isSmsTemplates = pathname.startsWith("/dashboard/sms-rcs/templates");
+  const isSmsReports = pathname.startsWith("/dashboard/sms-rcs/reports");
+  const isSmsSettings = pathname.startsWith("/dashboard/sms-rcs/settings");
+
+  const [smsRcsOpen, setSmsRcsOpen] = useState(true);
+
+  // Automatically expand and keep SMS & RCS submenu open when on /dashboard/sms-rcs
+  useEffect(() => {
+    if (pathname.startsWith("/dashboard/sms-rcs")) {
+      setSmsRcsOpen(true);
+    }
+  }, [pathname]);
+
+  const isVoice = pathname.startsWith("/dashboard/voice-campaigns");
+  const isVoiceOverview = pathname === "/dashboard/voice-campaigns" || pathname === "/dashboard/voice-campaigns/overview";
+  const isVoiceCampaigns = pathname.startsWith("/dashboard/voice-campaigns/campaigns");
+  const isVoiceCompose = pathname.startsWith("/dashboard/voice-campaigns/compose");
+  const isVoiceTemplates = pathname.startsWith("/dashboard/voice-campaigns/templates");
+  const isVoiceReports = pathname.startsWith("/dashboard/voice-campaigns/reports");
+  const isVoiceSettings = pathname.startsWith("/dashboard/voice-campaigns/settings");
+
+  const [voiceOpen, setVoiceOpen] = useState(true);
+
+  useEffect(() => {
+    if (pathname.startsWith("/dashboard/voice-campaigns")) {
+      setVoiceOpen(true);
+    }
+  }, [pathname]);
 
   const handleLogout = async () => {
     try {
@@ -259,8 +292,249 @@ export function Sidebar({ user, workspace, isOpen = false, onClose }: SidebarPro
 
           <DisabledItem icon={MessageSquare} label="WhatsApp Marketing" />
           <DisabledItem icon={Share2} label="Social Media" />
-          <DisabledItem icon={Smartphone} label="SMS & RCS" />
-          <DisabledItem icon={PhoneCall} label="Voice Campaigns" />
+          {/* SMS & RCS Parent with Sub-items */}
+          <div className="space-y-0.5">
+            <button
+              onClick={() => setSmsRcsOpen(!smsRcsOpen)}
+              className={cn(
+                "w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer",
+                isSmsRcs
+                  ? "text-blue-300 bg-blue-950/40 border border-blue-900/40"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800/50"
+              )}
+            >
+              <div className="flex items-center gap-2.5">
+                <Smartphone className="h-4 w-4 text-blue-400" />
+                <span>SMS & RCS</span>
+              </div>
+              {smsRcsOpen ? (
+                <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+              ) : (
+                <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
+              )}
+            </button>
+
+            {smsRcsOpen && (
+              <div className="pl-6 pr-1 pt-1 space-y-0.5 border-l border-slate-800 ml-4">
+                {/* 1. Overview */}
+                <Link
+                  href="/dashboard/sms-rcs"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isSmsOverview
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <Radio className="h-3.5 w-3.5" />
+                  <span>Overview</span>
+                </Link>
+
+                {/* 2. Campaigns */}
+                <Link
+                  href="/dashboard/sms-rcs/campaigns"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isSmsCampaigns
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  <span>Campaigns</span>
+                </Link>
+
+                {/* 3. Composer & Preview */}
+                <Link
+                  href="/dashboard/sms-rcs/compose"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isSmsCompose
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Smartphone className="h-3.5 w-3.5" />
+                    <span>Composer & Preview</span>
+                  </div>
+                  <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    RCS
+                  </span>
+                </Link>
+
+                {/* 4. Templates */}
+                <Link
+                  href="/dashboard/sms-rcs/templates"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isSmsTemplates
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  <span>Templates</span>
+                </Link>
+
+                {/* 5. Reports & Logs */}
+                <Link
+                  href="/dashboard/sms-rcs/reports"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isSmsReports
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <BarChart3 className="h-3.5 w-3.5" />
+                  <span>Reports & Logs</span>
+                </Link>
+
+                {/* 6. Settings */}
+                <Link
+                  href="/dashboard/sms-rcs/settings"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isSmsSettings
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <SlidersHorizontal className="h-3.5 w-3.5" />
+                  <span>Settings</span>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Voice Campaigns Parent with Sub-items */}
+          <div className="space-y-0.5">
+            <button
+              onClick={() => setVoiceOpen(!voiceOpen)}
+              className={cn(
+                "w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer",
+                isVoice
+                  ? "text-blue-300 bg-blue-950/40 border border-blue-900/40"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800/50"
+              )}
+            >
+              <div className="flex items-center gap-2.5">
+                <PhoneCall className="h-4 w-4 text-blue-400" />
+                <span>Voice Campaigns</span>
+              </div>
+              {voiceOpen ? (
+                <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+              ) : (
+                <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
+              )}
+            </button>
+
+            {voiceOpen && (
+              <div className="pl-6 pr-1 pt-1 space-y-0.5 border-l border-slate-800 ml-4">
+                {/* 1. Overview */}
+                <Link
+                  href="/dashboard/voice-campaigns"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isVoiceOverview
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <Radio className="h-3.5 w-3.5" />
+                  <span>Overview</span>
+                </Link>
+
+                {/* 2. Campaigns */}
+                <Link
+                  href="/dashboard/voice-campaigns/campaigns"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isVoiceCampaigns
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  <span>Campaigns</span>
+                </Link>
+
+                {/* 3. Composer & Studio */}
+                <Link
+                  href="/dashboard/voice-campaigns/compose"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center justify-between px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isVoiceCompose
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <PhoneCall className="h-3.5 w-3.5" />
+                    <span>Create Campaign</span>
+                  </div>
+                  <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                    Studio
+                  </span>
+                </Link>
+
+                {/* 4. Templates */}
+                <Link
+                  href="/dashboard/voice-campaigns/templates"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isVoiceTemplates
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  <span>Templates</span>
+                </Link>
+
+                {/* 5. Reports & Logs */}
+                <Link
+                  href="/dashboard/voice-campaigns/reports"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isVoiceReports
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <BarChart3 className="h-3.5 w-3.5" />
+                  <span>Reports & Logs</span>
+                </Link>
+
+                {/* 6. Settings */}
+                <Link
+                  href="/dashboard/voice-campaigns/settings"
+                  onClick={onClose}
+                  className={cn(
+                    "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-all",
+                    isVoiceSettings
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/60"
+                  )}
+                >
+                  <SlidersHorizontal className="h-3.5 w-3.5" />
+                  <span>Settings</span>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* SECTION: LEADS */}

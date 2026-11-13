@@ -364,7 +364,7 @@ async function runCampaignAudit() {
     where: { campaignId: errorCamp.id, status: "FAILED" },
   });
   assert(
-    failedSnapshot?.errorMessage?.includes("Domain not verified"),
+    Boolean(failedSnapshot?.errorMessage?.includes("Domain not verified")),
     "Diagnostic error message persisted on recipient snapshot"
   );
 

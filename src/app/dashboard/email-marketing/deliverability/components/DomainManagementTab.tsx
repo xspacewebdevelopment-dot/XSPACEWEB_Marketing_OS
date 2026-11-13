@@ -18,7 +18,7 @@ import {
   Star,
   Plus,
 } from "lucide-react";
-import { DnsRecordItem } from "@/lib/services/deliverability";
+import type { DnsRecordItem } from "@/lib/services/deliverability";
 
 interface DomainManagementTabProps {
   domains: any[];

@@ -21,6 +21,10 @@ model User {
   templates     EmailTemplate[]
   campaigns     Campaign[]
   emailSends    EmailSendRecord[]
+  smsBroadcasts SmsBroadcast[]
+  smsTemplates  SmsTemplate[]
+  voiceCampaigns VoiceCampaign[]
+  voiceTemplates VoiceTemplate[]
 
   @@map("users")
 }
@@ -59,6 +63,15 @@ model Workspace {
   sendingDomains SendingDomain[]
   emailSends     EmailSendRecord[]
   webhookEvents  EmailWebhookEvent[]
+  smsBroadcasts  SmsBroadcast[]
+  smsTemplates   SmsTemplate[]
+  smsSettings    SmsSettings?
+  consentAuditLogs ContactConsentAuditLog[]
+  voiceCampaigns VoiceCampaign[]
+  voiceTemplates VoiceTemplate[]
+  voiceSettings  VoiceSettings?
+  voiceCallJobs  VoiceCallJob[]
+  voiceCallEvents VoiceCallEvent[]
 
   @@map("workspaces")
 }
@@ -88,6 +101,16 @@ model Contact {
   lastName           String?
   name               String?
   phone              String?
+  phoneNormalized    String?
+  phoneCountry       String?
+  smsConsent         String                  @default("PENDING") // PENDING, OPTED_IN, OPTED_OUT
+  smsConsentSource   String?                 // MANUAL, IMPORT, WEB_FORM, KEYWORD_START, API
+  smsConsentTimestamp DateTime?
+  smsOptOutTimestamp DateTime?
+  voiceConsent       String                  @default("PENDING") // PENDING, OPTED_IN, OPTED_OUT
+  voiceConsentSource String?                 // MANUAL, IMPORT, WEB_FORM, IVR, API
+  voiceConsentTimestamp DateTime?
+  voiceOptOutTimestamp DateTime?
   company            String?
   jobTitle           String?
   tags               String[]                @default([])
@@ -103,11 +126,16 @@ model Contact {
   results            VerificationResult[]
   lists              ContactListMembership[]
   campaignSnapshots  CampaignRecipientSnapshot[]
+  consentAuditLogs   ContactConsentAuditLog[]
+  voiceCallJobs      VoiceCallJob[]
 
   @@unique([workspaceId, normalizedEmail])
   @@index([workspaceId])
   @@index([workspaceId, verificationStatus])
   @@index([workspaceId, isArchived])
+  @@index([workspaceId, phoneNormalized])
+  @@index([workspaceId, smsConsent])
+  @@index([workspaceId, voiceConsent])
   @@index([normalizedEmail])
   @@map("contacts")
 }
@@ -245,6 +273,9 @@ model SuppressionEntry {
   normalizedEmail      String
   reason               String
   source               String    @default("MANUAL") // MANUAL, IMPORT, BOUNCE, COMPLAINT, UNSUBSCRIBE, SYSTEM
+  channel              String    @default("EMAIL") // EMAIL, SMS, ALL
+  phone                String?
+  normalizedPhone      String?
   notes                String?
   status               String    @default("ACTIVE") // ACTIVE, REMOVED
   addedByUserId        String?
@@ -262,6 +293,8 @@ model SuppressionEntry {
   @@index([workspaceId, status])
   @@index([workspaceId, reason])
   @@index([workspaceId, source])
+  @@index([workspaceId, normalizedPhone])
+  @@index([workspaceId, channel])
   @@map("suppression_entries")
 }
 
@@ -285,6 +318,30 @@ model SuppressionAuditLog {
   @@index([workspaceId, normalizedEmail])
   @@index([workspaceId, createdAt])
   @@map("suppression_audit_logs")
+}
+
+model ContactConsentAuditLog {
+  id                   String    @id @default(uuid())
+  workspaceId          String
+  contactId            String
+  channel              String    @default("SMS") // SMS, EMAIL
+  previousStatus       String?   // PENDING, OPTED_IN, OPTED_OUT
+  newStatus            String    // PENDING, OPTED_IN, OPTED_OUT
+  source               String    @default("MANUAL") // MANUAL, IMPORT, API, WEB_FORM, KEYWORD_STOP, KEYWORD_START, DIRECT_TEST
+  performedByUserId    String?
+  performedByUserEmail String?
+  notes                String?
+  metadata             Json?
+  createdAt            DateTime  @default(now())
+
+  workspace            Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  contact              Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([contactId])
+  @@index([workspaceId, channel])
+  @@index([workspaceId, createdAt])
+  @@map("contact_consent_audit_logs")
 }
 
 model VerificationSettings {
@@ -595,5 +652,292 @@ model EmailWebhookEvent {
   @@index([createdAt])
   @@map("email_webhook_events")
 }
+
+model SmsBroadcast {
+  id              String       @id @default(uuid())
+  workspaceId     String
+  userId          String?
+  name            String
+  protocol        String       @default("SMS") // SMS, RCS
+  status          String       @default("DRAFT") // DRAFT, SCHEDULED, SENT, ARCHIVED
+  senderId        String       @default("NEXAREACH")
+  messageText     String       @db.Text
+
+  // RCS Rich Card Content
+  rcsCardTitle    String?
+  rcsActionLabel  String?
+  rcsActionUrl    String?
+  rcsMediaUrl     String?
+  rcsSuggestion   String?
+
+  // Audience Configuration
+  audienceType    String       @default("ALL") // ALL, LIST, TEST
+  listId          String?
+  testPhone       String?
+  audienceConfig  Json?
+
+  // Telecom Estimation & Counts
+  encoding        String       @default("GSM-7") // GSM-7, UCS-2
+  characterCount  Int          @default(0)
+  segments        Int          @default(1)
+  totalRecipients Int          @default(0)
+  totalSegments   Int          @default(0)
+
+  // Scheduling & Delivery Timestamps
+  scheduledAt     DateTime?
+  sentAt          DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  workspace       Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user            User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([workspaceId, status])
+  @@index([workspaceId, createdAt])
+  @@map("sms_broadcasts")
+}
+
+model SmsTemplate {
+  id             String       @id @default(uuid())
+  workspaceId    String
+  userId         String?
+  name           String
+  description    String?
+  protocol       String       @default("SMS") // SMS, RCS
+  category       String       @default("GENERAL") // TRANSACTIONAL, PROMOTIONAL, ALERTS, MARKETING, GENERAL
+  messageText    String       @db.Text
+
+  // RCS Rich Card Content
+  rcsCardTitle   String?
+  rcsMediaUrl    String?
+  rcsActionLabel String?
+  rcsActionUrl   String?
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  workspace      Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user           User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([workspaceId, protocol])
+  @@index([workspaceId, category])
+  @@index([workspaceId, updatedAt])
+  @@map("sms_templates")
+}
+
+model SmsSettings {
+  id                 String    @id @default(uuid())
+  workspaceId        String    @unique
+  defaultSenderId    String    @default("NEXAREACH")
+  defaultChannel     String    @default("SMS") // SMS, RCS
+  timezone           String    @default("UTC")
+  enforceStopOptOut  Boolean   @default(true)
+  encodingPreference String    @default("AUTO") // AUTO, GSM-7, UCS-2
+  rcsBrandName       String    @default("NexaReach Marketing OS")
+  rcsBrandColor      String    @default("#2563EB")
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  workspace          Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@map("sms_settings")
+}
+
+model VoiceCampaign {
+  id               String          @id @default(uuid())
+  workspaceId      String
+  userId           String?
+  name             String
+  description      String?
+  purpose          String          @default("NOTIFICATION") // NOTIFICATION, REMINDER, SURVEY, PROMOTIONAL, TRANSACTIONAL
+  status           String          @default("DRAFT") // DRAFT, READY_FOR_REVIEW, SCHEDULED, QUEUED, COMPLETED, CANCELLED, FAILED
+  
+  // Voice Script & Configuration
+  scriptText       String          @db.Text
+  language         String          @default("en-US")
+  voiceId          String          @default("alloy")
+  speed            Float           @default(1.0)
+  pitch            Float           @default(1.0)
+  
+  // Audience Configuration
+  audienceType     String          @default("ALL") // ALL, LIST, SEGMENT, TEST
+  listId           String?
+  segmentId        String?
+  testPhone        String?
+  audienceConfig   Json?
+  
+  // Counts & Eligibility Snapshot (Server-Calculated)
+  totalRecipients  Int             @default(0)
+  eligibleCount    Int             @default(0)
+  excludedCount    Int             @default(0)
+  
+  // Call Execution Metrics (Internal Simulation / Ready for Provider)
+  completedCount   Int             @default(0)
+  failedCount      Int             @default(0)
+  busyCount        Int             @default(0)
+  noAnswerCount    Int             @default(0)
+  cancelledCount   Int             @default(0)
+  
+  // Scheduling & Lifecycle Timestamps
+  scheduledAt      DateTime?
+  timezone         String?         @default("UTC")
+  startedAt        DateTime?
+  completedAt      DateTime?
+  cancelledAt      DateTime?
+  errorMessage     String?
+  
+  // Template linkage
+  templateId       String?
+  
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  workspace        Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user             User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  callJobs         VoiceCallJob[]
+  callEvents       VoiceCallEvent[]
+
+  @@index([workspaceId])
+  @@index([workspaceId, status])
+  @@index([workspaceId, createdAt])
+  @@map("voice_campaigns")
+}
+
+model VoiceCallJob {
+  id                      String          @id @default(uuid())
+  campaignId              String
+  workspaceId             String
+  contactId               String?
+  destinationPhone        String
+  destinationPhoneNorm    String
+  countryCode             String?
+  
+  // Script with contact dynamic placeholders rendered
+  renderedScript          String          @db.Text
+  
+  // Internal Call Status
+  status                  String          @default("PENDING") // PENDING, QUEUED, IN_PROGRESS, COMPLETED, FAILED, BUSY, NO_ANSWER, CANCELLED, SKIPPED
+  attemptCount            Int             @default(0)
+  maxAttempts             Int             @default(3)
+  
+  // Execution Timestamps & Metrics
+  scheduledAt             DateTime?
+  startedAt               DateTime?
+  completedAt             DateTime?
+  callDurationSeconds     Int?            // Nullable until real data exists
+  
+  // Future Provider Abstraction Fields (Nullable)
+  providerName            String?         // Nullable (e.g. TWILIO, VONAGE, PLIVO)
+  providerCallId          String?         // Nullable
+  
+  // Error & Failure Diagnosis
+  failureCode             String?
+  failureReason           String?
+  
+  // Test / Dry-Run Flag
+  isSimulated             Boolean         @default(true)
+  
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  campaign                VoiceCampaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  workspace               Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  contact                 Contact?        @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  events                  VoiceCallEvent[]
+
+  @@unique([campaignId, destinationPhoneNorm])
+  @@index([workspaceId])
+  @@index([campaignId])
+  @@index([campaignId, status])
+  @@index([workspaceId, destinationPhoneNorm])
+  @@map("voice_call_jobs")
+}
+
+model VoiceCallEvent {
+  id              String         @id @default(uuid())
+  workspaceId     String
+  campaignId      String
+  jobId           String?
+  eventType       String         // CREATED, SCHEDULED, QUEUED, DISPATCH_SIMULATED, STATUS_CHANGED, CANCELLED, FAILED
+  previousStatus  String?
+  newStatus       String
+  notes           String?
+  metadata        Json?
+  isSimulated     Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+
+  workspace       Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  campaign        VoiceCampaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  job             VoiceCallJob?  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([campaignId])
+  @@index([jobId])
+  @@index([createdAt])
+  @@map("voice_call_events")
+}
+
+model VoiceTemplate {
+  id              String         @id @default(uuid())
+  workspaceId     String
+  userId          String?
+  name            String
+  description     String?
+  category        String         @default("GENERAL") // REMINDER, NOTIFICATION, TRANSACTIONAL, MARKETING, SURVEY, GENERAL
+  scriptText      String         @db.Text
+  language        String         @default("en-US")
+  voiceId         String         @default("alloy")
+  speed           Float          @default(1.0)
+  tags            String[]       @default([])
+  isStarter       Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  workspace       Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user            User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId])
+  @@index([workspaceId, category])
+  @@index([workspaceId, language])
+  @@map("voice_templates")
+}
+
+model VoiceSettings {
+  id                   String       @id @default(uuid())
+  workspaceId          String       @unique
+  defaultLanguage      String       @default("en-US")
+  defaultVoice         String       @default("alloy")
+  defaultSpeed         Float        @default(1.0)
+  timezone             String       @default("UTC")
+  
+  // Calling Preferences
+  callingWindowStart   String       @default("09:00")
+  callingWindowEnd     String       @default("20:00")
+  callingDays          String       @default("MON_FRI")
+  quietHoursEnabled    Boolean      @default(true)
+  maxRetryAttempts     Int          @default(3)
+  retryIntervalMinutes Int          @default(30)
+  
+  // Compliance & Consent
+  enforceConsent       Boolean      @default(true)
+  enforceSuppression   Boolean      @default(true)
+  requireOptInProof    Boolean      @default(true)
+  
+  // Future Provider Configuration
+  providerStatus       String       @default("NOT_CONNECTED")
+  providerName         String?
+  
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  workspace            Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@map("voice_settings")
+}
+
 
 

@@ -96,24 +96,28 @@ body {
 .text-gradient {
   background: linear-gradient(135deg, #0F172A 0%, #1E40AF 70%, #3B82F6 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-brand {
   background: linear-gradient(135deg, #0F172A 10%, #1D4ED8 65%, #3B82F6 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-muted {
   background: linear-gradient(180deg, #0F172A 0%, #64748B 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .text-gradient-dark {
   background: linear-gradient(180deg, #FFFFFF 0%, #94A3B8 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
